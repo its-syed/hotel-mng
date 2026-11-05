@@ -28,3 +28,11 @@ The API runs at http://localhost:4000. Set `VITE_API_URL` in `client/.env` if th
 
 ## Important
 This is an initial development build. Configure a real PostgreSQL database before use. Authentication/role permissions, audit logs, production payment gateway integration, backups, deployment and comprehensive validation are not yet implemented. Do not use it for live hotel operations until those are completed and tested.
+
+## Staff login and public booking (new)
+- Configure `JWT_SECRET`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` in the root `.env` before seeding.
+- Run `npm install`, then `npm run db:push`, then `npm run db:seed` to create the first administrator.
+- Staff sign in at http://localhost:5173. The administrator can create staff accounts under Staff.
+- Roles: ADMIN, MANAGER, RECEPTIONIST, HOUSEKEEPING. API endpoints enforce role checks.
+- Public booking page: http://localhost:5173/book. It shows available rooms for selected dates and submits a PENDING request for staff confirmation. It does not collect payment.
+- Change the default admin password after first sign-in; use a unique long password and keep `.env` private.
