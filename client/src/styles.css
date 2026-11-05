@@ -12,3 +12,61 @@
 /* Floor separation for room inventory and rack */
 .floor-sections{display:grid;gap:25px}.floor-section{background:#edf2f2;border:1px solid #e1e9e9;border-radius:13px;padding:14px}.floor-heading{display:flex;align-items:center;justify-content:space-between;margin:0 2px 12px;color:#29434a}.floor-heading b{font:800 14px Manrope}.floor-heading span{font-size:10px;color:#7e9095}.floor-section .room-grid{gap:12px}.rack-floor-row td{background:#eaf2f1!important;color:#246d68;font:800 11px Manrope;text-align:left!important;padding:10px 12px!important;border-top:12px solid #fff;letter-spacing:.3px}.dirty-room-list{display:grid;gap:8px}.dirty-room-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:#fff}.dirty-room-row>div{display:grid;gap:4px}.dirty-room-row b{font-size:12px;color:#344b52}.dirty-room-row small{font-size:10px;color:#829196}.dirty-room-row select{min-width:190px;max-width:55%;border:1px solid var(--line);border-radius:7px;padding:9px;background:#fff;color:#53676e;font-size:11px}
 @media(max-width:600px){.dirty-room-row{align-items:stretch;flex-direction:column}.dirty-room-row select{max-width:100%;width:100%}}
+
+
+/* Readability pass: comfortable typography for daily hotel operations */
+body{font-size:15px}
+.nav-item{font-size:14px}
+.sidebar-bottom b{font-size:13px}
+.sidebar-bottom small{font-size:11px}
+.breadcrumb,.top-actions{font-size:13px}
+.welcome h1{font-size:27px}
+.welcome p{font-size:14px}
+.eyebrow{font-size:11px}
+.stat-top{font-size:13px}
+.stat strong{font-size:29px}
+.stat small{font-size:12px}
+.panel h3{font-size:17px}
+.panel-head p{font-size:12px}
+.text-btn{font-size:13px}
+th{font-size:11px;padding:11px 10px}
+td{font-size:13px;padding:13px 10px}
+.badge{font-size:11px;padding:5px 9px}
+.hk-card span,.hk-card small{font-size:12px}
+.hk-card b{font-size:26px}
+.quick-actions button{font-size:13px;padding:13px}
+.btn{font-size:13px;padding:10px 14px}
+.filter{font-size:12px;padding:9px 13px}
+.filter-caption{font-size:13px}
+.searchbox input{font-size:13px}
+.room-card-top span,.room-card p{font-size:12px}
+.room-card-top b{font-size:21px}
+.room-controls select,td select{font-size:12px;padding:8px}
+.empty{font-size:13px}
+.rack-booking{font-size:11px}
+.rack td:first-child small{font-size:11px}
+.date-input{font-size:13px}
+.field span{font-size:13px}
+.field input,.field select{font-size:14px;padding:11px}
+.modal-head h2{font-size:20px}
+.icon-btn{font-size:21px}
+.error-banner{font-size:13px}
+.loading{font-size:15px}
+.toast{font-size:13px}
+.login-card>p{font-size:14px}
+.login-foot{font-size:11px}
+.login-error,.public-error{font-size:12px}
+.dirty-room-row b{font-size:14px}
+.dirty-room-row small{font-size:12px}
+.dirty-room-row select{font-size:13px}
+.room-delete-picker>p{font-size:14px}
+.room-delete-option small{font-size:12px}
+.delete-selection-count{font-size:14px}
+@media(max-width:700px){
+  .welcome h1{font-size:25px}
+  .stat-top{font-size:12px}
+  .stat small{font-size:11px}
+  .panel h3{font-size:16px}
+  td{font-size:12px}
+  .field span{font-size:13px}
+}
