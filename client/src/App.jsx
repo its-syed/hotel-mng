@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useState} from "react";
+import React, {useEffect,useMemo,useState} from "react";
 import {BedDouble,LayoutDashboard,CalendarDays,Users,ClipboardList,Wallet,Grid3X3,Menu,Search,Plus,RefreshCw,CheckCircle2,Clock3,AlertCircle,ChevronRight,LogOut,Settings,CalendarRange,Building2,Sparkles} from "lucide-react";
 
 const API=import.meta.env.VITE_API_URL||"http://localhost:4000/api";
