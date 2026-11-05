@@ -128,7 +128,7 @@ app.get("/api/room-rack", asyncRoute(async (req,res)=>{
     prisma.room.findMany({orderBy:[{floor:"asc"},{number:"asc"}]}),
     prisma.reservation.findMany({where:{checkIn:{lt:end},checkOut:{gt:start},status:{in:["CONFIRMED","CHECKED_IN"]}},include:{guest:true}})
   ]);
-  const dates=Array.from({length:days},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return d.toISOString().slice(0,10);});
+  const dates=Array.from({length:days},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");});
   res.json({mode,dates,rooms:rooms.map(room=>({...room,reservations:reservations.filter(r=>r.roomId===room.id)}))});
 }));
 
