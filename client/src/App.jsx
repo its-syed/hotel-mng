@@ -52,7 +52,7 @@ export default function App(){
  const roomOptions=rooms.filter(r=>{
   if(modal!=="reservation")return true;
   if(r.occupancyStatus==="OUT_OF_ORDER")return false;
-  if(form.source==="WALK_IN")return r.occupancyStatus==="AVAILABLE";
+  if(form.source==="WALK_IN")return r.occupancyStatus==="AVAILABLE"&&!r.reservedToday;
   if(!form.checkIn||!form.checkOut)return true;
   const start=form.checkIn,end=form.checkOut;
   const overlaps=reservations.some(b=>b.roomId===r.id&&["CONFIRMED","CHECKED_IN"].includes(b.status)&&dateKey(b.checkIn)<end&&(!b.checkOut||dateKey(b.checkOut)>start));
