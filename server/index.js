@@ -97,6 +97,16 @@ app.post("/api/rooms/bulk", allow("ADMIN","MANAGER"), asyncRoute(async (req,res)
   const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
   res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
 }));
+app.post("/api/rooms/bulk-delete", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+  const roomIds=[...new Set((Array.isArray(req.body.roomIds)?req.body.roomIds:[]).filter(id=>typeof id==="string"))];
+  if(!roomIds.length)return res.status(400).json({error:"Select at least one room"});
+  const selected=await prisma.room.findMany({where:{id:{in:roomIds}},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
+  if(selected.length!==roomIds.length)return res.status(404).json({error:"One or more selected rooms were not found. Refresh and try again."});
+  const protectedRooms=selected.filter(room=>room.reservations.length||room.tasks.length);
+  if(protectedRooms.length)return res.status(409).json({error:"Cannot delete rooms with reservation or housekeeping history: "+protectedRooms.map(room=>room.number).join(", ")+". Remove them from the selection and try again."});
+  await prisma.room.deleteMany({where:{id:{in:roomIds}}});
+  res.json({success:true,deleted:roomIds.length,message:roomIds.length+" room(s) removed"});
+}));
 app.delete("/api/rooms/:id", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
   const room=await prisma.room.findUnique({where:{id:req.params.id},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
   if(!room)return res.status(404).json({error:"Room not found"});
