@@ -1,5 +1,5 @@
 {
-  "name": "staysuite-hms",
+  "name": "ezystay-hms",
   "version": "1.0.0",
   "private": true,
   "workspaces": ["client", "server"],
