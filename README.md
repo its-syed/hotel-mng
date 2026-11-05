@@ -1,4 +1,4 @@
-# StaySuite — Hotel Management System
+# EzyStay — Hotel Management System
 
 A full-stack HMS starter built with React, Node.js/Express and PostgreSQL (Prisma).
 
