@@ -82,11 +82,11 @@ model Reservation {
   guestId     String
   roomId      String
   checkIn     DateTime
-  checkOut    DateTime
+  checkOut    DateTime?
   adults      Int               @default(1)
   children    Int               @default(0)
   status      ReservationStatus @default(PENDING)
-  totalAmount Decimal           @db.Decimal(10, 2)
+  totalAmount Decimal?          @db.Decimal(10, 2)
   source      String            @default("WALK_IN")
   notes       String?
   guest       Guest             @relation(fields: [guestId], references: [id])
