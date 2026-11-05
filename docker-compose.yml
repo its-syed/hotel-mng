@@ -1,0 +1,20 @@
+services:
+  ezystay-postgres:
+    image: postgres:16-alpine
+    container_name: ezystay-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ezystay
+      POSTGRES_PASSWORD: ezystay_dev_password_change_me
+      POSTGRES_DB: ezystay
+    ports:
+      - "5433:5432"
+    volumes:
+      - ezystay_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezystay -d ezystay"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  ezystay_postgres_data:
