@@ -128,13 +128,17 @@ app.get("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute
 }));
 app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
-  if (!guestId||!roomId||!checkIn||!checkOut||totalAmount==null) return res.status(400).json({error:"Complete all required reservation fields"});
-  const start=new Date(checkIn), end=new Date(checkOut);
-  if (!(end>start)) return res.status(400).json({error:"Check-out must be after check-in"});
-  const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},checkOut:{gt:start}}});
-  if(conflict) return res.status(409).json({error:"This room already has a reservation for those dates"});
+  if (!guestId||!roomId||!checkIn) return res.status(400).json({error:"Guest, room and check-in are required"});
+  const start=new Date(checkIn);
+  if(!Number.isFinite(start.getTime())) return res.status(400).json({error:"Choose a valid check-in date"});
+  const end=checkOut?new Date(checkOut):null;
+  if(checkOut&&(!Number.isFinite(end.getTime())||!(end>start))) return res.status(400).json({error:"Check-out must be after check-in"});
+  if(end){
+    const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},checkOut:{gt:start}}});
+    if(conflict) return res.status(409).json({error:"This room already has a reservation for those dates"});
+  }
   const bookingCode="ST"+Date.now().toString().slice(-8);
-  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount,adults:Number(adults||1),children:Number(children||0),source:source||"WALK_IN",notes,status:"CONFIRMED"},include:{guest:true,room:true}});
+  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:source||"WALK_IN",notes,status:"CONFIRMED"},include:{guest:true,room:true}});
   await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"RESERVED"}});
   res.status(201).json(reservation);
 }));
