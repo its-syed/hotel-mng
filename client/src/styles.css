@@ -91,3 +91,124 @@ td{font-size:13px;padding:13px 10px}
 .hk-cards+.panel{margin-top:0}
 @media(max-width:900px){.hk-help{grid-template-columns:1fr 1fr}.hk-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.hk-help{grid-template-columns:1fr}.hk-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.hk-card{padding:12px}.dirty-room-row select{min-width:0}}
+
+
+/* EzyStay customer-facing direct booking website */
+.ez-public{background:#faf9f6;color:#1c302f;min-height:100vh;font-family:'DM Sans',sans-serif}
+.ez-public a{color:inherit;text-decoration:none}
+.ez-nav{height:82px;padding:0 clamp(22px,7vw,110px);display:flex;align-items:center;justify-content:space-between;background:#fbfaf7;position:relative;z-index:5;border-bottom:1px solid #e9e7df}
+.ez-brand{display:flex;align-items:center;gap:11px;font:800 20px Manrope,sans-serif;letter-spacing:-.6px;color:#173b39!important}
+.ez-brand-mark{width:40px;height:40px;border-radius:12px;background:#173f3b;color:#f6f2e8;display:grid;place-items:center}
+.ez-brand small{display:block;font:700 8px 'DM Sans';letter-spacing:1.6px;color:#82918a;margin-top:3px}
+.ez-nav-links{display:flex;align-items:center;gap:34px;font-size:13px;color:#586a64}
+.ez-nav-links>a:not(.ez-nav-book):hover,.ez-footer>a:last-child:hover{color:#b27b48}
+.ez-nav-book,.ez-hero-cta,.ez-cta-band>a{display:inline-flex;align-items:center;gap:12px;background:#b37a49;color:#fff!important;padding:13px 19px;border-radius:3px;font-weight:700;font-size:13px;transition:.2s}
+.ez-nav-book:hover,.ez-hero-cta:hover,.ez-cta-band>a:hover{background:#936039;transform:translateY(-1px)}
+.ez-menu-toggle{display:none;background:none;border:0;color:#173b39}
+.ez-hero{height:min(690px,75vw);min-height:530px;position:relative;display:flex;align-items:center;overflow:hidden;background:#243b35}
+.ez-hero-image{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=2200&q=85');background-position:center 53%;background-size:cover;transform:scale(1.015)}
+.ez-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,32,29,.83) 0%,rgba(18,37,34,.62) 45%,rgba(18,37,34,.08) 100%)}
+.ez-hero-content{position:relative;z-index:1;color:#fff;margin-left:clamp(24px,10vw,155px);max-width:650px;padding:45px 25px}
+.ez-kicker{display:inline-flex;align-items:center;gap:8px;color:#b98759;font-size:10px;font-weight:800;letter-spacing:2px}
+.ez-hero .ez-kicker{color:#e5bd91}
+.ez-hero h1{font:800 clamp(43px,6.2vw,78px)/1.04 Manrope,sans-serif;letter-spacing:-3.5px;margin:22px 0}
+.ez-hero h1 em,.ez-intro h2 em{font-family:Georgia,serif;font-weight:400}
+.ez-hero-content>p{max-width:470px;color:#e2e6df;font-size:16px;line-height:1.8;margin:0 0 27px}
+.ez-hero-cta{padding:16px 23px}
+.ez-hero-note{display:flex;align-items:center;gap:8px;color:#e2e6df;font-size:11px;margin-top:25px}
+.ez-hero-side-note{position:absolute;right:35px;bottom:33px;color:#f0e9df;font-size:9px;letter-spacing:2px;writing-mode:vertical-rl}
+.ez-hero-side-note span{color:#d6a474;margin:8px 0}
+.ez-book-wrap{position:relative;z-index:2;width:min(1120px,calc(100% - 44px));margin:-48px auto 0;background:#fff;padding:32px 38px 36px;box-shadow:0 16px 55px #253a3014;border:1px solid #eeeae2}
+.ez-book-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:23px}
+.ez-book-heading h2,.ez-rooms-section h2,.ez-faq h2{font:800 30px Manrope;letter-spacing:-1px;margin:7px 0 5px;color:#1b3935}
+.ez-book-heading p,.ez-rooms-section>div>p{margin:0;color:#788780;font-size:13px}
+.ez-secure-note{display:flex;align-items:center;gap:8px;color:#718079;font-size:11px}
+.ez-secure-note svg{color:#44806c}
+.ez-search-form{display:grid;grid-template-columns:1.1fr 1.1fr .8fr .8fr auto;align-items:end;gap:12px}
+.ez-search-form label,.ez-guest-fields label{display:grid;gap:8px;min-width:0}
+.ez-search-form label>span{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#5e6f67}
+.ez-search-form label>span svg{color:#ad8055}
+.ez-search-form input,.ez-search-form select,.ez-guest-fields input{width:100%;min-width:0;height:48px;border:1px solid #e4e6df;border-radius:2px;background:#fbfbf8;padding:0 12px;color:#293d37;font-size:13px;outline:none}
+.ez-search-form input:focus,.ez-search-form select:focus,.ez-guest-fields input:focus{border-color:#9baf9e;box-shadow:0 0 0 3px #e8eee8}
+.ez-primary-btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;border:0;border-radius:2px;background:#183e39;color:#fff;padding:0 19px;height:48px;font-size:12px;font-weight:700;white-space:nowrap;transition:.2s}
+.ez-primary-btn:hover{background:#285d52}
+.ez-primary-btn:disabled{opacity:.55;cursor:not-allowed}
+.ez-error{background:#fff3ef;border-left:3px solid #c56b51;color:#994c3a;padding:12px 14px;font-size:12px;margin:17px 0 0}
+.ez-available{border-top:1px solid #ecece6;margin-top:27px;padding-top:24px}
+.ez-available-title{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+.ez-available-title h3,.ez-guest-heading h3{font:800 21px Manrope;color:#1b3935;margin:5px 0 0}
+.ez-available-title>span{font-size:12px;color:#77857e}
+.ez-room-options{display:grid;gap:8px}
+.ez-room-option{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1px solid #e7e9e2;background:#fff;cursor:pointer;transition:.15s}
+.ez-room-option.selected{border-color:#6c9586;background:#f5f8f4;box-shadow:inset 3px 0 #3e7565}
+.ez-room-option>input{accent-color:#285d52;width:16px;height:16px}
+.ez-room-icon{width:42px;height:42px;display:grid;place-items:center;background:#edf2eb;color:#557b69}
+.ez-room-info{display:grid;gap:4px;flex:1}
+.ez-room-info b{font-size:13px;color:#30473e}
+.ez-room-info small,.ez-room-price small{font-size:11px;color:#78877e}
+.ez-room-price{text-align:right;display:grid;gap:4px}
+.ez-room-price b{font:700 16px Manrope;color:#23483e}
+.ez-guest-form{background:#f8f8f4;padding:23px;margin-top:18px}
+.ez-guest-heading{margin-bottom:16px}
+.ez-guest-heading h3{margin:0 0 4px}
+.ez-guest-heading p{font-size:12px;color:#78877e;margin:0}
+.ez-guest-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ez-guest-fields label>span{font-size:11px;font-weight:700;color:#596b62}
+.ez-guest-fields label>span small{font-weight:400;color:#89958d}
+.ez-guest-fields input{background:#fff}
+.ez-submit-row{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:19px;padding-top:16px;border-top:1px solid #e5e8e0}
+.ez-submit-row>div{display:grid;gap:3px}
+.ez-submit-row>div b{font:800 22px Manrope;color:#1d443a}
+.ez-submit-row>div small{font-size:11px;color:#7b8981}
+.ez-booking-disclaimer{font-size:10px;color:#818d85;line-height:1.5;margin:12px 0 0}
+.ez-confirmation{display:flex;align-items:flex-start;gap:18px;background:#f4f8f2;border:1px solid #dce9dc;padding:25px}
+.ez-confirm-icon{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#e1eee1;color:#43805d;flex:none}
+.ez-confirmation h3{font:800 22px Manrope;margin:6px 0;color:#24473b}
+.ez-confirmation p{font-size:13px;color:#697970;line-height:1.6}
+.ez-confirm-details{display:flex;flex-wrap:wrap;gap:20px;margin:17px 0}
+.ez-confirm-details span{display:grid;gap:4px;color:#7c8980;font-size:10px}
+.ez-confirm-details b{font-size:13px;color:#2c4d41}
+.ez-outline-btn{border:1px solid #8ba897;background:transparent;color:#2c5a49;padding:10px 14px;font-size:12px;font-weight:700}
+.ez-intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(35px,7vw,100px);align-items:center;padding:110px max(7vw,24px);max-width:1440px;margin:auto}
+.ez-intro-image{min-height:520px;background:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1100&q=85') center/cover no-repeat;position:relative}
+.ez-intro-image:after{content:"";position:absolute;inset:18px -18px -18px 18px;border:1px solid #c6ad8e;z-index:-1}
+.ez-intro-copy{padding:15px 0}
+.ez-intro h2{font:800 clamp(34px,4vw,49px)/1.12 Manrope;letter-spacing:-1.8px;margin:15px 0 18px;color:#1c3b35}
+.ez-intro-copy>p{font-size:14px;color:#718078;line-height:1.9;max-width:480px}
+.ez-feature-list{display:grid;gap:17px;margin:29px 0}
+.ez-feature-list>div{display:grid;grid-template-columns:39px 1fr;column-gap:12px;align-items:center}
+.ez-feature-list>div>span{grid-row:span 2;width:38px;height:38px;display:grid;place-items:center;background:#eaf0e8;color:#557c67}
+.ez-feature-list b{font-size:13px;color:#354c41}
+.ez-feature-list small{font-size:11px;color:#839087;margin-top:3px}
+.ez-text-link{display:inline-flex;align-items:center;gap:9px;padding:0 0 6px;border:0;border-bottom:1px solid #b58a5e;background:none;color:#8f613b;font-size:12px;font-weight:700}
+.ez-rooms-section{padding:80px max(7vw,24px);background:#f0f1eb;text-align:center}
+.ez-rooms-section h2{font-size:36px;margin:9px 0}
+.ez-room-preview-grid{max-width:1120px;margin:35px auto 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;text-align:left}
+.ez-room-preview-grid article{background:#fff}
+.ez-preview-photo{height:230px;background-size:cover;background-position:center}
+.ez-preview-photo.standard{background-image:url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80')}
+.ez-preview-photo.deluxe{background-image:url('https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80')}
+.ez-preview-photo.suite{background-image:url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80')}
+.ez-room-preview-grid article>div:last-child{padding:19px 20px 22px}
+.ez-room-preview-grid article>div:last-child>span{font-size:9px;letter-spacing:1.4px;color:#a17b56;font-weight:700}
+.ez-room-preview-grid h3{font:800 21px Manrope;color:#29483d;margin:7px 0}
+.ez-room-preview-grid p{font-size:12px;color:#78877e;margin:0;line-height:1.6}
+.ez-room-note{font-size:10px;color:#89938b;margin:18px 0 0}
+.ez-cta-band{padding:48px max(7vw,24px);background:#183e39;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.ez-cta-band .ez-kicker{color:#d7ae80}
+.ez-cta-band h2{font:800 32px Manrope;margin:7px 0}
+.ez-cta-band p{font-size:12px;color:#d0dbd3;margin:0}
+.ez-cta-band>a{background:#c08a59}
+.ez-faq{max-width:1180px;margin:auto;padding:95px 24px;display:grid;grid-template-columns:.8fr 1.2fr;gap:60px}
+.ez-faq h2{font-size:36px;line-height:1.2}
+.ez-faq-list details{border-bottom:1px solid #e4e6df;padding:18px 0}
+.ez-faq-list summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:15px;color:#344b40;font-size:14px;font-weight:700}
+.ez-faq-list summary::-webkit-details-marker{display:none}
+.ez-faq-list details[open] summary svg{transform:rotate(180deg)}
+.ez-faq-list details p{font-size:12px;line-height:1.8;color:#78877e;max-width:620px}
+.ez-footer{padding:26px max(7vw,24px);border-top:1px solid #e6e7e0;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.ez-footer>span{font-size:10px;color:#879188}
+.ez-footer>a:last-child{display:flex;align-items:center;gap:6px;font-size:11px;color:#5e7569}
+@media(max-width:950px){.ez-search-form{grid-template-columns:repeat(2,minmax(0,1fr))}.ez-search-form .ez-primary-btn{grid-column:span 2}.ez-intro{gap:38px}.ez-preview-photo{height:180px}}
+@media(max-width:650px){.ez-nav{height:70px;padding:0 19px}.ez-menu-toggle{display:block}.ez-nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:#fbfaf7;padding:17px 22px 22px;box-shadow:0 12px 22px #152c2417;align-items:stretch;gap:18px;flex-direction:column}.ez-nav-links.open{display:flex}.ez-nav-book{justify-content:center}.ez-hero{min-height:580px;height:78vh;max-height:690px}.ez-hero-content{margin:0;padding:30px 24px}.ez-hero h1{font-size:47px;letter-spacing:-2.2px}.ez-hero-content>p{font-size:14px}.ez-hero-side-note{display:none}.ez-book-wrap{width:calc(100% - 26px);margin:-28px auto 0;padding:23px 17px}.ez-book-heading{align-items:flex-start;flex-direction:column}.ez-book-heading h2{font-size:27px}.ez-search-form{grid-template-columns:1fr 1fr;gap:12px}.ez-search-form .ez-primary-btn{grid-column:span 2}.ez-secure-note{font-size:10px}.ez-room-option{gap:8px;padding:10px}.ez-room-icon{width:34px;height:34px}.ez-room-info b{font-size:12px}.ez-room-info small{font-size:10px}.ez-room-price b{font-size:13px}.ez-guest-form{padding:17px 13px}.ez-guest-fields{grid-template-columns:1fr}.ez-submit-row{align-items:stretch;flex-direction:column}.ez-submit-row .ez-primary-btn{width:100%}.ez-confirmation{padding:18px;gap:12px}.ez-confirm-details{gap:12px}.ez-intro{grid-template-columns:1fr;padding:70px 25px;gap:35px}.ez-intro-image{min-height:330px;margin-right:12px}.ez-intro-copy{padding:0}.ez-rooms-section{padding:65px 20px}.ez-rooms-section h2{font-size:30px}.ez-room-preview-grid{grid-template-columns:1fr;gap:14px;margin-top:25px}.ez-preview-photo{height:220px}.ez-cta-band{align-items:flex-start;flex-direction:column;padding:39px 24px}.ez-cta-band h2{font-size:29px}.ez-faq{grid-template-columns:1fr;gap:15px;padding:65px 24px}.ez-faq h2{font-size:31px}.ez-footer{align-items:flex-start;flex-direction:column;padding:24px}.ez-footer>span{order:3}}
+@media(prefers-reduced-motion:reduce){.ez-public *{scroll-behavior:auto!important;transition:none!important}}
