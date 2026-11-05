@@ -176,6 +176,7 @@ app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPI
   }
   res.json({created,message:`Created ${created} daily cleaning tasks`});
 }));
+app.patch("/api/housekeeping/room/:roomId/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{const {assignedTo}=req.body;const room=await prisma.room.findUnique({where:{id:req.params.roomId}});if(!room)return res.status(404).json({error:"Room not found"});const existing=await prisma.housekeepingTask.findFirst({where:{roomId:room.id,status:{not:"COMPLETED"}},orderBy:{scheduledAt:"desc"}});const task=existing?await prisma.housekeepingTask.update({where:{id:existing.id},data:{assignedTo:assignedTo||null},include:{room:true}}):await prisma.housekeepingTask.create({data:{roomId:room.id,description:"Room cleaning",assignedTo:assignedTo||null},include:{room:true}});res.json(task);}));
 app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["PENDING","IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Invalid task status"});
@@ -206,7 +207,7 @@ app.get("/api/room-rack", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(as
 }));
 
 app.use((err,_req,res,_next)=>{console.error(err);res.status(500).json({error:err.code==="P2002"?"That record already exists": "Server error. Check the server logs."});});
-app.get("/api/staff",allow("ADMIN","MANAGER"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
-app.post("/api/staff",allow("ADMIN"),asyncRoute(async(req,res)=>{const {fullName,email,password,role}=req.body;if(!fullName||!email||!password||!["ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"].includes(role))return res.status(400).json({error:"Name, email, password and valid role are required"});if(String(password).length<10)return res.status(400).json({error:"Password must be at least 10 characters"});const passwordHash=await bcrypt.hash(password,12);const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role},select:{id:true,fullName:true,email:true,role:true,active:true}});res.status(201).json(user);}));
+app.get("/api/staff",allow("ADMIN","MANAGER","HOUSEKEEPING"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
+app.post("/api/staff",allow("ADMIN"),asyncRoute(async(req,res)=>{const {fullName,email,password,role}=req.body;if(!fullName||!email||!password||!["ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"].includes(role))return res.status(400).json({error:"Name, email, password and valid role are required"});const passwordHash=await bcrypt.hash(password,12);const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role},select:{id:true,fullName:true,email:true,role:true,active:true}});res.status(201).json(user);}));
 app.patch("/api/staff/:id/active",allow("ADMIN"),asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});res.json(await prisma.user.update({where:{id:req.params.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
 app.listen(port,()=>console.log("StaySuite API running on http://localhost:"+port));
