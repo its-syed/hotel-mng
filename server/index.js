@@ -50,6 +50,10 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  if(!fullName||!phone||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
  if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
+ if(room.occupancyStatus==="OCCUPIED"){
+  const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
+  if(!activeStay?.checkOut||activeStay.checkOut>start)return res.status(409).json({error:"This room is currently occupied through the selected check-in date"});
+ }
  const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]}});
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
@@ -180,6 +184,7 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
   if(!allowed.includes(status)) return res.status(400).json({error:"Invalid reservation status"});
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
+  if(current.status==="CHECKED_IN"&&["CANCELLED","NO_SHOW"].includes(status)) return res.status(409).json({error:"Check out the guest before cancelling an active stay"});
   if(status==="CONFIRMED"||status==="CHECKED_IN"){
     if(current.room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
     const conflict=await prisma.reservation.findFirst({where:{id:{not:current.id},roomId:current.roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:current.checkOut?{lt:current.checkOut}:undefined,OR:[{checkOut:{gt:current.checkIn}},{checkOut:null}]}});
