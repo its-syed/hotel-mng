@@ -39,7 +39,11 @@ app.get("/api/public/availability",asyncRoute(async(req,res)=>{
  if(!checkIn||!checkOut||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Choose valid check-in and check-out dates"});
  const rooms=await prisma.room.findMany({where:{occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
  const conflicts=await prisma.reservation.findMany({where:{status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]},select:{roomId:true}});
- const busy=new Set(conflicts.map(x=>x.roomId));res.json(rooms.filter(r=>!busy.has(r.id)).map(r=>({id:r.id,number:r.number,category:r.category,rate:r.rate})));
+ const busy=new Set(conflicts.map(x=>x.roomId));
+ const occupiedIds=rooms.filter(r=>r.occupancyStatus==="OCCUPIED").map(r=>r.id);
+ const activeStayRows=occupiedIds.length?await prisma.reservation.findMany({where:{roomId:{in:occupiedIds},status:"CHECKED_IN"},select:{roomId:true}}):[];
+ const activeStayRooms=new Set(activeStayRows.map(x=>x.roomId));
+ res.json(rooms.filter(r=>!busy.has(r.id)&&(r.occupancyStatus!=="OCCUPIED"||activeStayRooms.has(r.id))).map(r=>({id:r.id,number:r.number,category:r.category,rate:r.rate})));
 }));
 app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const {fullName,phone,email,roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
@@ -157,6 +161,10 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   if(!room) return res.status(404).json({error:"Room not found"});
   if(room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
   if(bookingSource==="WALK_IN"&&room.occupancyStatus==="OCCUPIED") return res.status(409).json({error:"A walk-in must be assigned to a currently available room"});
+  if(bookingSource!=="WALK_IN"&&room.occupancyStatus==="OCCUPIED"){
+    const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
+    if(!activeStay?.checkOut||activeStay.checkOut>start) return res.status(409).json({error:"This room is currently occupied through the selected check-in date"});
+  }
   const conflictEnd=end||new Date(start.getTime()+86400000);
   const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:conflictEnd},OR:[{checkOut:{gt:start}},{checkOut:null}]}});
   if(conflict) return res.status(409).json({error:"This room already has a reservation for those dates"});
@@ -174,7 +182,7 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
   if(!current) return res.status(404).json({error:"Reservation not found"});
   if(status==="CONFIRMED"||status==="CHECKED_IN"){
     if(current.room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
-    const conflict=await prisma.reservation.findFirst({where:{id:{not:current.id},roomId:current.roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:current.checkOut||new Date(8640000000000000)},OR:[{checkOut:{gt:current.checkIn}},{checkOut:null}]}});
+    const conflict=await prisma.reservation.findFirst({where:{id:{not:current.id},roomId:current.roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:current.checkOut?{lt:current.checkOut}:undefined,OR:[{checkOut:{gt:current.checkIn}},{checkOut:null}]}});
     if(conflict) return res.status(409).json({error:"This room already has a reservation for overlapping dates"});
   }
   if(status==="CHECKED_IN"&&current.room.occupancyStatus==="OCCUPIED"&&current.status!=="CHECKED_IN") return res.status(409).json({error:"This room is already occupied"});
