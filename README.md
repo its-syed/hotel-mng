@@ -36,3 +36,9 @@ This is an initial development build. Configure a real PostgreSQL database befor
 - Roles: ADMIN, MANAGER, RECEPTIONIST, HOUSEKEEPING. API endpoints enforce role checks.
 - Public booking page: http://localhost:5173/book. It shows available rooms for selected dates and submits a PENDING request for staff confirmation. It does not collect payment.
 - Change the default admin password after first sign-in; use a unique long password and keep `.env` private.
+
+
+## Local development without login (temporary)
+Run `docker compose up -d` from the project root to create the isolated `ezystay-postgres` container on host port 5433 with its own named volume. It does not modify the StockFlow container or its data.
+
+Copy `server/.env.example` to `server/.env` and `client/.env.example` to `client/.env`. The example configuration enables a development-only authentication bypass so the dashboard opens without a login. Never enable either bypass setting in a deployed or internet-accessible environment. To restore login, set both bypass values to `false` and configure real credentials.
