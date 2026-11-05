@@ -70,8 +70,8 @@ app.get("/api/dashboard", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING")
     prisma.housekeepingTask.count({where:{scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}}),
     prisma.reservation.findMany({where:{status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
   ]);
-  const reserved=reservedTodayRows.length;
-  const available=Math.max(0,availableBase-reservedTodayRows.length);
+  const reserved=await prisma.room.count({where:{id:{in:reservedTodayRows.map(r=>r.roomId)},occupancyStatus:{in:["AVAILABLE","RESERVED"]}}});
+  const available=Math.max(0,availableBase-reserved);
   res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,checkIns,checkOuts,pendingTasks:tasks});
 }));
 
