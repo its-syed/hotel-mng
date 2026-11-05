@@ -58,16 +58,18 @@ app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.start
 app.get("/api/dashboard", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (_req,res) => {
   const today = dayStart();
   const tomorrow = dayEnd();
-  const [total, occupied, available, reserved, outOfOrder, clean, dirty, cleaning, arrivals, departures, tasks] = await Promise.all([
+  const [total, occupied, available, reserved, outOfOrder, clean, dirty, cleaning, arrivals, departures, checkIns, checkOuts, tasks] = await Promise.all([
     prisma.room.count(), prisma.room.count({where:{occupancyStatus:"OCCUPIED"}}),
     prisma.room.count({where:{occupancyStatus:"AVAILABLE"}}), prisma.room.count({where:{occupancyStatus:"RESERVED"}}),
     prisma.room.count({where:{occupancyStatus:"OUT_OF_ORDER"}}), prisma.room.count({where:{housekeepingStatus:"CLEAN"}}),
     prisma.room.count({where:{housekeepingStatus:"DIRTY"}}), prisma.room.count({where:{housekeepingStatus:"CLEANING"}}),
     prisma.reservation.count({where:{checkIn:{gte:today,lt:tomorrow},status:"CONFIRMED"}}),
     prisma.reservation.count({where:{checkOut:{gte:today,lt:tomorrow},status:{in:["CONFIRMED","CHECKED_IN"]}}}),
+    prisma.reservation.count({where:{checkedInAt:{gte:today,lt:tomorrow}}}),
+    prisma.reservation.count({where:{checkedOutAt:{gte:today,lt:tomorrow}}}),
     prisma.housekeepingTask.count({where:{scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}})
   ]);
-  res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,pendingTasks:tasks});
+  res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,checkIns,checkOuts,pendingTasks:tasks});
 }));
 
 app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (req,res) => {
@@ -139,16 +141,22 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
     const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},checkOut:{gt:start}}});
     if(conflict) return res.status(409).json({error:"This room already has a reservation for those dates"});
   }
+  const room=await prisma.room.findUnique({where:{id:roomId}});
+  if(!room) return res.status(404).json({error:"Room not found"});
+  if(bookingSource==="WALK_IN"&&room.occupancyStatus!=="AVAILABLE") return res.status(409).json({error:"A walk-in must be assigned to an available room"});
+  const isWalkIn=bookingSource==="WALK_IN";
   const bookingCode="ST"+Date.now().toString().slice(-8);
-  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:bookingSource,notes,status:"CONFIRMED"},include:{guest:true,room:true}});
-  await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"RESERVED"}});
+  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:bookingSource,notes,status:isWalkIn?"CHECKED_IN":"CONFIRMED",checkedInAt:isWalkIn?new Date():null},include:{guest:true,room:true}});
+  await prisma.room.update({where:{id:roomId},data:{occupancyStatus:isWalkIn?"OCCUPIED":"RESERVED",...(isWalkIn?{housekeepingStatus:"CLEAN"}:{})}});
   res.status(201).json(reservation);
 }));
 app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {status}=req.body;
   const allowed=["PENDING","CONFIRMED","CHECKED_IN","CHECKED_OUT","CANCELLED","NO_SHOW"];
   if(!allowed.includes(status)) return res.status(400).json({error:"Invalid reservation status"});
-  const r=await prisma.reservation.update({where:{id:req.params.id},data:{status},include:{room:true}});
+  const current=await prisma.reservation.findUnique({where:{id:req.params.id}});
+  if(!current) return res.status(404).json({error:"Reservation not found"});
+  const r=await prisma.reservation.update({where:{id:req.params.id},data:{status,checkedInAt:status==="CHECKED_IN"?(current.checkedInAt||new Date()):undefined,checkedOutAt:status==="CHECKED_OUT"?(current.checkedOutAt||new Date()):undefined},include:{room:true}});
   if(status==="CHECKED_IN") await prisma.room.update({where:{id:r.roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   if(["CHECKED_OUT","CANCELLED","NO_SHOW"].includes(status)) await prisma.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:status==="CHECKED_OUT"?"DIRTY":r.room.housekeepingStatus}});
   res.json(r);
