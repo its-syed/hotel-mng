@@ -2,6 +2,7 @@ import {useEffect,useMemo,useState} from "react";
 import {BedDouble,LayoutDashboard,CalendarDays,Users,ClipboardList,Wallet,Grid3X3,Menu,Search,Plus,RefreshCw,CheckCircle2,Clock3,AlertCircle,ChevronRight,LogOut,Settings,CalendarRange,Building2,Sparkles} from "lucide-react";
 
 const API=import.meta.env.VITE_API_URL||"http://localhost:4000/api";
+const DEV_AUTH_BYPASS=import.meta.env.VITE_DEV_AUTH_BYPASS==="true";
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN");
 const dateKey=d=>{if(typeof d==="string" && /^\d{4}-\d{2}-\d{2}/.test(d))return d.slice(0,10);const x=new Date(d);return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const pretty=s=>String(s||"").replaceAll("_"," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
@@ -17,11 +18,11 @@ function Field({label,children}){return <label className="field"><span>{label}</
 
 export default function App(){
  const [page,setPage]=useState("Dashboard"),[data,setData]=useState(null),[rooms,setRooms]=useState([]),[reservations,setReservations]=useState([]),[guests,setGuests]=useState([]),[tasks,setTasks]=useState([]),[payments,setPayments]=useState([]),[rack,setRack]=useState(null);
- const [loading,setLoading]=useState(true),[error,setError]=useState(""),[modal,setModal]=useState(""),[busy,setBusy]=useState(false),[toast,setToast]=useState(""),[user,setUser]=useState(null),[authChecked,setAuthChecked]=useState(false),[staff,setStaff]=useState([]);
+ const [loading,setLoading]=useState(true),[error,setError]=useState(""),[modal,setModal]=useState(""),[busy,setBusy]=useState(false),[toast,setToast]=useState(""),[user,setUser]=useState(DEV_AUTH_BYPASS?{id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN"}:null),[authChecked,setAuthChecked]=useState(DEV_AUTH_BYPASS),[staff,setStaff]=useState([]);
  const [roomFilter,setRoomFilter]=useState("ALL"),[roomHkFilter,setRoomHkFilter]=useState("ALL"),[hkFilter,setHkFilter]=useState("ALL"),[rackMode,setRackMode]=useState("daily"),[rackDate,setRackDate]=useState(dateKey(new Date())),[search,setSearch]=useState("");
  const [form,setForm]=useState({});
  async function refresh(){setLoading(true);setError("");try{const housekeepingOnly=role==="HOUSEKEEPING";const [d,r,b,g,t,p]=await Promise.all([request("/dashboard"),request("/rooms"),housekeepingOnly?Promise.resolve([]):request("/reservations"),housekeepingOnly?Promise.resolve([]):request("/guests"),request("/housekeeping"),housekeepingOnly?Promise.resolve([]):request("/payments")]);setData(d);setRooms(r);setReservations(b);setGuests(g);setTasks(t);setPayments(p)}catch(e){setError(e.message)}finally{setLoading(false)}}
- useEffect(()=>{const token=localStorage.getItem("ezystay_token");if(!token){setAuthChecked(true);setLoading(false);return;}request("/auth/me").then(u=>{setUser(u);setAuthChecked(true)}).catch(()=>{localStorage.removeItem("ezystay_token");setAuthChecked(true)});},[]);
+ useEffect(()=>{if(DEV_AUTH_BYPASS){setAuthChecked(true);return;}const token=localStorage.getItem("ezystay_token");if(!token){setAuthChecked(true);setLoading(false);return;}request("/auth/me").then(u=>{setUser(u);setAuthChecked(true)}).catch(()=>{localStorage.removeItem("ezystay_token");setAuthChecked(true)});},[]);
  useEffect(()=>{if(user)refresh()},[user]);
  useEffect(()=>{if(user&&page==="Staff")request("/staff").then(setStaff).catch(e=>notify(e.message))},[user,page]);
  useEffect(()=>{if(page==="Room Rack")request("/room-rack?mode="+rackMode+"&date="+rackDate).then(setRack).catch(e=>setError(e.message))},[page,rackMode,rackDate]);
