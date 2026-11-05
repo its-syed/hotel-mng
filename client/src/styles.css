@@ -70,3 +70,24 @@ td{font-size:13px;padding:13px 10px}
   td{font-size:12px}
   .field span{font-size:13px}
 }
+
+
+/* Housekeeping page hierarchy and responsive layout */
+.hk-help{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 17px}
+.hk-help>div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.hk-help b{display:block;color:#29434a;font:700 13px Manrope;margin-bottom:5px}
+.hk-help p{margin:0;color:#718188;font-size:12px;line-height:1.55}
+.hk-cards{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}
+.hk-card{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s;min-width:0}
+.hk-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px #18333b0c}
+.hk-card.active{border-color:#77aaa3;box-shadow:0 0 0 2px #167c7818;background:#f7fbfa}
+.hk-card.all{border-left:3px solid #718990}
+.hk-card span{font-size:13px;font-weight:700;color:#40565d}
+.hk-card small{font-size:11px;line-height:1.4}
+.hk-card b{font-size:27px}
+.dirty-room-list{gap:10px}
+.dirty-room-row{padding:13px 15px}
+.dirty-room-row select{min-width:210px}
+.hk-cards+.panel{margin-top:0}
+@media(max-width:900px){.hk-help{grid-template-columns:1fr 1fr}.hk-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.hk-help{grid-template-columns:1fr}.hk-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.hk-card{padding:12px}.dirty-room-row select{min-width:0}}
