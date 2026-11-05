@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -14,7 +16,45 @@ const asyncRoute = fn => (req,res,next) => Promise.resolve(fn(req,res,next)).cat
 
 app.get("/api/health", (_req,res) => res.json({ ok:true, service:"StaySuite HMS API" }));
 
-app.get("/api/dashboard", asyncRoute(async (_req,res) => {
+const JWT_SECRET=process.env.JWT_SECRET;
+if(!JWT_SECRET) console.warn("JWT_SECRET is not configured. Set it before use.");
+const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},JWT_SECRET||"development-only-change-me",{expiresIn:"12h"});
+const authenticate=asyncRoute(async(req,res,next)=>{
+ const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ if(!token)return res.status(401).json({error:"Please sign in"});
+ try{const payload=jwt.verify(token,JWT_SECRET||"development-only-change-me");const user=await prisma.user.findUnique({where:{id:payload.sub}});if(!user||!user.active)return res.status(401).json({error:"Account is inactive"});req.user=user;next();}
+ catch{return res.status(401).json({error:"Session expired. Please sign in again"});}
+});
+const allow=(...roles)=>(req,res,next)=>roles.includes(req.user?.role)?next():res.status(403).json({error:"Your role does not have permission for this action"});
+app.post("/api/auth/login",asyncRoute(async(req,res)=>{
+ const {email,password}=req.body;if(!email||!password)return res.status(400).json({error:"Email and password are required"});
+ const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()}});
+ if(!user||!user.active||!(await bcrypt.compare(password,user.passwordHash)))return res.status(401).json({error:"Invalid email or password"});
+ res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role}});
+}));
+app.get("/api/auth/me",authenticate,(req,res)=>res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role}));
+app.get("/api/public/availability",asyncRoute(async(req,res)=>{
+ const {checkIn,checkOut}=req.query;const start=new Date(checkIn),end=new Date(checkOut);
+ if(!checkIn||!checkOut||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Choose valid check-in and check-out dates"});
+ const rooms=await prisma.room.findMany({where:{occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
+ const conflicts=await prisma.reservation.findMany({where:{status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},checkOut:{gt:start}},select:{roomId:true}});
+ const busy=new Set(conflicts.map(x=>x.roomId));res.json(rooms.filter(r=>!busy.has(r.id)).map(r=>({id:r.id,number:r.number,category:r.category,rate:r.rate})));
+}));
+app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
+ const {fullName,phone,email,roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
+ if(!fullName||!phone||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
+ const room=await prisma.room.findUnique({where:{id:roomId}});
+ if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
+ const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},checkOut:{gt:start}}});
+ if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
+ const nights=Math.max(1,Math.ceil((end-start)/86400000));
+ const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null}});return tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});});
+ res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
+}));
+app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
+
+
+app.get("/api/dashboard", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (_req,res) => {
   const today = dayStart();
   const tomorrow = dayEnd();
   const [total, occupied, available, reserved, outOfOrder, clean, dirty, cleaning, arrivals, departures, tasks] = await Promise.all([
@@ -29,31 +69,31 @@ app.get("/api/dashboard", asyncRoute(async (_req,res) => {
   res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,pendingTasks:tasks});
 }));
 
-app.get("/api/rooms", asyncRoute(async (req,res) => {
+app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (req,res) => {
   const where = {};
   if (req.query.occupancyStatus) where.occupancyStatus = req.query.occupancyStatus;
   if (req.query.housekeepingStatus) where.housekeepingStatus = req.query.housekeepingStatus;
   if (req.query.floor) where.floor = Number(req.query.floor);
   res.json(await prisma.room.findMany({where,orderBy:[{floor:"asc"},{number:"asc"}]}));
 }));
-app.post("/api/rooms", asyncRoute(async (req,res) => {
+app.post("/api/rooms", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
   const {number,floor,category,rate} = req.body;
   if (!number || !category || rate == null) return res.status(400).json({error:"Room number, category and rate are required"});
   res.status(201).json(await prisma.room.create({data:{number:String(number),floor:Number(floor||1),category,rate}}));
 }));
-app.patch("/api/rooms/:id", asyncRoute(async (req,res) => {
+app.patch("/api/rooms/:id", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","occupancyStatus","housekeepingStatus","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
   res.json(await prisma.room.update({where:{id:req.params.id},data}));
 }));
 
-app.get("/api/reservations", asyncRoute(async (req,res) => {
+app.get("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const where = {};
   if (req.query.status) where.status = req.query.status;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
   res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true},orderBy:{checkIn:"asc"}}));
 }));
-app.post("/api/reservations", asyncRoute(async (req,res) => {
+app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
   if (!guestId||!roomId||!checkIn||!checkOut||totalAmount==null) return res.status(400).json({error:"Complete all required reservation fields"});
   const start=new Date(checkIn), end=new Date(checkOut);
@@ -65,7 +105,7 @@ app.post("/api/reservations", asyncRoute(async (req,res) => {
   await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"RESERVED"}});
   res.status(201).json(reservation);
 }));
-app.patch("/api/reservations/:id/status", asyncRoute(async (req,res) => {
+app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {status}=req.body;
   const allowed=["PENDING","CONFIRMED","CHECKED_IN","CHECKED_OUT","CANCELLED","NO_SHOW"];
   if(!allowed.includes(status)) return res.status(400).json({error:"Invalid reservation status"});
@@ -75,25 +115,25 @@ app.patch("/api/reservations/:id/status", asyncRoute(async (req,res) => {
   res.json(r);
 }));
 
-app.get("/api/guests", asyncRoute(async (_req,res)=>res.json(await prisma.guest.findMany({orderBy:{createdAt:"desc"}}))));
-app.post("/api/guests", asyncRoute(async (req,res)=>{
+app.get("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.guest.findMany({orderBy:{createdAt:"desc"}}))));
+app.post("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
   const {fullName,phone,email,idType,idNumber}=req.body;
   if(!fullName||!phone) return res.status(400).json({error:"Guest name and phone are required"});
   res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
 }));
 
-app.get("/api/housekeeping", asyncRoute(async (req,res)=>{
+app.get("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const where={};
   if(req.query.status) where.status=req.query.status;
   if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
   res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
 }));
-app.post("/api/housekeeping", asyncRoute(async (req,res)=>{
+app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
   if(!roomId||!description) return res.status(400).json({error:"Room and task description are required"});
   res.status(201).json(await prisma.housekeepingTask.create({data:{roomId,description,assignedTo,taskType,scheduledAt:scheduledAt?new Date(scheduledAt):new Date()}}));
 }));
-app.post("/api/housekeeping/generate-daily", asyncRoute(async (_req,res)=>{
+app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (_req,res)=>{
   const today=dayStart(), tomorrow=dayEnd();
   const occupied=await prisma.room.findMany({where:{occupancyStatus:"OCCUPIED"}});
   let created=0;
@@ -103,7 +143,7 @@ app.post("/api/housekeeping/generate-daily", asyncRoute(async (_req,res)=>{
   }
   res.json({created,message:`Created ${created} daily cleaning tasks`});
 }));
-app.patch("/api/housekeeping/:id/status", asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["PENDING","IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Invalid task status"});
   const task=await prisma.housekeepingTask.update({where:{id:req.params.id},data:{status,startedAt:status==="IN_PROGRESS"?new Date():undefined,completedAt:status==="COMPLETED"?new Date():null},include:{room:true}});
@@ -112,14 +152,14 @@ app.patch("/api/housekeeping/:id/status", asyncRoute(async (req,res)=>{
   res.json(task);
 }));
 
-app.get("/api/payments", asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
-app.post("/api/payments", asyncRoute(async (req,res)=>{
+app.get("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
+app.post("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
   res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,amount,method,reference},include:{guest:true}}));
 }));
 
-app.get("/api/room-rack", asyncRoute(async (req,res)=>{
+app.get("/api/room-rack", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
   const mode=["daily","weekly","monthly"].includes(req.query.mode)?req.query.mode:"daily";
   const start=dayStart(req.query.date||new Date());
   const days=mode==="daily"?1:mode==="weekly"?7:30;
@@ -133,4 +173,7 @@ app.get("/api/room-rack", asyncRoute(async (req,res)=>{
 }));
 
 app.use((err,_req,res,_next)=>{console.error(err);res.status(500).json({error:err.code==="P2002"?"That record already exists": "Server error. Check the server logs."});});
-app.listen(port,()=>console.log(`StaySuite API running on http://localhost:${port}`));
+app.get("/api/staff",allow("ADMIN","MANAGER"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
+app.post("/api/staff",allow("ADMIN"),asyncRoute(async(req,res)=>{const {fullName,email,password,role}=req.body;if(!fullName||!email||!password||!["ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"].includes(role))return res.status(400).json({error:"Name, email, password and valid role are required"});if(String(password).length<10)return res.status(400).json({error:"Password must be at least 10 characters"});const passwordHash=await bcrypt.hash(password,12);const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role},select:{id:true,fullName:true,email:true,role:true,active:true}});res.status(201).json(user);}));
+app.patch("/api/staff/:id/active",allow("ADMIN"),asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});res.json(await prisma.user.update({where:{id:req.params.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
+app.listen(port,()=>console.log("StaySuite API running on http://localhost:"+port));
