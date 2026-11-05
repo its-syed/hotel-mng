@@ -79,8 +79,30 @@ app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), as
 }));
 app.post("/api/rooms", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
   const {number,floor,category,rate} = req.body;
-  if (!number || !category || rate == null) return res.status(400).json({error:"Room number, category and rate are required"});
-  res.status(201).json(await prisma.room.create({data:{number:String(number),floor:Number(floor||1),category,rate}}));
+  const type=String(category||"").toUpperCase();
+  if (!number || !["STANDARD","DELUXE","SUITE"].includes(type) || rate == null || Number(rate)<0) return res.status(400).json({error:"Room number, valid room type and non-negative rate are required"});
+  res.status(201).json(await prisma.room.create({data:{number:String(number).trim(),floor:Number(floor||1),category:type,rate:Number(rate)}}));
+}));
+app.post("/api/rooms/bulk", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+  const {startNumber,endNumber,floor,category,rate}=req.body;
+  const start=String(startNumber||"").trim(),end=String(endNumber||"").trim();
+  const matchStart=start.match(/^(.*?)(\d+)$/),matchEnd=end.match(/^(.*?)(\d+)$/);
+  if(!matchStart||!matchEnd||matchStart[1]!==matchEnd[1])return res.status(400).json({error:"Enter a matching room range, such as 101 to 108"});
+  const first=Number(matchStart[2]),last=Number(matchEnd[2]),count=last-first+1;
+  if(!Number.isInteger(first)||!Number.isInteger(last)||count<1||count>50)return res.status(400).json({error:"Room range must contain between 1 and 50 rooms"});
+  const type=String(category||"").toUpperCase();
+  if(!["STANDARD","DELUXE","SUITE"].includes(type)||rate==null||Number(rate)<0)return res.status(400).json({error:"Choose a valid room type and non-negative rate"});
+  const width=matchStart[2].length;
+  const rows=Array.from({length:count},(_,i)=>({number:matchStart[1]+String(first+i).padStart(width,"0"),floor:Number(floor||1),category:type,rate:Number(rate)}));
+  const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
+  res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
+}));
+app.delete("/api/rooms/:id", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+  const room=await prisma.room.findUnique({where:{id:req.params.id},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
+  if(!room)return res.status(404).json({error:"Room not found"});
+  if(room.reservations.length||room.tasks.length)return res.status(409).json({error:"This room has reservation or housekeeping history and cannot be deleted. Mark it Out of Order instead."});
+  await prisma.room.delete({where:{id:req.params.id}});
+  res.json({success:true});
 }));
 app.patch("/api/rooms/:id", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","occupancyStatus","housekeepingStatus","notes"];
