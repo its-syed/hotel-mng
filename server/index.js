@@ -87,7 +87,7 @@ app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), as
   const reservedIds=new Set(reservedRows.map(r=>r.roomId));
   const rooms=allRooms.map(room=>({...room,occupancyStatus:room.occupancyStatus==="RESERVED"&&!reservedIds.has(room.id)?"AVAILABLE":room.occupancyStatus,reservedToday:reservedIds.has(room.id)}));
   const filtered=req.query.occupancyStatus==="RESERVED"
-    ? rooms.filter(room=>room.reservedToday||room.occupancyStatus==="RESERVED")
+    ? rooms.filter(room=>room.reservedToday&&["AVAILABLE","RESERVED"].includes(room.occupancyStatus))
     : req.query.occupancyStatus==="AVAILABLE"
       ? rooms.filter(room=>room.occupancyStatus==="AVAILABLE"&&!room.reservedToday)
       : req.query.occupancyStatus
