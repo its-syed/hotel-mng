@@ -41,7 +41,7 @@ export default function App(){
   if(modal==="room"&&f.entryMode==="bulk")return act(()=>request("/rooms/bulk",{method:"POST",body:JSON.stringify({startNumber:f.startNumber,endNumber:f.endNumber,floor:Number(f.floor||1),category:f.category,rate:Number(f.rate)})}),result=>result.message||"Room range added");
   if(modal==="room")return act(()=>request("/rooms",{method:"POST",body:JSON.stringify({...f,floor:Number(f.floor||1),rate:Number(f.rate)})}),"Room added");
   if(modal==="guest")return act(()=>request("/guests",{method:"POST",body:JSON.stringify(f)}),"Guest added");
-  if(modal==="reservation")return act(()=>request("/reservations",{method:"POST",body:JSON.stringify({...f,adults:Number(f.adults||1),children:Number(f.children||0),totalAmount:f.totalAmount===""||f.totalAmount==null?null:Number(f.totalAmount)})}),"Reservation confirmed");
+  if(modal==="reservation")return act(()=>request("/reservations",{method:"POST",body:JSON.stringify({...f,adults:Number(f.adults||1),children:Number(f.children||0),totalAmount:f.totalAmount===""||f.totalAmount==null?null:Number(f.totalAmount)})}),f.source==="WALK_IN"?"Walk-in checked in":"Reservation confirmed");
   if(modal==="task")return act(()=>request("/housekeeping",{method:"POST",body:JSON.stringify(f)}),"Housekeeping task created");
   if(modal==="payment")return act(()=>request("/payments",{method:"POST",body:JSON.stringify({...f,amount:Number(f.amount)})}),"Payment recorded");
   if(modal==="staff")return act(()=>request("/staff",{method:"POST",body:JSON.stringify(f)}),"Staff account created");
