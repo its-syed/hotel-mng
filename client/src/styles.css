@@ -685,3 +685,11 @@ td{font-size:13px;padding:13px 10px}
  .ez-track-result-top{align-items:flex-start;flex-wrap:wrap}
  .ez-track-guest-name{font-size:clamp(17px,5vw,23px)}
 }
+
+
+/* Focused guest-creation step inside the reservation modal */
+.inline-guest-create{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;width:100%;min-width:0;padding:15px;border:1px solid var(--line);border-radius:9px;background:#f8faf9}
+.inline-guest-create>strong,.guest-create-actions{grid-column:1/-1}
+.inline-guest-create .field{min-width:0}
+.guest-create-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
+@media(max-width:560px){.inline-guest-create{grid-template-columns:1fr}.inline-guest-create>strong,.guest-create-actions{grid-column:1}.guest-create-actions{flex-wrap:wrap}}
