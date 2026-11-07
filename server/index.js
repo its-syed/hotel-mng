@@ -160,7 +160,7 @@ app.get("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute
   const where = {};
   if (req.query.status) where.status = req.query.status;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
-  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true},orderBy:{checkIn:"asc"}}));
+  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{checkIn:"asc"}}));
 }));
 app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
@@ -185,26 +185,50 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   const isWalkIn=bookingSource==="WALK_IN";
   const bookingCode="ST"+Date.now().toString().slice(-8);
   const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:bookingSource,notes,status:isWalkIn?"CHECKED_IN":"CONFIRMED",checkedInAt:isWalkIn?new Date():null},include:{guest:true,room:true}});
+  await prisma.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:reservation.status,changedBy:req.user.fullName||req.user.email||"Staff"}});
   if(isWalkIn) await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   res.status(201).json(reservation);
 }));
 app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {status}=req.body;
-  const allowed=["PENDING","CONFIRMED","CHECKED_IN","CHECKED_OUT","CANCELLED","NO_SHOW"];
-  if(!allowed.includes(status)) return res.status(400).json({error:"Invalid reservation status"});
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
-  if(current.status==="CHECKED_IN"&&["CANCELLED","NO_SHOW"].includes(status)) return res.status(409).json({error:"Check out the guest before cancelling an active stay"});
-  if(status==="CONFIRMED"||status==="CHECKED_IN"){
+  const transitions={
+    PENDING:["CONFIRMED","CANCELLED"],
+    CONFIRMED:["CHECKED_IN","CANCELLED","NO_SHOW"],
+    CHECKED_IN:["CHECKED_OUT"],
+    CHECKED_OUT:[],
+    CANCELLED:[],
+    NO_SHOW:[]
+  };
+  if(!transitions[current.status]?.includes(status)) return res.status(409).json({error:"That status change is not allowed. Follow the reservation's next available action."});
+  const now=new Date();
+  const todayKey=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(now);
+  const dateKey=value=>new Date(value).toISOString().slice(0,10);
+  const arrivalKey=dateKey(current.checkIn);
+  const departureKey=current.checkOut?dateKey(current.checkOut):null;
+  if(status==="CONFIRMED"){
     if(current.room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
     const conflict=await prisma.reservation.findFirst({where:{id:{not:current.id},roomId:current.roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:current.checkOut?{lt:current.checkOut}:undefined,OR:[{checkOut:{gt:current.checkIn}},{checkOut:null}]}});
     if(conflict) return res.status(409).json({error:"This room already has a reservation for overlapping dates"});
   }
-  if(status==="CHECKED_IN"&&current.room.occupancyStatus==="OCCUPIED"&&current.status!=="CHECKED_IN") return res.status(409).json({error:"This room is already occupied"});
-  const r=await prisma.reservation.update({where:{id:req.params.id},data:{status,checkedInAt:status==="CHECKED_IN"?(current.checkedInAt||new Date()):undefined,checkedOutAt:status==="CHECKED_OUT"?(current.checkedOutAt||new Date()):undefined},include:{room:true}});
-  if(status==="CHECKED_IN") await prisma.room.update({where:{id:r.roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
-  if(status==="CHECKED_OUT") await prisma.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:"DIRTY"}});
-  res.json(r);
+  if(status==="CHECKED_IN"){
+    if(todayKey<arrivalKey) return res.status(409).json({error:"This guest is not due to check in yet"});
+    if(departureKey&&todayKey>=departureKey) return res.status(409).json({error:"The check-in date has already passed for this stay. Contact a manager to resolve the booking."});
+    if(current.room.occupancyStatus==="OUT_OF_ORDER"||current.room.occupancyStatus==="OCCUPIED") return res.status(409).json({error:"This room is not currently available for check-in"});
+    if(current.room.housekeepingStatus!=="CLEAN") return res.status(409).json({error:"This room must be marked Clean by housekeeping before check-in"});
+    const conflict=await prisma.reservation.findFirst({where:{id:{not:current.id},roomId:current.roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:current.checkOut?{lt:current.checkOut}:undefined,OR:[{checkOut:{gt:now}},{checkOut:null}]}});
+    if(conflict) return res.status(409).json({error:"Another reservation currently overlaps this room. Resolve the room schedule before check-in."});
+  }
+  if(status==="NO_SHOW"&&todayKey<=arrivalKey) return res.status(409).json({error:"A reservation can be marked no-show only after its check-in date has passed"});
+  const updated=await prisma.$transaction(async tx=>{
+    const r=await tx.reservation.update({where:{id:current.id},data:{status,checkedInAt:status==="CHECKED_IN"?now:undefined,checkedOutAt:status==="CHECKED_OUT"?now:undefined},include:{room:true}});
+    await tx.reservationStatusHistory.create({data:{reservationId:r.id,fromStatus:current.status,toStatus:status,changedBy:req.user.fullName||req.user.email||"Staff"}});
+    if(status==="CHECKED_IN") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"OCCUPIED"}});
+    if(status==="CHECKED_OUT") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:"DIRTY"}});
+    return r;
+  });
+  res.json(updated);
 }));
 
 app.get("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.guest.findMany({orderBy:{createdAt:"desc"}}))));
