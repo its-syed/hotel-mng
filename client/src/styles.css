@@ -269,3 +269,54 @@ td{font-size:13px;padding:13px 10px}
 .ez-track-link:hover{background:#eaf1e9}
 @media(max-width:800px){.ez-track-section{grid-template-columns:1fr;padding:65px 24px;gap:20px}}
 @media(max-width:600px){.ez-track-card{padding:17px}.ez-track-form{grid-template-columns:1fr}.ez-track-form .ez-primary-btn{grid-column:auto}.ez-track-details{grid-template-columns:1fr 1fr}.ez-track-result-top{flex-direction:column}.ez-confirmation .ez-track-link{margin-top:10px}}
+
+
+/* Placeholder contact, map, reviews and payment sections */
+.ez-amenity-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+.ez-amenity-tags span{padding:5px 8px;background:#f1f3ed;color:#5f7064;font-size:9px;font-weight:700}
+.ez-room-preview-copy .ez-placeholder-note{display:block;margin-top:8px;font-style:normal;color:#a17b56;font-size:9px;line-height:1.5}
+.ez-reviews-section{padding:86px max(5vw,24px);background:#f3f4ee;display:grid;grid-template-columns:.75fr 1.25fr;gap:42px;align-items:center}
+.ez-reviews-heading h2,.ez-contact-copy h2,.ez-payment-section h2{font:800 clamp(30px,3.5vw,43px)/1.12 Manrope;color:#1e4037;letter-spacing:-1.5px;margin:12px 0}
+.ez-reviews-heading h2 em,.ez-contact-copy h2 em,.ez-payment-section h2 em{font-family:Georgia,serif;font-weight:400}
+.ez-reviews-heading p,.ez-contact-copy p,.ez-payment-section>div>p{font-size:12px;line-height:1.8;color:#77847b;max-width:390px}
+.ez-demo-label-inline{display:inline-block;margin-top:12px;padding:7px 9px;background:#f4e7d6;color:#92683c;font-size:8px;font-weight:800;letter-spacing:1px}
+.ez-review-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ez-review-card{padding:19px 16px;background:#fff;border:1px solid #e7e9e1;min-height:205px;display:flex;flex-direction:column}
+.ez-review-stars{display:flex;gap:3px;color:#b98243}
+.ez-review-card p{font:italic 13px/1.7 Georgia,serif;color:#52665b;margin:15px 0 20px;flex:1}
+.ez-review-card>b{font-size:11px;color:#29463b}
+.ez-review-card>small{font-size:9px;color:#929b92;margin-top:4px}
+.ez-contact-section{padding:88px max(5vw,24px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,80px);align-items:center;background:#fff}
+.ez-contact-actions{display:grid;gap:10px;margin-top:24px;max-width:390px}
+.ez-contact-action{display:flex;align-items:center;gap:13px;padding:13px 15px;border:1px solid #e7e9e2;color:#345548;background:#fafbf8;text-align:left}
+.ez-contact-action span{display:grid;gap:4px}
+.ez-contact-action b{font-size:12px}
+.ez-contact-action small{font-size:10px;color:#8b968d}
+.ez-contact-action.is-placeholder{opacity:.72;cursor:not-allowed}
+.ez-map-placeholder{border:1px solid #e5e8df;background:#fafbf7;padding:12px}
+.ez-map-placeholder-art{height:230px;position:relative;overflow:hidden;background-color:#e8ede2;background-image:linear-gradient(30deg,transparent 47%,#fff 48%,#fff 51%,transparent 52%),linear-gradient(120deg,transparent 44%,#fff 45%,#fff 48%,transparent 49%);background-size:95px 95px,130px 130px;display:grid;place-items:center}
+.ez-map-road{position:absolute;height:13px;width:150%;background:#fff;transform:rotate(-18deg);opacity:.9}
+.ez-map-road.road-one{top:35%;left:-20%}
+.ez-map-road.road-two{top:72%;left:-20%;transform:rotate(22deg)}
+.ez-map-pin{position:relative;z-index:1;width:54px;height:54px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#315c4b;color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px #203e3233}
+.ez-map-pin svg{transform:rotate(45deg)}
+.ez-map-label{position:absolute;bottom:12px;left:12px;padding:6px 8px;background:#fff;color:#7d8b7d;font-size:8px;letter-spacing:1.2px;font-weight:800}
+.ez-map-details{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 3px 8px}
+.ez-map-details>div{display:grid;gap:5px}
+.ez-map-details b{font-size:12px;color:#2e4c3f}
+.ez-map-details span{font-size:10px;color:#89948b}
+.ez-map-details a{display:inline-flex;align-items:center;gap:5px;color:#3d6b55;font-size:10px;font-weight:800;text-decoration:none}
+.ez-map-placeholder>.ez-placeholder-note{font-size:9px;color:#a17b56;margin:4px}
+.ez-payment-section{padding:86px max(5vw,24px);background:#f5f5ef;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+.ez-payment-card{background:#fff;border:1px solid #e7e9e1;padding:24px;box-shadow:0 12px 35px #253a300b}
+.ez-payment-brands{display:flex;flex-wrap:wrap;gap:8px;padding-bottom:18px;border-bottom:1px solid #edf0e9}
+.ez-payment-brands span{padding:7px 10px;background:#f4f6f1;color:#52695b;font-size:10px;font-weight:800;letter-spacing:.5px}
+.ez-payment-row{display:flex;align-items:center;gap:13px;padding:21px 0;color:#3a5d4c}
+.ez-payment-row>div{display:grid;gap:4px;flex:1}
+.ez-payment-row b{font-size:12px;color:#304a3d}
+.ez-payment-row small{font-size:10px;color:#8c978d}
+.ez-coming-soon{font-size:8px;font-weight:800;letter-spacing:1px;color:#9b754a;background:#f6eddf;padding:6px 7px}
+.ez-payment-card .ez-primary-btn{width:100%;opacity:.55;cursor:not-allowed}
+.ez-payment-card>.ez-placeholder-note{display:block;margin-top:12px;font-size:9px;line-height:1.6;color:#9a805e}
+@media(max-width:950px){.ez-reviews-section{grid-template-columns:1fr}.ez-review-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.ez-reviews-section,.ez-contact-section,.ez-payment-section{grid-template-columns:1fr;padding:62px 22px;gap:25px}.ez-review-grid{grid-template-columns:1fr}.ez-review-card{min-height:0}.ez-map-placeholder-art{height:190px}.ez-map-details{align-items:flex-start;flex-direction:column}}
