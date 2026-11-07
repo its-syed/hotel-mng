@@ -62,10 +62,10 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
  const code=String(req.body.bookingCode||"").trim().toUpperCase();
- const phone=String(req.body.phone||"").replace(/\\D/g,"");
+ const phone=String(req.body.phone||"").replace(/\D/g,"");
  if(!code||!phone)return res.status(400).json({error:"Enter your booking reference and phone number"});
  const booking=await prisma.reservation.findUnique({where:{bookingCode:code},include:{guest:true,room:true}});
- if(!booking||String(booking.guest.phone||"").replace(/\\D/g,"")!==phone)return res.status(404).json({error:"We couldn't find a booking with those details. Check your reference and phone number."});
+ if(!booking||String(booking.guest.phone||"").replace(/\D/g,"")!==phone)return res.status(404).json({error:"We couldn't find a booking with those details. Check your reference and phone number."});
  res.json({bookingCode:booking.bookingCode,status:booking.status,guest:booking.guest.fullName,room:booking.room.number,category:booking.room.category,checkIn:booking.checkIn,checkOut:booking.checkOut,totalAmount:booking.totalAmount,adults:booking.adults,children:booking.children,createdAt:booking.createdAt});
 }));
 app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
