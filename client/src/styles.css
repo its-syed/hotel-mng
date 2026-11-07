@@ -396,3 +396,18 @@ td{font-size:13px;padding:13px 10px}
   .ez-hero{min-height:540px}
   .ez-hero-note{align-items:flex-start}
 }
+
+
+/* Distinct, subtle room-type colours across Rooms and Room Rack */
+.room-card.room-type-standard{background:#f0f6fb;border-color:#cbddec}
+.room-card.room-type-deluxe{background:#f5f1fb;border-color:#d9cbed}
+.room-card.room-type-suite{background:#fbf5e9;border-color:#ead9b5}
+.room-card.room-type-standard .room-card-top b{color:#315f83}
+.room-card.room-type-deluxe .room-card-top b{color:#70539a}
+.room-card.room-type-suite .room-card-top b{color:#98702e}
+.rack-room-row.room-type-standard td:first-child{background:#eaf2f9!important;border-left:3px solid #6e9fc5!important}
+.rack-room-row.room-type-deluxe td:first-child{background:#f0eafa!important;border-left:3px solid #9a7bc3!important}
+.rack-room-row.room-type-suite td:first-child{background:#f8f0df!important;border-left:3px solid #c39b50!important}
+.rack-room-row.room-type-standard .rack-booking{background:#d9e9f6;color:#315f83}
+.rack-room-row.room-type-deluxe .rack-booking{background:#e8def5;color:#674b91}
+.rack-room-row.room-type-suite .rack-booking{background:#f2e5c9;color:#876326}
