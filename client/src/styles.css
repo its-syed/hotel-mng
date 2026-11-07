@@ -212,3 +212,33 @@ td{font-size:13px;padding:13px 10px}
 @media(max-width:950px){.ez-search-form{grid-template-columns:repeat(2,minmax(0,1fr))}.ez-search-form .ez-primary-btn{grid-column:span 2}.ez-intro{gap:38px}.ez-preview-photo{height:180px}}
 @media(max-width:650px){.ez-nav{height:70px;padding:0 19px}.ez-menu-toggle{display:block}.ez-nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:#fbfaf7;padding:17px 22px 22px;box-shadow:0 12px 22px #152c2417;align-items:stretch;gap:18px;flex-direction:column}.ez-nav-links.open{display:flex}.ez-nav-book{justify-content:center}.ez-hero{min-height:580px;height:78vh;max-height:690px}.ez-hero-content{margin:0;padding:30px 24px}.ez-hero h1{font-size:47px;letter-spacing:-2.2px}.ez-hero-content>p{font-size:14px}.ez-hero-side-note{display:none}.ez-book-wrap{width:calc(100% - 26px);margin:-28px auto 0;padding:23px 17px}.ez-book-heading{align-items:flex-start;flex-direction:column}.ez-book-heading h2{font-size:27px}.ez-search-form{grid-template-columns:1fr 1fr;gap:12px}.ez-search-form .ez-primary-btn{grid-column:span 2}.ez-secure-note{font-size:10px}.ez-room-option{gap:8px;padding:10px}.ez-room-icon{width:34px;height:34px}.ez-room-info b{font-size:12px}.ez-room-info small{font-size:10px}.ez-room-price b{font-size:13px}.ez-guest-form{padding:17px 13px}.ez-guest-fields{grid-template-columns:1fr}.ez-submit-row{align-items:stretch;flex-direction:column}.ez-submit-row .ez-primary-btn{width:100%}.ez-confirmation{padding:18px;gap:12px}.ez-confirm-details{gap:12px}.ez-intro{grid-template-columns:1fr;padding:70px 25px;gap:35px}.ez-intro-image{min-height:330px;margin-right:12px}.ez-intro-copy{padding:0}.ez-rooms-section{padding:65px 20px}.ez-rooms-section h2{font-size:30px}.ez-room-preview-grid{grid-template-columns:1fr;gap:14px;margin-top:25px}.ez-preview-photo{height:220px}.ez-cta-band{align-items:flex-start;flex-direction:column;padding:39px 24px}.ez-cta-band h2{font-size:29px}.ez-faq{grid-template-columns:1fr;gap:15px;padding:65px 24px}.ez-faq h2{font-size:31px}.ez-footer{align-items:flex-start;flex-direction:column;padding:24px}.ez-footer>span{order:3}}
 @media(prefers-reduced-motion:reduce){.ez-public *{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Demo room photo galleries */
+.ez-demo-gallery{position:relative;background:#e7e9e2;padding-bottom:12px}
+.ez-gallery-main{display:block;position:relative;width:100%;height:230px;padding:0;border:0;overflow:hidden;background:#dfe5dc;cursor:zoom-in}
+.ez-gallery-main img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.ez-gallery-main:hover img{transform:scale(1.035)}
+.ez-gallery-expand{position:absolute;right:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;padding:8px 10px;background:#173e39e8;color:white;font-size:10px;font-weight:700}
+.ez-gallery-thumbs{display:flex;gap:7px;padding:10px 11px 0}
+.ez-gallery-thumbs button{width:58px;height:43px;padding:2px;border:1px solid transparent;background:transparent;cursor:pointer;opacity:.72}
+.ez-gallery-thumbs button.active{border-color:#b37a49;opacity:1}
+.ez-gallery-thumbs img{display:block;width:100%;height:100%;object-fit:cover}
+.ez-demo-label{position:absolute;top:12px;left:12px;background:#fffdf0e8;color:#765a3c;padding:6px 8px;font-size:8px;font-weight:800;letter-spacing:1.4px}
+.ez-room-preview-copy{padding:19px 20px 22px;background:#fff}
+.ez-room-preview-copy>span{font-size:9px;letter-spacing:1.4px;color:#a17b56;font-weight:700}
+.ez-room-preview-copy h3{font:800 21px Manrope;color:#29483d;margin:7px 0}
+.ez-room-preview-copy p{font-size:12px;color:#78877e;margin:0;line-height:1.6}
+.ez-room-preview-copy small{display:block;margin-top:11px;color:#a17b56;font-size:10px}
+.ez-lightbox{position:fixed;z-index:1000;inset:0;background:rgba(9,20,18,.94);display:flex;align-items:center;justify-content:center;padding:65px 80px}
+.ez-lightbox-content{width:min(100%,1050px);display:grid;justify-items:center;gap:14px}
+.ez-lightbox-content img{display:block;max-width:100%;max-height:calc(100vh - 150px);object-fit:contain;box-shadow:0 18px 60px #0008}
+.ez-lightbox-content>div{width:100%;display:flex;justify-content:space-between;gap:12px;color:#fff;font-size:13px}
+.ez-lightbox-content>div span{color:#c4cec7;font-size:11px}
+.ez-lightbox-close,.ez-lightbox-arrow{position:absolute;display:grid;place-items:center;border:1px solid #ffffff55;background:#ffffff12;color:white;width:44px;height:44px;cursor:pointer}
+.ez-lightbox-close{top:20px;right:22px}
+.ez-lightbox-arrow{top:50%;transform:translateY(-50%);border-radius:50%}
+.ez-lightbox-arrow.prev{left:22px}
+.ez-lightbox-arrow.next{right:22px}
+@media(max-width:950px){.ez-gallery-main{height:190px}}
+@media(max-width:650px){.ez-gallery-main{height:225px}.ez-gallery-thumbs button{width:62px;height:45px}.ez-lightbox{padding:65px 16px}.ez-lightbox-arrow{top:auto;bottom:18px;transform:none;width:40px;height:40px}.ez-lightbox-arrow.prev{left:calc(50% - 48px)}.ez-lightbox-arrow.next{right:calc(50% - 48px)}.ez-lightbox-content img{max-height:calc(100vh - 190px)}.ez-lightbox-content>div{padding:0 4px}}
