@@ -666,3 +666,7 @@ td{font-size:13px;padding:13px 10px}
 .ez-facilities-section .ez-demo-label-inline{display:inline-block;margin-top:8px}
 @media(max-width:1050px){.ez-location-section{padding:70px 28px;gap:28px}.ez-location-map{height:350px}.ez-facilities-section{padding:70px 28px}.ez-facilities-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ez-nav-links{gap:clamp(9px,1.4vw,16px)}.ez-nav-links>a{font-size:10px}}
 @media(max-width:760px){.ez-location-section{grid-template-columns:1fr;padding:65px 22px;gap:25px}.ez-location-map{height:300px}.ez-facilities-section{padding:65px 22px}.ez-facilities-grid{grid-template-columns:1fr;gap:10px}.ez-facility-card{padding:17px}}
+
+/* Contact now uses a single, balanced column after the location section moved up the page */
+.ez-contact-section{grid-template-columns:1fr;max-width:900px;margin:0 auto;gap:24px}
+.ez-contact-copy{max-width:760px}
