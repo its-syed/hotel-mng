@@ -320,3 +320,10 @@ td{font-size:13px;padding:13px 10px}
 .ez-payment-card>.ez-placeholder-note{display:block;margin-top:12px;font-size:9px;line-height:1.6;color:#9a805e}
 @media(max-width:950px){.ez-reviews-section{grid-template-columns:1fr}.ez-review-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.ez-reviews-section,.ez-contact-section,.ez-payment-section{grid-template-columns:1fr;padding:62px 22px;gap:25px}.ez-review-grid{grid-template-columns:1fr}.ez-review-card{min-height:0}.ez-map-placeholder-art{height:190px}.ez-map-details{align-items:flex-start;flex-direction:column}}
+
+.reservation-history{min-width:105px;font-size:11px}
+.reservation-history summary{cursor:pointer;color:#426b56;font-weight:700;white-space:nowrap}
+.reservation-history>div{position:relative;z-index:2;min-width:190px;max-width:260px;padding:8px 10px;background:#fff;border:1px solid #e5e9e2;box-shadow:0 8px 24px #1b302012}
+.reservation-history p{display:grid;gap:3px;margin:5px 0 9px;line-height:1.4}
+.reservation-history p:last-child{margin-bottom:3px}
+.reservation-history small{color:#879188;font-size:10px}
