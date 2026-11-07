@@ -60,6 +60,14 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null}});return tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
 }));
+app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
+ const code=String(req.body.bookingCode||"").trim().toUpperCase();
+ const phone=String(req.body.phone||"").replace(/\\D/g,"");
+ if(!code||!phone)return res.status(400).json({error:"Enter your booking reference and phone number"});
+ const booking=await prisma.reservation.findUnique({where:{bookingCode:code},include:{guest:true,room:true}});
+ if(!booking||String(booking.guest.phone||"").replace(/\\D/g,"")!==phone)return res.status(404).json({error:"We couldn't find a booking with those details. Check your reference and phone number."});
+ res.json({bookingCode:booking.bookingCode,status:booking.status,guest:booking.guest.fullName,room:booking.room.number,category:booking.room.category,checkIn:booking.checkIn,checkOut:booking.checkOut,totalAmount:booking.totalAmount,adults:booking.adults,children:booking.children,createdAt:booking.createdAt});
+}));
 app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
 
 
