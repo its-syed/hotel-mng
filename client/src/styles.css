@@ -722,3 +722,24 @@ td{font-size:13px;padding:13px 10px}
 .new-request-status{display:grid;gap:4px;justify-items:start}
 .new-request-status small{font-size:9px;letter-spacing:.6px;font-weight:800;color:#a56d17}
 @media(max-width:650px){.website-request-alert{align-items:flex-start;flex-wrap:wrap}.website-request-alert>strong{margin-left:54px}.top-actions>span{display:none}}
+
+
+/* Cleaner reservation list and on-demand details */
+.reservation-source,.guest-name-cell>small,.table-wrap td>small{display:block;margin-top:4px;font-size:10px;color:var(--muted);font-weight:500;white-space:normal}
+.reservation-details-link{font-weight:700;white-space:nowrap}
+.reservation-detail-panel{display:grid;gap:18px}
+.reservation-detail-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.reservation-detail-heading h3{margin:5px 0 0;font-size:21px}
+.reservation-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.reservation-detail-grid>div{min-width:0;display:grid;gap:5px;padding:12px;border:1px solid var(--line);border-radius:9px;background:#fbfcfc}
+.reservation-detail-grid small,.reservation-timeline-event small{font-size:11px;color:var(--muted)}
+.reservation-detail-grid b{font-size:13px;overflow-wrap:anywhere}
+.reservation-detail-grid span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.reservation-detail-history h4{font-size:14px;margin:0 0 12px}
+.reservation-timeline{display:grid;gap:0;padding-left:3px}
+.reservation-timeline-event{display:flex;gap:11px;position:relative;padding:0 0 15px}
+.reservation-timeline-event:not(:last-child):before{content:"";position:absolute;left:4px;top:12px;bottom:0;width:1px;background:#dce6e3}
+.reservation-timeline-dot{width:9px;height:9px;flex:0 0 9px;margin-top:3px;border-radius:50%;background:var(--teal);z-index:1}
+.reservation-timeline-event>div{display:grid;gap:4px;min-width:0}
+.reservation-timeline-event b{font-size:12px}
+@media(max-width:560px){.reservation-detail-grid{grid-template-columns:1fr}}
