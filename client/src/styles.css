@@ -411,3 +411,11 @@ td{font-size:13px;padding:13px 10px}
 .rack-room-row.room-type-standard .rack-booking{background:#d9e9f6;color:#315f83}
 .rack-room-row.room-type-deluxe .rack-booking{background:#e8def5;color:#674b91}
 .rack-room-row.room-type-suite .rack-booking{background:#f2e5c9;color:#876326}
+
+
+/* Room-type photos in live availability results */
+.ez-room-option{align-items:center}
+.ez-room-option-photo{display:block;flex:0 0 104px;width:104px;height:76px;overflow:hidden;border-radius:7px;background:#e8ece5}
+.ez-room-option-photo img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:650px){.ez-room-option-photo{flex-basis:76px;width:76px;height:66px}}
+@media(max-width:420px){.ez-room-option-photo{flex-basis:62px;width:62px;height:58px}}
