@@ -419,3 +419,12 @@ td{font-size:13px;padding:13px 10px}
 .ez-room-option-photo img{display:block;width:100%;height:100%;object-fit:cover}
 @media(max-width:650px){.ez-room-option-photo{flex-basis:76px;width:76px;height:66px}}
 @media(max-width:420px){.ez-room-option-photo{flex-basis:62px;width:62px;height:58px}}
+
+
+/* Open the full room gallery directly from live availability results */
+.ez-room-option-photo{position:relative;padding:0;border:0;cursor:zoom-in}
+.ez-room-option-photo>span{position:absolute;right:5px;bottom:5px;padding:5px 7px;background:#173e39e8;color:#fff;border-radius:3px;font-size:9px;font-weight:700}
+.ez-room-view-link{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:0;border:0;background:transparent;color:#47715a;font-size:10px;font-weight:800;cursor:pointer}
+.ez-room-view-link:hover{text-decoration:underline}
+.ez-room-option-photo:focus-visible,.ez-room-view-link:focus-visible{outline:2px solid #b98243;outline-offset:3px}
+@media(max-width:520px){.ez-room-option-photo>span{font-size:8px;padding:4px 5px}.ez-room-view-link{font-size:9px}}
