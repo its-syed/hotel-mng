@@ -670,3 +670,18 @@ td{font-size:13px;padding:13px 10px}
 /* Contact now uses a single, balanced column after the location section moved up the page */
 .ez-contact-section{grid-template-columns:1fr;max-width:900px;margin:0 auto;gap:24px}
 .ez-contact-copy{max-width:760px}
+
+
+/* Long guest names: wrap without clipping or pushing adjacent table columns */
+.table-wrap{min-width:0}
+.table-wrap table{white-space:nowrap}
+.table-wrap td.guest-name-cell{white-space:normal;min-width:145px;max-width:260px;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.table-wrap td.guest-name-cell>b{display:block;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.ez-track-result-top{min-width:0;gap:14px}
+.ez-track-result-top>div{min-width:0;flex:1}
+.ez-track-guest-name{max-width:100%;overflow-wrap:anywhere;word-break:normal;white-space:normal;line-height:1.3}
+@media(max-width:650px){
+ .table-wrap td.guest-name-cell{min-width:125px;max-width:190px}
+ .ez-track-result-top{align-items:flex-start;flex-wrap:wrap}
+ .ez-track-guest-name{font-size:clamp(17px,5vw,23px)}
+}
