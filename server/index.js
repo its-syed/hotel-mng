@@ -151,7 +151,7 @@ app.delete("/api/rooms/:id", allow("ADMIN","MANAGER"), asyncRoute(async (req,res
   res.json({success:true});
 }));
 app.patch("/api/rooms/:id", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
-  const allowed = ["floor","category","rate","occupancyStatus","notes"];
+  const allowed = ["floor","category","rate","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
   res.json(await prisma.room.update({where:{id:req.params.id},data}));
 }));
