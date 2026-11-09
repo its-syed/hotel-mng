@@ -762,3 +762,22 @@ td{font-size:13px;padding:13px 10px}
 .checkout-final-field input{font-weight:750;font-size:17px}
 .checkout-note{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
 @media(max-width:560px){.checkout-stay-summary{grid-template-columns:1fr 1fr}.checkout-guest-summary{align-items:flex-start;flex-wrap:wrap}}
+
+
+/* Focused housekeeping workflow: two status views and explicit task actions */
+.hk-cards.hk-two-tabs{grid-template-columns:repeat(2,minmax(0,1fr));max-width:520px}
+.hk-work-list{display:grid;gap:10px}
+.hk-work-row{display:grid;grid-template-columns:minmax(110px,1fr) minmax(170px,1.2fr) minmax(160px,1fr) auto;align-items:center;gap:15px;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.hk-work-room,.hk-work-assignee{display:grid;gap:5px;min-width:0}
+.hk-work-room b{font-size:13px;color:#344b52}
+.hk-work-room small,.hk-work-meta small{font-size:11px;color:var(--muted)}
+.hk-work-assignee label{font-size:10px;color:var(--muted)}
+.hk-work-assignee select{width:100%;min-width:0;border:1px solid var(--line);border-radius:7px;padding:9px;background:#fff;color:#53676e;font-size:12px}
+.hk-work-assignee>b{font-size:12px}
+.hk-work-meta{display:grid;gap:5px}
+.hk-status-label{font-size:11px;font-weight:700}
+.hk-status-label.dirty-label{color:#a56b18}
+.hk-status-label.cleaning-label{color:#4776a8}
+.hk-work-action .btn{white-space:nowrap}
+@media(max-width:900px){.hk-work-row{grid-template-columns:1fr 1fr}.hk-work-action{grid-column:1/-1}.hk-work-action .btn{width:100%}}
+@media(max-width:560px){.hk-cards.hk-two-tabs{max-width:none}.hk-work-row{grid-template-columns:1fr;gap:11px}.hk-work-action{grid-column:auto}}
