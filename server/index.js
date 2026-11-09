@@ -191,7 +191,7 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   res.status(201).json(reservation);
 }));
 app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
-  const {status,totalAmount}=req.body;
+  const {status,totalAmount,extraCharges,discount}=req.body;
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
   const transitions={
@@ -203,11 +203,14 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
     NO_SHOW:[]
   };
   if(!transitions[current.status]?.includes(status)) return res.status(409).json({error:"That status change is not allowed. Follow the reservation's next available action."});
-  let checkoutAmount;
+  let checkoutAmount,checkoutExtraCharges,checkoutDiscount;
   if(status==="CHECKED_OUT"){
     if(totalAmount===undefined||totalAmount===null||totalAmount==="") return res.status(400).json({error:"Enter the final amount before checking out"});
     checkoutAmount=Number(totalAmount);
+    checkoutExtraCharges=Number(extraCharges??0);
+    checkoutDiscount=Number(discount??0);
     if(!Number.isFinite(checkoutAmount)||checkoutAmount<0) return res.status(400).json({error:"Final amount must be a valid non-negative number"});
+    if(!Number.isFinite(checkoutExtraCharges)||checkoutExtraCharges<0||!Number.isFinite(checkoutDiscount)||checkoutDiscount<0) return res.status(400).json({error:"Extra charges and discount must be valid non-negative amounts"});
   }
   const now=new Date();
   const todayKey=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(now);
@@ -229,7 +232,7 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
   }
   if(status==="NO_SHOW"&&todayKey<=arrivalKey) return res.status(409).json({error:"A reservation can be marked no-show only after its check-in date has passed"});
   const updated=await prisma.$transaction(async tx=>{
-    const r=await tx.reservation.update({where:{id:current.id},data:{status,checkedInAt:status==="CHECKED_IN"?now:undefined,checkedOutAt:status==="CHECKED_OUT"?now:undefined,checkOut:status==="CHECKED_OUT"&&!current.checkOut?new Date(`${todayKey}T00:00:00.000+05:30`):undefined,totalAmount:status==="CHECKED_OUT"?checkoutAmount:undefined},include:{room:true}});
+    const r=await tx.reservation.update({where:{id:current.id},data:{status,checkedInAt:status==="CHECKED_IN"?now:undefined,checkedOutAt:status==="CHECKED_OUT"?now:undefined,checkOut:status==="CHECKED_OUT"&&!current.checkOut?new Date(`${todayKey}T00:00:00.000+05:30`):undefined,totalAmount:status==="CHECKED_OUT"?checkoutAmount:undefined,extraCharges:status==="CHECKED_OUT"?checkoutExtraCharges:undefined,discount:status==="CHECKED_OUT"?checkoutDiscount:undefined},include:{room:true}});
     await tx.reservationStatusHistory.create({data:{reservationId:r.id,fromStatus:current.status,toStatus:status,changedBy:req.user.fullName||req.user.email||"Staff"}});
     if(status==="CHECKED_IN") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"OCCUPIED"}});
     if(status==="CHECKED_OUT") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:"DIRTY"}});
