@@ -795,3 +795,4 @@ td{font-size:13px;padding:13px 10px}
 .hk-task-meta{display:grid;gap:5px;justify-items:start}.hk-complete-mark{font-size:11px;font-weight:700;color:#267b59;white-space:nowrap}
 @media(max-width:1050px){.hk-task-row{grid-template-columns:1fr 1.5fr 1fr}.hk-task-meta{grid-column:1}.hk-task-row .hk-work-action{grid-column:2/-1}.hk-task-row .hk-work-action .btn{width:100%}}
 @media(max-width:650px){.hk-task-tabs{grid-template-columns:1fr 1fr}.hk-history-link{grid-column:1/-1;justify-self:start;padding:7px 0}.hk-task-row{grid-template-columns:1fr;gap:10px}.hk-task-meta,.hk-task-row .hk-work-action{grid-column:auto}.hk-task-row .hk-work-action .btn{width:100%}}
+.hk-card.pending{border-left:3px solid #d99b3b}.hk-card.in-progress{border-left:3px solid #5489c6}
