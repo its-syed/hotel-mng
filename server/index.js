@@ -191,7 +191,7 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   res.status(201).json(reservation);
 }));
 app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
-  const {status}=req.body;
+  const {status,totalAmount}=req.body;
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
   const transitions={
@@ -203,6 +203,12 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
     NO_SHOW:[]
   };
   if(!transitions[current.status]?.includes(status)) return res.status(409).json({error:"That status change is not allowed. Follow the reservation's next available action."});
+  let checkoutAmount;
+  if(status==="CHECKED_OUT"){
+    if(totalAmount===undefined||totalAmount===null||totalAmount==="") return res.status(400).json({error:"Enter the final amount before checking out"});
+    checkoutAmount=Number(totalAmount);
+    if(!Number.isFinite(checkoutAmount)||checkoutAmount<0) return res.status(400).json({error:"Final amount must be a valid non-negative number"});
+  }
   const now=new Date();
   const todayKey=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Kolkata"}).format(now);
   const dateKey=value=>new Date(value).toISOString().slice(0,10);
@@ -223,7 +229,7 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
   }
   if(status==="NO_SHOW"&&todayKey<=arrivalKey) return res.status(409).json({error:"A reservation can be marked no-show only after its check-in date has passed"});
   const updated=await prisma.$transaction(async tx=>{
-    const r=await tx.reservation.update({where:{id:current.id},data:{status,checkedInAt:status==="CHECKED_IN"?now:undefined,checkedOutAt:status==="CHECKED_OUT"?now:undefined,checkOut:status==="CHECKED_OUT"&&!current.checkOut?new Date(`${todayKey}T00:00:00.000+05:30`):undefined},include:{room:true}});
+    const r=await tx.reservation.update({where:{id:current.id},data:{status,checkedInAt:status==="CHECKED_IN"?now:undefined,checkedOutAt:status==="CHECKED_OUT"?now:undefined,checkOut:status==="CHECKED_OUT"&&!current.checkOut?new Date(`${todayKey}T00:00:00.000+05:30`):undefined,totalAmount:status==="CHECKED_OUT"?checkoutAmount:undefined},include:{room:true}});
     await tx.reservationStatusHistory.create({data:{reservationId:r.id,fromStatus:current.status,toStatus:status,changedBy:req.user.fullName||req.user.email||"Staff"}});
     if(status==="CHECKED_IN") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"OCCUPIED"}});
     if(status==="CHECKED_OUT") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:"DIRTY"}});
