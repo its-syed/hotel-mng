@@ -167,7 +167,8 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
   if (!guestId||!roomId||!checkIn) return res.status(400).json({error:"Guest, room and check-in are required"});
   const bookingSource=source||"WALK_IN";
-  if(bookingSource!=="WALK_IN"&&(!checkOut||totalAmount==null||totalAmount==="")) return res.status(400).json({error:"Check-out and total amount are required for advance reservations"});
+  if(bookingSource!=="WALK_IN"&&!checkOut) return res.status(400).json({error:"Check-out is required for advance reservations"});
+  if(totalAmount!==undefined&&totalAmount!==null&&totalAmount!==""&&(!Number.isFinite(Number(totalAmount))||Number(totalAmount)<0)) return res.status(400).json({error:"Total amount must be a valid non-negative number"});
   const start=new Date(checkIn);
   if(!Number.isFinite(start.getTime())) return res.status(400).json({error:"Choose a valid check-in date"});
   const end=checkOut?new Date(checkOut):null;
