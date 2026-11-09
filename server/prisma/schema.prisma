@@ -89,6 +89,8 @@ model Reservation {
   children    Int               @default(0)
   status      ReservationStatus @default(PENDING)
   totalAmount Decimal?          @db.Decimal(10, 2)
+  extraCharges Decimal           @default(0) @db.Decimal(10, 2)
+  discount     Decimal           @default(0) @db.Decimal(10, 2)
   source      String            @default("WALK_IN")
   notes       String?
   guest       Guest             @relation(fields: [guestId], references: [id])
