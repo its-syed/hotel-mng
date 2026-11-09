@@ -272,11 +272,21 @@ app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPI
 app.patch("/api/housekeeping/room/:roomId/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{const {assignedTo}=req.body;const room=await prisma.room.findUnique({where:{id:req.params.roomId}});if(!room)return res.status(404).json({error:"Room not found"});const existing=await prisma.housekeepingTask.findFirst({where:{roomId:room.id,status:{not:"COMPLETED"}},orderBy:{scheduledAt:"desc"}});const task=existing?await prisma.housekeepingTask.update({where:{id:existing.id},data:{assignedTo:assignedTo||null},include:{room:true}}):await prisma.housekeepingTask.create({data:{roomId:room.id,description:"Room cleaning",assignedTo:assignedTo||null},include:{room:true}});res.json(task);}));
 app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {status}=req.body;
-  if(!["PENDING","IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Invalid task status"});
-  const task=await prisma.housekeepingTask.update({where:{id:req.params.id},data:{status,startedAt:status==="IN_PROGRESS"?new Date():undefined,completedAt:status==="COMPLETED"?new Date():null},include:{room:true}});
-  const housekeepingStatus=status==="IN_PROGRESS"?"CLEANING":status==="COMPLETED"?"CLEAN": "DIRTY";
-  await prisma.room.update({where:{id:task.roomId},data:{housekeepingStatus}});
-  res.json(task);
+  if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
+  const result=await prisma.$transaction(async tx=>{
+    const current=await tx.housekeepingTask.findUnique({where:{id:req.params.id}});
+    if(!current) return {error:"Housekeeping task not found",statusCode:404};
+    if(status==="IN_PROGRESS"&&current.status!=="PENDING") return {error:"Only pending tasks can be started",statusCode:409};
+    if(status==="COMPLETED"&&current.status!=="IN_PROGRESS") return {error:"Only a task in progress can be completed",statusCode:409};
+    if(status==="IN_PROGRESS"&&!current.assignedTo) return {error:"Assign a cleaner before starting this task",statusCode:409};
+    const task=await tx.housekeepingTask.update({where:{id:current.id},data:{status,startedAt:status==="IN_PROGRESS"?new Date():undefined,completedAt:status==="COMPLETED"?new Date():undefined}});
+    const openTasks=await tx.housekeepingTask.findMany({where:{roomId:task.roomId,status:{not:"COMPLETED"}},select:{status:true}});
+    const housekeepingStatus=openTasks.some(t=>t.status==="IN_PROGRESS")?"CLEANING":openTasks.length?"DIRTY":"CLEAN";
+    await tx.room.update({where:{id:task.roomId},data:{housekeepingStatus}});
+    return {task,room:await tx.room.findUnique({where:{id:task.roomId}})};
+  });
+  if(result.error) return res.status(result.statusCode).json({error:result.error});
+  res.json({...result.task,room:result.room});
 }));
 
 app.get("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
