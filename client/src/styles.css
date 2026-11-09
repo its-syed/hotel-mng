@@ -743,3 +743,22 @@ td{font-size:13px;padding:13px 10px}
 .reservation-timeline-event>div{display:grid;gap:4px;min-width:0}
 .reservation-timeline-event b{font-size:12px}
 @media(max-width:560px){.reservation-detail-grid{grid-template-columns:1fr}}
+
+
+/* Checkout bill review and editable final amount */
+.checkout-form{display:grid;gap:16px}
+.checkout-guest-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.checkout-guest-summary h3{margin:5px 0;font-size:19px}
+.checkout-guest-summary p{margin:0;color:var(--muted);font-size:12px}
+.checkout-stay-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.checkout-stay-summary>div{display:grid;gap:5px;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fbfcfc;min-width:0}
+.checkout-stay-summary small{font-size:11px;color:var(--muted)}
+.checkout-stay-summary b{font-size:13px}
+.checkout-calculation{display:grid;gap:12px;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fbfcfc}
+.checkout-calculation-line{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}
+.checkout-calculation-line b{white-space:nowrap}
+.checkout-calculation .field{margin:0}
+.checkout-final-field{padding-top:12px;border-top:1px solid var(--line)}
+.checkout-final-field input{font-weight:750;font-size:17px}
+.checkout-note{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
+@media(max-width:560px){.checkout-stay-summary{grid-template-columns:1fr 1fr}.checkout-guest-summary{align-items:flex-start;flex-wrap:wrap}}
