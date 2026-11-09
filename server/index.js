@@ -161,7 +161,7 @@ app.get("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute
   if (req.query.status) where.status = req.query.status;
   if (req.query.source) where.source = req.query.source;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
-  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{checkIn:"asc"}}));
+  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{createdAt:"desc"}}));
 }));
 app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
@@ -256,7 +256,7 @@ app.get("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute
 }));
 app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
-  if(!roomId||!String(description||"").trim()) return res.status(400).json({error:"Room and task description are required"});
+  if(!roomId) return res.status(400).json({error:"Choose a room for this task"});
   const room=await prisma.room.findUnique({where:{id:roomId}});
   if(!room) return res.status(404).json({error:"Room not found"});
   const scheduled=scheduledAt?new Date(scheduledAt):new Date();
@@ -266,7 +266,9 @@ app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRout
     if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
   }
   const result=await prisma.$transaction(async tx=>{
-    const task=await tx.housekeepingTask.create({data:{roomId,description:String(description).trim(),assignedTo:assignedTo||null,taskType:taskType||"DAILY_CLEANING",scheduledAt:scheduled},include:{room:true}});
+    const taskLabel=String(taskType||"DAILY_CLEANING").replaceAll("_"," ").toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+    const taskDescription=String(description||"").trim()||taskLabel;
+    const task=await tx.housekeepingTask.create({data:{roomId,description:taskDescription,assignedTo:assignedTo||null,taskType:taskType||"DAILY_CLEANING",scheduledAt:scheduled},include:{room:true}});
     const active=await tx.housekeepingTask.count({where:{roomId,status:"IN_PROGRESS"}});
     await tx.room.update({where:{id:roomId},data:{housekeepingStatus:active?"CLEANING":"DIRTY"}});
     return {...task,room:{...task.room,housekeepingStatus:active?"CLEANING":"DIRTY"}};
