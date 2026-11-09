@@ -781,3 +781,17 @@ td{font-size:13px;padding:13px 10px}
 .hk-work-action .btn{white-space:nowrap}
 @media(max-width:900px){.hk-work-row{grid-template-columns:1fr 1fr}.hk-work-action{grid-column:1/-1}.hk-work-action .btn{width:100%}}
 @media(max-width:560px){.hk-cards.hk-two-tabs{max-width:none}.hk-work-row{grid-template-columns:1fr;gap:11px}.hk-work-action{grid-column:auto}}
+
+/* Task-led housekeeping workspace */
+.hk-task-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;align-items:stretch;gap:10px;margin:0 0 16px;max-width:900px}
+.hk-task-tab{display:grid;grid-template-columns:1fr auto;align-items:center;gap:3px 10px;text-align:left;padding:13px 15px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--navy)}
+.hk-task-tab>span{font-size:11px;font-weight:750}.hk-task-tab>b{grid-row:span 2;font:800 23px Manrope}.hk-task-tab>small{font-size:10px;color:var(--muted)}
+.hk-task-tab.active{border-color:#8bbdb4;background:#f0f8f6;box-shadow:inset 0 0 0 1px #c8e1dc}
+.hk-history-link{align-self:center;padding:10px 12px;border:1px solid transparent;background:transparent;color:var(--teal);font-size:11px;font-weight:700;white-space:nowrap}
+.hk-history-link span{margin-left:5px;color:var(--muted)}
+.hk-history-link.active{border-color:var(--line);border-radius:8px;background:#fff}
+.hk-task-row{display:grid;grid-template-columns:minmax(90px,.75fr) minmax(180px,1.5fr) minmax(145px,1fr) minmax(95px,.7fr) auto;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.hk-task-description{display:grid;gap:4px;min-width:0}.hk-task-description>b{font-size:12px;color:#344b52}.hk-task-description>span{font-size:11px;color:#667980;overflow-wrap:anywhere}.hk-task-description>small,.hk-task-meta>small{font-size:10px;color:var(--muted)}
+.hk-task-meta{display:grid;gap:5px;justify-items:start}.hk-complete-mark{font-size:11px;font-weight:700;color:#267b59;white-space:nowrap}
+@media(max-width:1050px){.hk-task-row{grid-template-columns:1fr 1.5fr 1fr}.hk-task-meta{grid-column:1}.hk-task-row .hk-work-action{grid-column:2/-1}.hk-task-row .hk-work-action .btn{width:100%}}
+@media(max-width:650px){.hk-task-tabs{grid-template-columns:1fr 1fr}.hk-history-link{grid-column:1/-1;justify-self:start;padding:7px 0}.hk-task-row{grid-template-columns:1fr;gap:10px}.hk-task-meta,.hk-task-row .hk-work-action{grid-column:auto}.hk-task-row .hk-work-action .btn{width:100%}}
