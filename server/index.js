@@ -256,8 +256,22 @@ app.get("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute
 }));
 app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
-  if(!roomId||!description) return res.status(400).json({error:"Room and task description are required"});
-  res.status(201).json(await prisma.housekeepingTask.create({data:{roomId,description,assignedTo,taskType,scheduledAt:scheduledAt?new Date(scheduledAt):new Date()}}));
+  if(!roomId||!String(description||"").trim()) return res.status(400).json({error:"Room and task description are required"});
+  const room=await prisma.room.findUnique({where:{id:roomId}});
+  if(!room) return res.status(404).json({error:"Room not found"});
+  const scheduled=scheduledAt?new Date(scheduledAt):new Date();
+  if(Number.isNaN(scheduled.getTime())) return res.status(400).json({error:"Enter a valid scheduled date and time"});
+  if(assignedTo){
+    const cleaner=await prisma.user.findFirst({where:{fullName:assignedTo,role:"HOUSEKEEPING",active:true}});
+    if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
+  }
+  const result=await prisma.$transaction(async tx=>{
+    const task=await tx.housekeepingTask.create({data:{roomId,description:String(description).trim(),assignedTo:assignedTo||null,taskType:taskType||"DAILY_CLEANING",scheduledAt:scheduled},include:{room:true}});
+    const active=await tx.housekeepingTask.count({where:{roomId,status:"IN_PROGRESS"}});
+    await tx.room.update({where:{id:roomId},data:{housekeepingStatus:active?"CLEANING":"DIRTY"}});
+    return {...task,room:{...task.room,housekeepingStatus:active?"CLEANING":"DIRTY"}};
+  });
+  res.status(201).json(result);
 }));
 app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (_req,res)=>{
   const today=dayStart(), tomorrow=dayEnd();
@@ -269,7 +283,18 @@ app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPI
   }
   res.json({created,message:`Created ${created} daily cleaning tasks`});
 }));
-app.patch("/api/housekeeping/room/:roomId/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{const {assignedTo}=req.body;const room=await prisma.room.findUnique({where:{id:req.params.roomId}});if(!room)return res.status(404).json({error:"Room not found"});const existing=await prisma.housekeepingTask.findFirst({where:{roomId:room.id,status:{not:"COMPLETED"}},orderBy:{scheduledAt:"desc"}});const task=existing?await prisma.housekeepingTask.update({where:{id:existing.id},data:{assignedTo:assignedTo||null},include:{room:true}}):await prisma.housekeepingTask.create({data:{roomId:room.id,description:"Room cleaning",assignedTo:assignedTo||null},include:{room:true}});res.json(task);}));
+app.patch("/api/housekeeping/:id/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
+  const {assignedTo}=req.body;
+  const task=await prisma.housekeepingTask.findUnique({where:{id:req.params.id}});
+  if(!task) return res.status(404).json({error:"Housekeeping task not found"});
+  if(task.status!=="PENDING") return res.status(409).json({error:"Only pending tasks can be reassigned"});
+  if(assignedTo){
+    const cleaner=await prisma.user.findFirst({where:{fullName:assignedTo,role:"HOUSEKEEPING",active:true}});
+    if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
+  }
+  res.json(await prisma.housekeepingTask.update({where:{id:task.id},data:{assignedTo:assignedTo||null},include:{room:true}}));
+}));
+
 app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
