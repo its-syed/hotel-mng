@@ -631,7 +631,7 @@ td{font-size:13px;padding:13px 10px}
 
 
 /* About, prominent location and facilities sections */
-.ez-location-section{max-width:1240px;margin:0 auto;padding:88px 5vw;display:grid;grid-template-columns:.82fr 1.18fr;align-items:center;gap:clamp(35px,6vw,78px);scroll-margin-top:24px}
+.ez-location-section{max-width:1240px;margin:0 auto;padding:42px 5vw;display:grid;grid-template-columns:.82fr 1.18fr;align-items:center;gap:clamp(35px,6vw,78px);scroll-margin-top:24px}
 .ez-location-copy>.ez-kicker,.ez-facilities-heading>.ez-kicker{color:#a77d4c;letter-spacing:.17em;font-size:9px;font-weight:800}
 .ez-location-copy h2,.ez-facilities-heading h2{font:500 clamp(35px,4vw,49px)/1.13 Georgia,serif;color:#243f35;letter-spacing:-.8px;margin:13px 0 16px}
 .ez-location-copy h2 em{color:#9b7955;font-weight:400}
@@ -664,8 +664,8 @@ td{font-size:13px;padding:13px 10px}
 .ez-facility-card p{margin:6px 0 0;font-size:10px;line-height:1.65;color:#80877f}
 .ez-facilities-section>.ez-placeholder-note{max-width:1240px;margin:18px auto 0;font-size:10px;line-height:1.7}
 .ez-facilities-section .ez-demo-label-inline{display:inline-block;margin-top:8px}
-@media(max-width:1050px){.ez-location-section{padding:70px 28px;gap:28px}.ez-location-map{height:350px}.ez-facilities-section{padding:70px 28px}.ez-facilities-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ez-nav-links{gap:clamp(9px,1.4vw,16px)}.ez-nav-links>a{font-size:10px}}
-@media(max-width:760px){.ez-location-section{grid-template-columns:1fr;padding:65px 22px;gap:25px}.ez-location-map{height:300px}.ez-facilities-section{padding:65px 22px}.ez-facilities-grid{grid-template-columns:1fr;gap:10px}.ez-facility-card{padding:17px}}
+@media(max-width:1050px){.ez-location-section{padding:36px 28px;gap:28px}.ez-location-map{height:350px}.ez-facilities-section{padding:70px 28px}.ez-facilities-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ez-nav-links{gap:clamp(9px,1.4vw,16px)}.ez-nav-links>a{font-size:10px}}
+@media(max-width:760px){.ez-location-section{grid-template-columns:1fr;padding:30px 22px;gap:25px}.ez-location-map{height:300px}.ez-facilities-section{padding:65px 22px}.ez-facilities-grid{grid-template-columns:1fr;gap:10px}.ez-facility-card{padding:17px}}
 
 /* Contact now uses a single, balanced column after the location section moved up the page */
 .ez-contact-section{grid-template-columns:1fr;max-width:900px;margin:0 auto;gap:24px}
