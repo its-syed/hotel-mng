@@ -858,3 +858,18 @@ td{font-size:13px;padding:13px 10px}
   .ez-hero-note{margin-top:8px}
   .ez-book-heading{margin-bottom:10px}
 }
+
+
+/* Close the actual blank gap between the hero and availability panel */
+@media(min-width:1051px){
+  .ez-hero{padding-bottom:10px}
+  .ez-photo-caption{bottom:-14px}
+}
+@media(min-width:761px) and (max-width:1050px){
+  .ez-hero{padding-bottom:10px}
+  .ez-photo-caption{bottom:-14px}
+}
+@media(max-width:760px){
+  .ez-hero{padding-bottom:8px}
+  .ez-photo-caption{bottom:-14px}
+}
