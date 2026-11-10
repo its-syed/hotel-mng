@@ -876,4 +876,33 @@ td{font-size:13px;padding:13px 10px}
 
 
 /* Remove the blank strip directly below the public-site navigation */
-.ez-public main>.ez-hero{margin-top:0!important;padding-top:0!important}
+.ez-public main>.ez-hero{height:auto!important;margin-top:0!important;padding-top:0!important}
+
+/* Keep the public navigation collapsed at tablet and mobile widths. The
+   refreshed navigation rules below the older breakpoint rules otherwise
+   restore the desktop flex layout and let the links spill into the hero. */
+@media(max-width:1050px){
+ .ez-nav{position:relative}
+ .ez-nav .ez-menu-toggle{display:grid!important;visibility:visible;opacity:1;place-items:center;position:relative;z-index:1;flex:0 0 42px;min-width:42px}
+ .ez-nav-links{display:none;position:absolute;z-index:30;top:78px;left:0;right:0;padding:20px 28px;background:#fbfaf7;border-top:1px solid #e9e6de;box-shadow:0 15px 24px #172b2018;align-items:stretch;gap:16px;flex-direction:column}
+ .ez-nav-links.open{display:flex}
+}
+@media(max-width:760px){
+ .ez-nav .ez-menu-toggle{display:grid!important;visibility:visible;opacity:1;place-items:center;flex:0 0 42px;min-width:42px}
+ .ez-hero{width:100%;grid-template-columns:minmax(0,1fr)}
+ .ez-hero-copy,.ez-hero-gallery{width:100%;max-width:100%;min-width:0}
+ .ez-nav-links{top:72px;padding:20px 22px;gap:0}
+ .ez-nav-links>a{padding:14px 5px;border-bottom:1px solid #eeeae1}
+ .ez-nav-links .ez-nav-book{justify-content:center;margin-top:12px;padding:14px}
+}
+
+@media(min-width:761px){.ez-hero{padding-bottom:18px}}
+@media(max-width:760px){.ez-hero{padding-bottom:18px}}
+
+@media(max-width:520px){
+ .ez-hero-gallery{grid-template-columns:minmax(0,1fr) minmax(0,.72fr)}
+}
+
+/* Keep the photo caption inside the hero boundary so the booking panel does
+   not cover its baseline. */
+.ez-photo-caption{bottom:-6px}
