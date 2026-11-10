@@ -876,7 +876,7 @@ td{font-size:13px;padding:13px 10px}
 
 
 /* Remove the blank strip directly below the public-site navigation */
-.ez-public main>.ez-hero{height:auto!important;margin-top:0!important;padding-top:0!important}
+.ez-public main>.ez-hero{margin-top:0!important}
 
 /* Keep the public navigation collapsed at tablet and mobile widths. The
    refreshed navigation rules below the older breakpoint rules otherwise
