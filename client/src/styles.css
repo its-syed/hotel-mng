@@ -928,14 +928,14 @@ td{font-size:13px;padding:13px 10px}
 .ez-public .ez-hero-copy>p{max-width:490px;color:#f1f0e9;font-size:15px;line-height:1.8;margin:0}
 .ez-public main>.ez-book-wrap{
   position:relative;z-index:5;width:min(1180px,calc(100% - 10vw));
-  margin:-68px auto 42px;padding:28px 34px 32px;
+  margin:-88px auto 42px;padding:28px 34px 32px;
   border:1px solid #e9e5dc;border-radius:8px;background:#fff;
   box-shadow:0 18px 55px rgba(29,48,38,.16);
 }
 @media(max-width:1050px){
   .ez-public main>.ez-hero{height:500px;min-height:460px;padding:65px 6vw 95px}
   .ez-public .ez-hero-copy{margin-left:1vw}
-  .ez-public main>.ez-book-wrap{width:calc(100% - 56px);margin-top:-58px;padding:26px 28px 30px}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 56px);margin-top:-72px;padding:26px 28px 30px}
 }
 @media(max-width:760px){
   .ez-public main>.ez-hero{height:440px;min-height:410px;padding:48px 24px 88px}
@@ -943,10 +943,10 @@ td{font-size:13px;padding:13px 10px}
   .ez-public .ez-hero-copy{margin:0;max-width:560px}
   .ez-public .ez-hero-copy h1{font-size:clamp(43px,9vw,60px);margin:15px 0}
   .ez-public .ez-hero-copy>p{font-size:13px;line-height:1.7;max-width:420px}
-  .ez-public main>.ez-book-wrap{width:calc(100% - 28px);margin-top:-52px;padding:22px 18px 25px;border-radius:7px}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 28px);margin-top:-62px;padding:22px 18px 25px;border-radius:7px}
 }
 @media(max-width:520px){
   .ez-public main>.ez-hero{height:410px;min-height:390px;padding:40px 21px 82px}
   .ez-public .ez-hero-copy h1{font-size:clamp(41px,10vw,52px);letter-spacing:-1.2px}
-  .ez-public main>.ez-book-wrap{width:calc(100% - 24px);margin-top:-48px;padding:20px 15px 23px}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 24px);margin-top:-56px;padding:20px 15px 23px}
 }
