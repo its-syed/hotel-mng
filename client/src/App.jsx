@@ -13,6 +13,7 @@ const nav=[["Dashboard",LayoutDashboard],["Rooms",BedDouble],["Reservations",Cal
 function CustomSelect({children,value,defaultValue,onChange,disabled=false,className="",required=false,"aria-label":ariaLabel}){
  const [open,setOpen]=useState(false);
  const [internal,setInternal]=useState(defaultValue??"");
+ const [menuPosition,setMenuPosition]=useState(null);
  const rootRef=React.useRef(null);
  const options=React.Children.toArray(children).filter(option=>React.isValidElement(option)&&option.type==="option").map(option=>({value:String(option.props.value??option.props.children??""),label:option.props.children,disabled:!!option.props.disabled}));
  const selected=value!==undefined?String(value):String(internal);
@@ -21,10 +22,26 @@ function CustomSelect({children,value,defaultValue,onChange,disabled=false,class
   if(!open)return;
   function outside(event){if(!rootRef.current?.contains(event.target))setOpen(false)}
   function escape(event){if(event.key==="Escape")setOpen(false)}
+  function repositionClose(){setOpen(false)}
   document.addEventListener("mousedown",outside);
   document.addEventListener("keydown",escape);
-  return ()=>{document.removeEventListener("mousedown",outside);document.removeEventListener("keydown",escape)};
+  document.addEventListener("scroll",repositionClose,true);
+  window.addEventListener("resize",repositionClose);
+  return ()=>{document.removeEventListener("mousedown",outside);document.removeEventListener("keydown",escape);document.removeEventListener("scroll",repositionClose,true);window.removeEventListener("resize",repositionClose)};
  },[open]);
+ function toggleMenu(){
+  if(disabled)return;
+  if(!open){
+   const rect=rootRef.current.getBoundingClientRect();
+   const desiredHeight=Math.min(250,options.length*40+10);
+   const below=window.innerHeight-rect.bottom;
+   const above=rect.top;
+   const openAbove=below<desiredHeight&&above>below;
+   const available=Math.max(90,Math.min(desiredHeight,(openAbove?above:below)-16));
+   setMenuPosition({position:"fixed",left:rect.left,width:rect.width,top:openAbove?Math.max(8,rect.top-available-6):rect.bottom+6,maxHeight:available});
+  }
+  setOpen(current=>!current);
+ }
  function choose(option){
   if(disabled||option.disabled)return;
   if(value===undefined)setInternal(defaultValue!==undefined?String(defaultValue):option.value);
@@ -32,10 +49,10 @@ function CustomSelect({children,value,defaultValue,onChange,disabled=false,class
   setOpen(false);
  }
  return <div className="custom-select" ref={rootRef}>
-  <button type="button" className={"custom-select-trigger "+className} role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-label={ariaLabel} aria-required={required||undefined} disabled={disabled} onClick={()=>setOpen(current=>!current)}>
+  <button type="button" className={"custom-select-trigger "+className} role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-label={ariaLabel} aria-required={required||undefined} disabled={disabled} onClick={toggleMenu}>
    <span className="custom-select-value">{selectedOption?.label??options.find(option=>option.value==="")?.label??"Select"}</span><ChevronDown size={15} className="custom-select-chevron"/>
   </button>
-  {open&&<div className="custom-select-menu" role="listbox">
+  {open&&<div className="custom-select-menu" role="listbox" style={menuPosition||undefined}>
    {options.map((option,index)=><button type="button" key={option.value+"-"+index} className={"custom-select-option"+(option.value===selected?" selected":"")} role="option" aria-selected={option.value===selected} disabled={option.disabled} onClick={()=>choose(option)}>
     <span>{option.label}</span>{option.value===selected&&<Check size={15} className="custom-select-check"/>}
    </button>)}
