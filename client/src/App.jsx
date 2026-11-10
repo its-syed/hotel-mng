@@ -22,12 +22,9 @@ function CustomSelect({children,value,defaultValue,onChange,disabled=false,class
   if(!open)return;
   function outside(event){if(!rootRef.current?.contains(event.target))setOpen(false)}
   function escape(event){if(event.key==="Escape")setOpen(false)}
-  function repositionClose(){setOpen(false)}
   document.addEventListener("mousedown",outside);
   document.addEventListener("keydown",escape);
-  document.addEventListener("scroll",repositionClose,true);
-  window.addEventListener("resize",repositionClose);
-  return ()=>{document.removeEventListener("mousedown",outside);document.removeEventListener("keydown",escape);document.removeEventListener("scroll",repositionClose,true);window.removeEventListener("resize",repositionClose)};
+  return ()=>{document.removeEventListener("mousedown",outside);document.removeEventListener("keydown",escape)};
  },[open]);
  function toggleMenu(){
   if(disabled)return;
