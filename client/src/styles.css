@@ -507,7 +507,7 @@ td{font-size:13px;padding:13px 10px}
 .ez-submit-row>div{display:grid;gap:3px}
 .ez-submit-row>div>b{font:600 23px Georgia,serif;color:#29463b}
 .ez-submit-row>div>small,.ez-booking-disclaimer{font-size:10px;color:#858d84}
-.ez-intro{max-width:1240px;margin:0 auto;padding:90px 5vw;gap:clamp(35px,7vw,100px);align-items:center}
+.ez-intro{max-width:1240px;margin:0 auto;padding:90px 5vw 42px;gap:clamp(35px,7vw,100px);align-items:center}
 .ez-intro-image{min-height:460px;background-image:url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85');background-position:center;background-size:cover}
 .ez-intro-copy{padding:0}
 .ez-intro-copy .ez-kicker,.ez-rooms-section>.ez-kicker{color:#a77d4c;letter-spacing:.16em;font-size:9px;font-weight:800}
@@ -574,7 +574,7 @@ td{font-size:13px;padding:13px 10px}
  .ez-search-form{grid-template-columns:repeat(2,minmax(0,1fr))}
  .ez-search-form .ez-primary-btn{grid-column:1/-1}
  .ez-book-wrap{width:calc(100% - 56px);margin:0 auto 24px}
- .ez-intro{padding:70px 28px}
+ .ez-intro{padding:70px 28px 42px}
  .ez-rooms-section,.ez-reviews-section,.ez-contact-section{padding-left:28px;padding-right:28px}
  .ez-faq{padding:70px 28px}
 }
@@ -596,7 +596,7 @@ td{font-size:13px;padding:13px 10px}
  .ez-book-wrap{width:calc(100% - 32px);padding:23px 18px;margin:0 auto 18px}
  .ez-book-heading{align-items:flex-start}
  .ez-book-heading h2{font-size:27px}
- .ez-intro{grid-template-columns:1fr;padding:65px 22px;gap:28px}
+ .ez-intro{grid-template-columns:1fr;padding:65px 22px 42px;gap:28px}
  .ez-intro-image{min-height:290px}
  .ez-rooms-section{padding:65px 22px 14px}.ez-reviews-section,.ez-contact-section{padding:65px 22px}
  .ez-room-preview-grid{grid-template-columns:1fr;max-width:520px}
