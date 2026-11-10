@@ -148,7 +148,7 @@ export default function App(){
    if(!activeStay?.checkOut||dateKey(activeStay.checkOut)>start)return false;
   }
   return true;
- }).map(r=><option key={r.id} value={r.id}>{r.number} · {r.category}{r.occupancyStatus==="OCCUPIED"?" · occupied now":""}</option>);
+ }).map(r=><option key={r.id} value={r.id}>{r.number} · {r.category}{r.occupancyStatus==="OCCUPIED"?" (occupied)":""}</option>);
  function formField(name,label,type="text",required=true,options=null){return <Field label={label}>{options?<CustomSelect required={required} value={form[name]||""} onChange={e=>field(name,e.target.value)}><option value="">Select {label.toLowerCase()}</option>{options}</CustomSelect>:<input required={required} type={type} value={form[name]||""} onChange={e=>field(name,e.target.value)} />}</Field>}
  function table(headers,rows){return <div className="table-wrap"><table><thead><tr>{headers.map(h=><th key={h}>{h}</th>)}</tr></thead><tbody>{rows}</tbody></table></div>}
  function dashboard(){if(!data)return null;return <><div className="welcome"><div><span className="eyebrow">PROPERTY OVERVIEW</span><h1>Good day. Here's your hotel today.</h1><p>Live operational snapshot · {formatDate(new Date(),{weekday:true})}</p></div><button className="btn secondary" onClick={refresh}><RefreshCw size={15}/> Refresh</button></div>
