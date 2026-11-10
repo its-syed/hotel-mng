@@ -40,7 +40,7 @@ function CustomSelect({children,value,defaultValue,onChange,disabled=false,class
     <span>{option.label}</span>{option.value===selected&&<Check size={15} className="custom-select-check"/>}
    </button>)}
   </div>}
-  <CustomSelect className="custom-select-native" tabIndex={-1} aria-hidden="true" required={required} disabled={disabled} value={selected} onChange={()=>{}}>{children}</CustomSelect>
+  <select className="custom-select-native" tabIndex={-1} aria-hidden="true" required={required} disabled={disabled} value={selected} onChange={()=>{}}>{children}</select>
  </div>
 }
 function Badge({children}){return <span className={"badge "+String(children).toLowerCase().replaceAll(" ","-")}>{pretty(children)}</span>}
