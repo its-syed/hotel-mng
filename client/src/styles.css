@@ -520,7 +520,7 @@ td{font-size:13px;padding:13px 10px}
 .ez-feature-list b{font:600 15px Georgia,serif;color:#334b3e}
 .ez-feature-list small{font-size:10px;color:#899188;margin-top:4px}
 .ez-text-link{display:inline-flex;align-items:center;gap:9px;padding:0;border:0;background:none;color:#9b7549;font-size:11px;font-weight:800;cursor:pointer}
-.ez-rooms-section{max-width:none;padding:88px max(5vw,24px);background:#f2f1eb}
+.ez-rooms-section{max-width:none;padding:88px max(5vw,24px) 0;background:#f2f1eb}
 .ez-rooms-section>div:first-of-type{max-width:1240px;margin:0 auto}
 .ez-rooms-section>div:first-of-type>.ez-kicker{color:#a77d4c;letter-spacing:.16em;font-size:9px;font-weight:800}
 .ez-rooms-section h2{font:500 clamp(34px,4vw,48px) Georgia,serif;letter-spacing:-1px;color:#243f35;margin:12px 0}
@@ -598,7 +598,7 @@ td{font-size:13px;padding:13px 10px}
  .ez-book-heading h2{font-size:27px}
  .ez-intro{grid-template-columns:1fr;padding:65px 22px;gap:28px}
  .ez-intro-image{min-height:290px}
- .ez-rooms-section,.ez-reviews-section,.ez-contact-section{padding:65px 22px}
+ .ez-rooms-section{padding:65px 22px 0}.ez-reviews-section,.ez-contact-section{padding:65px 22px}
  .ez-room-preview-grid{grid-template-columns:1fr;max-width:520px}
  .ez-gallery-main{height:250px}
  .ez-review-grid{grid-template-columns:1fr;max-width:520px}
