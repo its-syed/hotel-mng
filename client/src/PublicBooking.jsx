@@ -10,8 +10,8 @@ const prettyDate=value=>value?new Date(String(value).slice(0,10)+"T00:00:00").to
 const statusLabel=value=>({PENDING:"Awaiting hotel confirmation",CONFIRMED:"Confirmed",CHECKED_IN:"Checked in",CHECKED_OUT:"Checked out",CANCELLED:"Cancelled",NO_SHOW:"No-show"}[value]||value);
 const HOTEL_CONTACT={
  whatsappNumber:"91XXXXXXXXXX", // Replace with country code + WhatsApp number; digits only
- address:"ADD HOTEL STREET ADDRESS, CITY, PINCODE",
- mapsQuery:"YOUR HOTEL ADDRESS, CITY",
+ address:"12, Residency Road, Shivamogga, Karnataka 577201",
+ mapsQuery:"Residency Road, Shivamogga, Karnataka 577201",
  paymentGateway:"RAZORPAY_KEY_ID_PLACEHOLDER"
 };
 const SAMPLE_REVIEWS=[
