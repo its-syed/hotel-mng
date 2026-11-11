@@ -1042,8 +1042,9 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 @media(max-width:700px){.ez-reviews-section{padding:56px 22px}.ez-reviews-heading{margin-bottom:24px}.ez-review-grid{grid-template-columns:1fr;gap:14px}.ez-review-card{min-height:230px;padding:22px}}
 
 
-/* Forest Mist background for the Find Us / Location section */
-.ez-location-section{background:#49665B}
+/* Full-width Forest Mist background while keeping location content centered */
+.ez-location-section{position:relative;isolation:isolate;background:transparent}
+.ez-location-section::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);background:#49665B}
 .ez-location-copy>.ez-kicker{color:#DCE9E1}
 .ez-location-copy h2{color:#FFFFFF}
 .ez-location-copy h2 em{color:#E2D1B5}
