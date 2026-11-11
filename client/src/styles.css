@@ -977,3 +977,15 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .hk-work-assignee .custom-select-trigger{font-size:12px}
 @keyframes customSelectIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.dirty-room-row .custom-select{max-width:100%;width:100%}.custom-select-menu{max-height:210px}}
+
+
+/* Refined, compact Find Us section */
+.ez-location-section{max-width:1160px;padding:28px 5vw;grid-template-columns:.82fr 1.18fr;gap:clamp(28px,4vw,54px)}
+.ez-location-copy h2{font-size:clamp(32px,3.2vw,40px);margin:10px 0 14px}
+.ez-location-copy>p{display:none}
+.ez-location-address{margin:17px 0 14px;padding:13px 0}
+.ez-location-address b{font-size:15px}
+.ez-location-directions{padding:11px 16px}
+.ez-location-copy>.ez-placeholder-note{display:block;margin-top:9px;font-size:9px;line-height:1.5;color:#9a805e}
+.ez-location-map{height:320px;border-radius:5px}
+@media(max-width:760px){.ez-location-section{padding:28px 22px;gap:18px}.ez-location-map{height:260px}}
