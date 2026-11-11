@@ -1110,3 +1110,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
  .ez-facilities-grid{margin-top:24px;gap:11px}
  .ez-facility-card{min-height:unset;padding:18px 17px}
 }
+
+
+/* Sample guest profile photos */
+.ez-review-avatar{display:block;object-fit:cover;object-position:center;border-radius:50%;overflow:hidden}
