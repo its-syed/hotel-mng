@@ -1040,3 +1040,17 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-review-card p{font:italic 15px/1.85 Georgia,serif;color:#52665b;margin:0;flex:1}
 @media(max-width:950px){.ez-review-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.ez-reviews-section{padding:56px 22px}.ez-reviews-heading{margin-bottom:24px}.ez-review-grid{grid-template-columns:1fr;gap:14px}.ez-review-card{min-height:230px;padding:22px}}
+
+
+/* Forest Mist background for the Find Us / Location section */
+.ez-location-section{background:#49665B}
+.ez-location-copy>.ez-kicker{color:#DCE9E1}
+.ez-location-copy h2{color:#FFFFFF}
+.ez-location-copy h2 em{color:#E2D1B5}
+.ez-location-address{border-color:rgba(237,243,239,.28)}
+.ez-location-address b{color:#FFFFFF}
+.ez-location-address span:not(.ez-location-pin){color:#EDF3EF}
+.ez-location-pin{background:#E2D1B5;color:#29483D}
+.ez-location-directions{background:#E2D1B5;color:#29483D}
+.ez-location-directions:hover{background:#F0E5D3;color:#29483D}
+.ez-location-copy>.ez-placeholder-note{color:#DCE9E1}
