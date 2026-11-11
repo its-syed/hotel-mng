@@ -992,7 +992,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 /* Compact, refined Let's Connect section */
-.ez-contact-section{display:block;padding:38px max(5vw,24px);background:#f7f7f2}
+.ez-contact-section{display:block;padding:38px max(5vw,24px);background:#49665B}
 .ez-contact-copy{max-width:900px;margin:0 auto;text-align:center}
 .ez-contact-copy h2{font-size:clamp(32px,3.2vw,40px);margin:9px 0 10px}
 .ez-contact-copy>p{max-width:none;margin:0 auto;font-size:12px}
