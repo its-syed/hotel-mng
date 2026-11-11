@@ -1161,3 +1161,16 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .rack-date-picker{width:180px}
 @keyframes ezCalendarIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:520px){.ez-calendar-popover{width:min(276px,calc(100vw - 44px))}.ez-date-time-field{grid-template-columns:minmax(0,1fr) 100px}}
+
+
+/* Calendar popover: compact, viewport-aware and independent of parent overflow */
+.ez-calendar-popover{position:fixed!important;z-index:9999;width:264px;max-width:calc(100vw - 24px);padding:10px;border-radius:10px;box-shadow:0 12px 30px rgba(30,54,43,.18);box-sizing:border-box}
+.ez-calendar-head{margin-bottom:7px}
+.ez-calendar-head button{width:28px;height:28px}
+.ez-calendar-grid{gap:2px}
+.ez-calendar-weekdays{margin-bottom:3px}
+.ez-calendar-weekdays span{height:24px;font-size:10px}
+.ez-calendar-day{height:28px;font-size:11px;border-radius:6px}
+.ez-calendar-footer{margin-top:6px;padding-top:6px}
+.ez-calendar-footer button{font-size:10px}
+@media(max-width:520px){.ez-calendar-popover{width:min(264px,calc(100vw - 24px));max-width:calc(100vw - 24px)}}
