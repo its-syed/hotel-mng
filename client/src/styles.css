@@ -977,3 +977,35 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .hk-work-assignee .custom-select-trigger{font-size:12px}
 @keyframes customSelectIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.dirty-room-row .custom-select{max-width:100%;width:100%}.custom-select-menu{max-height:210px}}
+
+
+/* UI refinement pass 1 — presentation only; existing palette and behaviour retained */
+.content{padding:26px 32px 34px;max-width:1560px}
+.welcome{align-items:center;margin-bottom:19px;gap:18px}
+.welcome h1{font-size:24px;line-height:1.25;letter-spacing:-.55px;margin:0}
+.welcome p{display:none}
+.welcome .button-row{margin:0}
+.stats{gap:12px;margin-bottom:18px}
+.stat{min-height:112px;padding:15px 17px;border-radius:11px;box-shadow:0 2px 10px #18333b06}
+.stat-top{font-size:11px;font-weight:600;letter-spacing:.05px}
+.stat strong{font-size:26px;line-height:1.15;margin:10px 0 4px}
+.stat small{font-size:10px;line-height:1.4}
+.panel{padding:18px 19px;border-radius:11px;margin-bottom:14px;box-shadow:0 2px 10px #18333b05}
+.panel-head{margin-bottom:14px}
+.panel h3{font-size:13px;letter-spacing:-.1px}
+.panel-head p{font-size:10px;line-height:1.4}
+.dashboard-grid{gap:14px}
+th{padding:9px 10px;font-size:9px}
+td{padding:11px 10px;font-size:11px}
+.filter-row,.button-row{gap:7px;margin-bottom:13px}
+.filter{padding:7px 11px;font-size:10px}
+.btn{padding:8px 12px;min-height:35px;border-radius:7px}
+.searchbox{min-height:35px}
+.searchbox input{font-size:11px}
+.room-grid{gap:10px}
+.room-card{padding:13px;border-radius:10px}
+.hk-cards{gap:10px;margin-bottom:14px}
+.hk-card{padding:13px;border-radius:10px}
+.modal{border-radius:12px}
+@media(max-width:1000px){.content{padding:23px 24px 30px}}
+@media(max-width:680px){.content{padding:18px 15px 24px}.welcome{align-items:flex-start;margin-bottom:16px}.welcome h1{font-size:21px}.stats{gap:9px}.stat{min-height:102px;padding:12px}.panel{padding:15px}.panel-head{margin-bottom:11px}}
