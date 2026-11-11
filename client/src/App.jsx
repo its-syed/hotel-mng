@@ -1,7 +1,7 @@
 import React, {useEffect,useMemo,useState} from "react";
 import {BedDouble,LayoutDashboard,CalendarDays,Users,ClipboardList,Wallet,Grid3X3,Menu,Search,Plus,RefreshCw,CheckCircle2,Clock3,AlertCircle,ChevronRight,ChevronDown,Check,LogOut,Settings,CalendarRange,Building2,Sparkles,Bell} from "lucide-react";
 
-const API=import.meta.env.VITE_API_URL||"http://localhost:4000/api";
+const API=import.meta.env.VITE_API_URL||"/api";
 const DEV_AUTH_BYPASS=import.meta.env.VITE_DEV_AUTH_BYPASS==="true";
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN");
 const dateKey=d=>{if(typeof d==="string" && /^\d{4}-\d{2}-\d{2}/.test(d))return d.slice(0,10);const x=new Date(d);return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
