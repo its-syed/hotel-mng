@@ -1,7 +1,7 @@
 import React,{useMemo,useState} from "react";
 import {ArrowRight,ArrowUpRight,Building2,CalendarDays,CheckCircle2,ChevronDown,ChevronLeft,ChevronRight,Clock3,MapPin,ShieldCheck,Sparkles,Users,Wifi,Phone,Menu,X,BedDouble,Star,MessageCircle,CreditCard,Navigation} from "lucide-react";
 
-const API=import.meta.env.VITE_API_URL||"http://localhost:4000/api";
+const API=import.meta.env.VITE_API_URL||"/api";
 const todayKey=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
 const money=n=>"₹"+Number(n||0).toLocaleString("en-IN");
 const nightsBetween=(a,b)=>Math.max(1,Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000));
