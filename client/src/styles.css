@@ -1066,7 +1066,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-intro-image-caption b{font:500 clamp(20px,2.2vw,27px)/1.2 Georgia,serif;letter-spacing:.1px}
 .ez-intro-copy{max-width:520px}
 .ez-intro-copy .ez-kicker{color:#9b7955}
-.ez-intro-copy h2{font-size:clamp(36px,3.7vw,47px);line-height:1.13;margin:12px 0 16px;letter-spacing:-.8px}
+.ez-intro-copy h2{font-size:clamp(30px,3vw,36px);line-height:1.15;margin:12px 0 16px;letter-spacing:-.5px}
 .ez-intro-copy h2 em{color:#9b7955}
 .ez-intro-copy>p{font-size:13px;line-height:1.85;color:#68776d;max-width:500px;margin:0}
 .ez-intro .ez-feature-list{margin:20px 0 18px;display:grid;gap:0}
@@ -1081,6 +1081,6 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
  .ez-intro-image{min-height:310px;margin-right:12px}
  .ez-intro-image-caption{left:14px;right:14px;bottom:14px;padding:16px}
  .ez-intro-image-caption b{font-size:22px}
- .ez-intro-copy h2{font-size:37px}
+ .ez-intro-copy h2{font-size:30px}
  .ez-intro .ez-feature-list{margin:18px 0}
 }
