@@ -1055,3 +1055,32 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-location-directions{background:#E2D1B5;color:#29483D}
 .ez-location-directions:hover{background:#F0E5D3;color:#29483D}
 .ez-location-copy>.ez-placeholder-note{color:#DCE9E1}
+
+
+/* About section — polished editorial layout */
+.ez-intro{max-width:1240px;padding:90px 5vw 42px;gap:clamp(35px,6vw,76px)}
+.ez-intro-image{min-height:460px;overflow:hidden;isolation:isolate;box-shadow:0 18px 42px rgba(35,55,43,.12)}
+.ez-intro-image:after{inset:16px -14px -14px 16px;border-color:#c6ad8e;z-index:-1}
+.ez-intro-image-caption{position:absolute;left:22px;right:22px;bottom:22px;padding:20px 22px;background:rgba(28,54,44,.9);backdrop-filter:blur(8px);color:#fff;display:grid;gap:8px}
+.ez-intro-image-caption span{font-size:8px;font-weight:800;letter-spacing:.19em;color:#e5c9a5}
+.ez-intro-image-caption b{font:500 clamp(20px,2.2vw,27px)/1.2 Georgia,serif;letter-spacing:.1px}
+.ez-intro-copy{max-width:520px}
+.ez-intro-copy .ez-kicker{color:#9b7955}
+.ez-intro-copy h2{font-size:clamp(36px,3.7vw,47px);line-height:1.13;margin:12px 0 16px;letter-spacing:-.8px}
+.ez-intro-copy h2 em{color:#9b7955}
+.ez-intro-copy>p{font-size:13px;line-height:1.85;color:#68776d;max-width:500px;margin:0}
+.ez-intro .ez-feature-list{margin:20px 0 18px;display:grid;gap:0}
+.ez-intro .ez-feature-list>div{padding:12px 0;border-bottom:1px solid #e8e6de;grid-template-columns:36px 1fr;column-gap:12px}
+.ez-intro .ez-feature-list>div:first-child{border-top:1px solid #e8e6de}
+.ez-intro .ez-feature-list>div>span{width:32px;height:32px;background:#e9efe9;color:#49665B}
+.ez-intro .ez-feature-list b{font:600 13px Manrope,sans-serif;color:#29483D}
+.ez-intro .ez-feature-list small{font-size:10px;line-height:1.55;color:#7d8980;margin-top:3px}
+.ez-intro .ez-text-link{font-size:11px;color:#8c6744;letter-spacing:.02em}
+@media(max-width:760px){
+ .ez-intro{padding:65px 22px 42px;gap:30px}
+ .ez-intro-image{min-height:310px;margin-right:12px}
+ .ez-intro-image-caption{left:14px;right:14px;bottom:14px;padding:16px}
+ .ez-intro-image-caption b{font-size:22px}
+ .ez-intro-copy h2{font-size:37px}
+ .ez-intro .ez-feature-list{margin:18px 0}
+}
