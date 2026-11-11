@@ -1021,3 +1021,22 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-floating-whatsapp:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.26)}
 .ez-floating-whatsapp:focus-visible{outline:3px solid #1f4937;outline-offset:4px}
 @media(max-width:700px){.ez-floating-whatsapp{right:16px;bottom:16px;width:54px;height:54px}}
+
+
+/* Guest reviews: full-width cards with profile header and more room for the review */
+.ez-reviews-section{display:block;padding:72px max(5vw,24px) 78px}
+.ez-reviews-heading{max-width:760px;margin:0 auto 30px;text-align:center}
+.ez-reviews-heading p{max-width:620px;margin:0 auto}
+.ez-review-grid{width:100%;max-width:1240px;margin:0 auto;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:18px}
+.ez-review-card{min-height:290px;height:100%;padding:24px 23px;display:flex;flex-direction:column;gap:14px}
+.ez-review-person{display:flex;align-items:center;gap:12px}
+.ez-review-avatar{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:grid;place-items:center;background:#dce8df;color:#29483d;font:700 13px/1 Manrope,sans-serif;letter-spacing:.04em;border:2px solid #fff;box-shadow:0 0 0 1px #d9e2da}
+.ez-review-avatar-1{background:#e9e1d5;color:#765b3f;box-shadow:0 0 0 1px #e4d9ca}
+.ez-review-avatar-2{background:#dce5eb;color:#405d70;box-shadow:0 0 0 1px #d4e0e8}
+.ez-review-person-details{display:grid;gap:4px;min-width:0}
+.ez-review-person-details b{font-size:12px;color:#29463b}
+.ez-review-person-details small{font-size:9px;color:#929b92}
+.ez-review-card .ez-review-stars{margin-top:2px}
+.ez-review-card p{font:italic 15px/1.85 Georgia,serif;color:#52665b;margin:0;flex:1}
+@media(max-width:950px){.ez-review-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.ez-reviews-section{padding:56px 22px}.ez-reviews-heading{margin-bottom:24px}.ez-review-grid{grid-template-columns:1fr;gap:14px}.ez-review-card{min-height:230px;padding:22px}}
