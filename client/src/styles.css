@@ -1122,9 +1122,9 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 /* Public booking navigation: slightly larger, easier-to-read labels */
-.ez-nav-links>a{font-size:12.5px}
-.ez-nav-links .ez-nav-book{font-size:13px}
-@media(max-width:1050px){.ez-nav-links>a{font-size:11.5px}}
+.ez-nav-links>a{font-size:13px}
+.ez-nav-links .ez-nav-book{font-size:13.5px}
+@media(max-width:1050px){.ez-nav-links>a{font-size:12px}}
 
 /* EzyStay supplied logo — public website header and footer */
 .ez-brand-logo{display:block;width:auto;height:68px;max-width:190px;object-fit:contain}
