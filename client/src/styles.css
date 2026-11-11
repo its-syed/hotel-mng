@@ -1014,3 +1014,10 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-contact-action b{color:#29483D}
 .ez-contact-action small{color:#65766D}
 .ez-contact-action svg{color:#49665B}
+
+
+/* Floating WhatsApp contact button — remains visible while scrolling */
+.ez-floating-whatsapp{position:fixed;right:24px;bottom:24px;z-index:1000;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#25D366;color:#fff;box-shadow:0 5px 18px rgba(0,0,0,.22);border:2px solid rgba(255,255,255,.9);transition:transform .18s ease,box-shadow .18s ease}
+.ez-floating-whatsapp:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.26)}
+.ez-floating-whatsapp:focus-visible{outline:3px solid #1f4937;outline-offset:4px}
+@media(max-width:700px){.ez-floating-whatsapp{right:16px;bottom:16px;width:54px;height:54px}}
