@@ -1121,6 +1121,11 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-review-card p{flex:0 0 auto;margin:0}
 
 
+/* Public booking navigation: slightly larger, easier-to-read labels */
+.ez-nav-links>a{font-size:12.5px}
+.ez-nav-links .ez-nav-book{font-size:13px}
+@media(max-width:1050px){.ez-nav-links>a{font-size:11.5px}}
+
 /* EzyStay supplied logo — public website header and footer */
 .ez-brand-logo{display:block;width:auto;height:68px;max-width:190px;object-fit:contain}
 .ez-brand-logo-footer{height:62px;max-width:180px}
