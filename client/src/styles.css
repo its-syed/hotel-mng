@@ -1084,3 +1084,29 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
  .ez-intro-copy h2{font-size:30px}
  .ez-intro .ez-feature-list{margin:18px 0}
 }
+
+
+/* Facilities section — fuller editorial layout and more substantial amenity cards */
+.ez-facilities-section{padding:88px max(5vw,24px) 82px;background:#f0f1eb}
+.ez-facilities-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,360px);column-gap:48px;align-items:end}
+.ez-facilities-heading>.ez-kicker{grid-column:1/-1}
+.ez-facilities-heading h2{grid-column:1;max-width:620px;font-size:clamp(34px,3.5vw,43px);margin:12px 0 0}
+.ez-facilities-heading>p{grid-column:2;grid-row:2;margin:0 0 5px;max-width:340px;font-size:12px;line-height:1.85}
+.ez-facilities-heading .ez-demo-label-inline{grid-column:1;justify-self:start}
+.ez-facilities-grid{margin-top:34px;gap:15px}
+.ez-facility-card{position:relative;min-height:126px;align-items:center;gap:17px;padding:24px 22px;background:#fff;border:1px solid #e2e5dc;box-shadow:0 5px 18px rgba(36,63,53,.035);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.ez-facility-card:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;background:#9eae9f;opacity:.8}
+.ez-facility-card:hover{transform:translateY(-3px);border-color:#cbd6cb;box-shadow:0 12px 26px rgba(36,63,53,.08)}
+.ez-facility-card>span{width:46px;height:46px;flex-basis:46px;background:#edf2ec;color:#49665b;border-radius:50%}
+.ez-facility-card b{font:600 16px Georgia,serif;color:#29463b}
+.ez-facility-card p{margin-top:7px;font-size:11px;line-height:1.65;color:#78847b}
+.ez-facilities-section>.ez-placeholder-note{margin-top:20px}
+@media(max-width:1050px){.ez-facilities-heading{column-gap:28px}.ez-facility-card{min-height:120px;padding:20px 18px}}
+@media(max-width:760px){
+ .ez-facilities-section{padding:65px 22px}
+ .ez-facilities-heading{display:block}
+ .ez-facilities-heading h2{font-size:34px;margin:12px 0 10px}
+ .ez-facilities-heading>p{margin:0 0 12px}
+ .ez-facilities-grid{margin-top:24px;gap:11px}
+ .ez-facility-card{min-height:unset;padding:18px 17px}
+}
