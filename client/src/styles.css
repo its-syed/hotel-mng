@@ -1619,3 +1619,48 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-contact-actions{grid-template-columns:1fr;gap:10px}
   .ez-contact-action{min-height:76px;padding:16px 18px}
 }
+
+
+/* Hero banner — three-photo carousel controls */
+.ez-hero-background img{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity 1.1s ease-in-out;
+  will-change:opacity;
+}
+.ez-hero-background img.active{opacity:1}
+.ez-hero-controls{
+  position:absolute;
+  z-index:3;
+  right:clamp(24px,6vw,88px);
+  bottom:38px;
+  display:flex;
+  gap:9px;
+}
+.ez-hero-arrow{
+  width:44px;height:44px;display:grid;place-items:center;
+  border:1px solid rgba(255,255,255,.58);border-radius:50%;
+  background:rgba(20,31,29,.36);color:#fff;backdrop-filter:blur(8px);
+  transition:background .2s ease,transform .2s ease;
+}
+.ez-hero-arrow:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.ez-hero-dots{
+  position:absolute;z-index:3;right:clamp(132px,12vw,196px);bottom:54px;
+  display:flex;align-items:center;gap:8px;
+}
+.ez-hero-dots button{
+  width:7px;height:7px;padding:0;border:0;border-radius:50%;
+  background:rgba(255,255,255,.55);transition:width .25s ease,background .25s ease;
+}
+.ez-hero-dots button.active{width:23px;border-radius:8px;background:#fff}
+@media(max-width:760px){
+  .ez-hero-controls{right:20px;bottom:22px;gap:7px}
+  .ez-hero-arrow{width:38px;height:38px}
+  .ez-hero-dots{right:112px;bottom:37px;gap:6px}
+  .ez-hero-dots button{width:6px;height:6px}
+  .ez-hero-dots button.active{width:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .ez-hero-background img,.ez-hero-arrow,.ez-hero-dots button{transition:none}
+}
