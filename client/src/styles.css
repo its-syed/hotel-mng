@@ -1779,3 +1779,112 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   background:#9eabb1;
   color:#263238;
 }
+
+
+/* Shared booking-site alignment: one consistent left content edge */
+.ez-public{
+  --ez-content-width:1240px;
+  --ez-page-gutter:24px;
+}
+.ez-public .ez-nav{
+  width:min(var(--ez-content-width),calc(100% - 48px));
+  max-width:var(--ez-content-width);
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-hero-copy{
+  margin-left:max(calc((100% - var(--ez-content-width))/2),24px);
+}
+.ez-public .ez-intro{
+  max-width:var(--ez-content-width);
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-room-preview-grid{
+  max-width:var(--ez-content-width);
+}
+.ez-public .ez-location-section{
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-facilities-section{
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-facilities-heading,
+.ez-public .ez-facilities-grid,
+.ez-public .ez-facilities-section>.ez-placeholder-note{
+  max-width:var(--ez-content-width);
+}
+.ez-public .ez-reviews-section{
+  width:min(var(--ez-content-width),calc(100% - 48px));
+  max-width:var(--ez-content-width);
+  margin-left:auto;
+  margin-right:auto;
+  padding:86px 0;
+  grid-template-columns:minmax(0,1fr);
+  box-shadow:0 0 0 100vmax #f3f4ee;
+  clip-path:inset(0 -100vmax);
+}
+.ez-public .ez-reviews-heading,
+.ez-public .ez-review-grid{
+  grid-column:1/-1;
+}
+.ez-public .ez-contact-section{
+  padding-left:max(calc((100% - var(--ez-content-width))/2),24px);
+  padding-right:max(calc((100% - var(--ez-content-width))/2),24px);
+}
+.ez-public .ez-faq{
+  max-width:var(--ez-content-width);
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-track-section{
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-footer{
+  width:min(var(--ez-content-width),calc(100% - 48px));
+  margin-left:auto;
+  margin-right:auto;
+  padding-left:0;
+  padding-right:0;
+}
+@media(max-width:760px){
+  .ez-public .ez-nav{
+    width:100%;
+    padding-left:19px;
+    padding-right:19px;
+  }
+  .ez-public .ez-hero-copy{margin-left:20px}
+  .ez-public .ez-intro{
+    width:calc(100% - 40px);
+    padding-left:0;
+    padding-right:0;
+  }
+  .ez-public .ez-rooms-section{padding-left:20px;padding-right:20px}
+  .ez-public .ez-room-preview-grid{width:100%}
+  .ez-public .ez-location-section{padding-left:20px;padding-right:20px}
+  .ez-public .ez-facilities-section{padding-left:20px;padding-right:20px}
+  .ez-public .ez-reviews-section{
+    width:calc(100% - 40px);
+    padding-top:56px;
+    padding-bottom:56px;
+  }
+  .ez-public .ez-contact-section{padding-left:20px;padding-right:20px}
+  .ez-public .ez-faq{
+    width:calc(100% - 40px);
+    padding-left:0;
+    padding-right:0;
+  }
+  .ez-public .ez-track-section{
+    width:calc(100% - 40px);
+    padding-left:0;
+    padding-right:0;
+  }
+  .ez-public .ez-footer{
+    width:calc(100% - 40px);
+    padding-left:0;
+    padding-right:0;
+  }
+}
