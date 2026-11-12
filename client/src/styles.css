@@ -2008,3 +2008,10 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-reviews-heading h2{
   color:#FFFFFF !important;
 }
+
+
+/* Guest review cards — subtle corner rounding */
+.ez-public .ez-review-card{
+  border-radius:8px;
+  overflow:hidden;
+}
