@@ -2439,3 +2439,10 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 @media(max-width:760px){
   .ez-public .ez-nav-links{background:var(--ez-ivory);border-color:rgba(52,58,56,.2)}
 }
+
+
+/* Keep Reviews visually distinct from the Contact section */
+.ez-public .ez-reviews-section{
+  background:var(--ez-charcoal);
+  box-shadow:0 0 0 100vmax var(--ez-charcoal);
+}
