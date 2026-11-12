@@ -2985,3 +2985,12 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   margin-right:auto!important;
   text-align:left!important;
 }
+
+
+/* Darken both guest-review heading lines for stronger contrast on sand. */
+.ez-public .ez-reviews-heading .ez-kicker,
+.ez-public .ez-reviews-heading h2,
+.ez-public .ez-reviews-heading h2 em{
+  color:var(--ez-forest)!important;
+  -webkit-text-fill-color:var(--ez-forest)!important;
+}
