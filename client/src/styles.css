@@ -1968,3 +1968,38 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
     padding:56px 20px;
   }
 }
+
+/* Full-bleed backgrounds for Track Booking and footer; keep their contents aligned */
+.ez-public .ez-track-section{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding-left:max(calc((100% - 1240px)/2),24px);
+  padding-right:max(calc((100% - 1240px)/2),24px);
+  box-sizing:border-box;
+  background:#f2f1eb;
+}
+.ez-public .ez-footer{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding-left:max(calc((100% - 1240px)/2),24px);
+  padding-right:max(calc((100% - 1240px)/2),24px);
+  box-sizing:border-box;
+  background:#203e36;
+}
+@media(max-width:760px){
+  .ez-public .ez-track-section{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .ez-public .ez-footer{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:24px 20px;
+  }
+}
