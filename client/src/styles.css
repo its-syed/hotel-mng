@@ -2064,3 +2064,32 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   color:#70451f !important;
   border-bottom-color:#9a713d !important;
 }
+
+
+/* Facilities cards — elegant light treatment */
+.ez-public .ez-facilities-grid .ez-facility-card{
+  background:#faf7ef;
+  border:1px solid #d8c7a8;
+  box-shadow:0 4px 15px rgba(65,53,34,.045);
+  border-radius:2px;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.ez-public .ez-facilities-grid .ez-facility-card:before{
+  background:#b18a51;
+  opacity:.75;
+}
+.ez-public .ez-facilities-grid .ez-facility-card:hover{
+  border-color:#b99a68;
+  box-shadow:0 10px 24px rgba(65,53,34,.09);
+}
+.ez-public .ez-facilities-grid .ez-facility-card>span{
+  background:#eee6d6;
+  color:#98713d;
+  border:1px solid #e1d2b7;
+}
+.ez-public .ez-facilities-grid .ez-facility-card b{
+  color:#263f34;
+}
+.ez-public .ez-facilities-grid .ez-facility-card p{
+  color:#68756b;
+}
