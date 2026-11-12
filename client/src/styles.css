@@ -1392,3 +1392,145 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-contact-copy{padding:30px 22px;border-radius:16px}
 }
 
+
+
+/* Graphite & Steel — integrated Location split and dark Contact section */
+.ez-location-section{
+  position:relative;
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:48px 5vw;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:0;
+  align-items:stretch;
+  border-radius:0;
+  background:#191D20;
+  box-shadow:none;
+  overflow:hidden;
+}
+.ez-location-copy{
+  position:relative;
+  z-index:1;
+  min-width:0;
+  padding:42px 52px 42px 42px;
+  background:#292F34;
+  border-radius:18px 0 0 18px;
+}
+.ez-location-copy::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  top:-8%;
+  right:0;
+  width:2px;
+  height:116%;
+  background:#829098;
+  transform:rotate(7deg);
+  transform-origin:center;
+  opacity:.8;
+}
+.ez-location-copy>.ez-kicker{color:#C6D0D4}
+.ez-location-copy h2{color:#FFFFFF}
+.ez-location-copy h2 em{color:#C6D0D4}
+.ez-location-address{border-color:rgba(198,208,212,.22)}
+.ez-location-address b{color:#FFFFFF}
+.ez-location-address>div>span{color:#D0D8DC}
+.ez-location-pin{background:#46535B;color:#FFFFFF;border-radius:9px}
+.ez-location-directions{background:#C6D0D4;color:#20282D;border-radius:7px}
+.ez-location-directions:hover{background:#E0E6E8;color:#20282D}
+.ez-location-copy>.ez-placeholder-note{color:#B7C1C6}
+.ez-location-map{
+  position:relative;
+  z-index:0;
+  height:auto;
+  min-height:390px;
+  min-width:0;
+  overflow:hidden;
+  border:0;
+  border-radius:0 18px 18px 0;
+  background:#292F34;
+  box-shadow:none;
+}
+.ez-location-map iframe{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:390px;
+  border:0;
+  border-radius:0;
+}
+
+.ez-contact-section{
+  display:block;
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:24px 5vw 48px;
+  border-radius:0;
+  background:#191D20;
+}
+.ez-contact-copy{
+  max-width:none;
+  margin:0;
+  padding:38px 42px;
+  text-align:center;
+  border:0;
+  border-radius:18px;
+  background:#38434A;
+  box-shadow:none;
+}
+.ez-contact-copy .ez-kicker{color:#C6D0D4}
+.ez-contact-copy h2{color:#FFFFFF}
+.ez-contact-copy h2 em{color:#C6D0D4}
+.ez-contact-copy>p{color:#D0D8DC}
+.ez-contact-actions{margin:20px auto 0}
+.ez-contact-action{
+  background:#293137;
+  border:1px solid #4A565E;
+  border-radius:12px;
+  color:#FFFFFF;
+  box-shadow:none;
+}
+.ez-contact-action b{color:#FFFFFF}
+.ez-contact-action small{color:#C0C9CE}
+.ez-contact-action svg{color:#C6D0D4}
+.ez-contact-note{color:#B7C1C6}
+
+@media(max-width:760px){
+  .ez-location-section{
+    width:100%;
+    margin:0;
+    padding:30px 16px;
+    grid-template-columns:1fr;
+    gap:0;
+  }
+  .ez-location-copy{
+    padding:28px 24px 32px;
+    border-radius:16px 16px 0 0;
+  }
+  .ez-location-copy::after{
+    top:auto;
+    right:5%;
+    bottom:0;
+    width:90%;
+    height:2px;
+    transform:rotate(-2deg);
+  }
+  .ez-location-map{
+    height:270px;
+    min-height:270px;
+    border-radius:0 0 16px 16px;
+  }
+  .ez-location-map iframe{
+    min-height:270px;
+  }
+  .ez-contact-section{
+    width:100%;
+    margin:0;
+    padding:16px 16px 30px;
+    border-radius:0;
+  }
+  .ez-contact-copy{padding:30px 22px;border-radius:16px}
+}
