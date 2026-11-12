@@ -1515,3 +1515,28 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   }
   .ez-contact-copy{padding:30px 22px;border-radius:16px}
 }
+
+
+/* Contact actions — larger WhatsApp and Call Us panels */
+.ez-contact-actions{
+  width:100%;
+  max-width:560px;
+  gap:14px;
+}
+.ez-contact-action{
+  min-height:82px;
+  padding:20px 24px;
+  gap:17px;
+  border-radius:14px;
+}
+.ez-contact-action svg{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+}
+.ez-contact-action b{font-size:14px}
+.ez-contact-action small{font-size:11px}
+@media(max-width:760px){
+  .ez-contact-actions{max-width:100%;gap:12px}
+  .ez-contact-action{min-height:76px;padding:17px 18px}
+}
