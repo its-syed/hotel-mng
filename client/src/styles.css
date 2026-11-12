@@ -1669,3 +1669,56 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 @media(prefers-reduced-motion:reduce){
   .ez-hero-background img,.ez-hero-arrow,.ez-hero-dots button{transition:none}
 }
+
+
+/* Track Booking — elevated card treatment to match the website's room cards */
+.ez-public .ez-track-section{
+  gap:clamp(32px,5vw,64px);
+  align-items:center;
+}
+.ez-public .ez-track-card{
+  padding:clamp(24px,3vw,34px);
+  border:1px solid #e7e2d8;
+  border-radius:16px;
+  background:linear-gradient(145deg,#fff 0%,#fbfaf6 100%);
+  box-shadow:0 14px 38px rgba(35,52,43,.09);
+}
+.ez-public .ez-track-form{
+  gap:16px;
+}
+.ez-public .ez-track-form label{
+  gap:9px;
+}
+.ez-public .ez-track-form label span{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.025em;
+  color:#42564a;
+}
+.ez-public .ez-track-form input{
+  height:50px;
+  padding:0 14px;
+  border:1px solid #e5e2d9;
+  border-radius:8px;
+  background:#f8f7f2;
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.ez-public .ez-track-form input:focus{
+  outline:none;
+  border-color:#a77d4c;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(167,125,76,.12);
+}
+.ez-public .ez-track-form .ez-primary-btn{
+  min-height:48px;
+  border-radius:8px;
+  box-shadow:0 5px 14px rgba(32,62,54,.12);
+}
+.ez-public .ez-track-result{
+  border-radius:12px;
+  background:#f5f6f0;
+  border-color:#e3e7dc;
+}
+@media(max-width:760px){
+  .ez-public .ez-track-card{padding:22px 18px;border-radius:13px}
+}
