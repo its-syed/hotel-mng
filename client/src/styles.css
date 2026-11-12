@@ -2446,3 +2446,38 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   background:var(--ez-charcoal);
   box-shadow:0 0 0 100vmax var(--ez-charcoal);
 }
+
+
+/* Light ivory surfaces for Reviews and Contact cards */
+.ez-public .ez-review-card,
+.ez-public .ez-contact-copy,
+.ez-public .ez-contact-action{
+  background:var(--ez-ivory);
+  color:var(--ez-charcoal);
+  border-color:rgba(52,58,56,.22);
+}
+.ez-public .ez-review-card p,
+.ez-public .ez-review-card>b,
+.ez-public .ez-review-card>small,
+.ez-public .ez-contact-copy h2,
+.ez-public .ez-contact-copy p,
+.ez-public .ez-contact-copy small,
+.ez-public .ez-contact-action b,
+.ez-public .ez-contact-action small,
+.ez-public .ez-contact-action svg{
+  color:var(--ez-charcoal)!important;
+}
+.ez-public .ez-contact-copy .ez-kicker,
+.ez-public .ez-contact-copy h2 em,
+.ez-public .ez-contact-action>span:first-child{
+  color:var(--ez-forest)!important;
+}
+.ez-public .ez-contact-action:hover{
+  background:var(--ez-forest);
+  border-color:var(--ez-forest);
+}
+.ez-public .ez-contact-action:hover b,
+.ez-public .ez-contact-action:hover small,
+.ez-public .ez-contact-action:hover svg{
+  color:var(--ez-ivory)!important;
+}
