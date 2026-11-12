@@ -1891,7 +1891,15 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 /* Final shared left edge for the remaining booking-site sections */
-.ez-public .ez-location-section,
+.ez-public .ez-location-section{
+  /* Keep the graphite background full-bleed; align only its inner content. */
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding-left:max(calc((100% - 1240px)/2),24px);
+  padding-right:max(calc((100% - 1240px)/2),24px);
+  box-sizing:border-box;
+}
 .ez-public .ez-track-section,
 .ez-public .ez-faq{
   width:min(1240px,calc(100% - 48px));
@@ -1900,10 +1908,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   margin-right:auto;
   box-sizing:border-box;
 }
-.ez-public .ez-location-section{
-  padding-left:0;
-  padding-right:0;
-}
+
 .ez-public .ez-track-section{
   padding-left:0;
   padding-right:0;
@@ -1917,14 +1922,16 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   padding-right:max(calc((100% - 1240px)/2),24px);
 }
 @media(max-width:760px){
-  .ez-public .ez-location-section,
+  .ez-public .ez-location-section{
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding-left:20px;
+    padding-right:20px;
+  }
   .ez-public .ez-track-section,
   .ez-public .ez-faq{
     width:calc(100% - 40px);
-  }
-  .ez-public .ez-location-section{
-    padding-left:0;
-    padding-right:0;
   }
   .ez-public .ez-track-section{
     padding-left:0;
