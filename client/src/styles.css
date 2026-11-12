@@ -1276,3 +1276,36 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-room-options{grid-template-columns:1fr}
   .ez-room-option-photo{height:180px}
 }
+
+
+/* Main Rooms section — match the Moody Luxury booking room cards */
+.ez-room-preview-grid article{
+  overflow:hidden;
+  border:1px solid transparent;
+  border-radius:10px;
+  box-shadow:0 5px 16px rgba(25,39,30,.10);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.ez-room-preview-grid article:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(25,39,30,.16);
+}
+.ez-room-preview-grid article:nth-child(1){background:#536D5D;border-color:#536D5D}
+.ez-room-preview-grid article:nth-child(2){background:#987C5D;border-color:#987C5D}
+.ez-room-preview-grid article:nth-child(3){background:#626D59;border-color:#626D59}
+.ez-room-preview-grid .ez-demo-gallery{background:transparent;padding-bottom:10px}
+.ez-room-preview-grid .ez-gallery-thumbs button.active{border-color:#F8F6F0}
+.ez-room-preview-grid .ez-demo-label{
+  background:rgba(23,45,37,.88);
+  color:#fff;
+}
+.ez-room-preview-grid .ez-gallery-expand{background:rgba(23,45,37,.9);color:#fff}
+.ez-room-preview-grid .ez-room-preview-copy{background:transparent;padding:17px 20px 22px}
+.ez-room-preview-grid .ez-room-preview-copy>span{color:rgba(255,255,255,.76)}
+.ez-room-preview-grid .ez-room-preview-copy h3{color:#fff}
+.ez-room-preview-grid .ez-room-preview-copy p{color:rgba(255,255,255,.86)}
+.ez-room-preview-grid .ez-amenity-tags span{
+  background:rgba(255,255,255,.14);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+}
