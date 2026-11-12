@@ -2207,7 +2207,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   height:100%;
   pointer-events:none;
   overflow:visible;
-  opacity:.72;
+  opacity:.48;
 }
 .ez-public .ez-facilities-content{
   position:relative;
@@ -2215,6 +2215,6 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 }
 @media(max-width:760px){
   .ez-public .ez-facilities-gold-sweep{
-    opacity:.55;
+    opacity:.38;
   }
 }
