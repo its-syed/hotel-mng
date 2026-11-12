@@ -1309,3 +1309,84 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   color:#fff;
   border:1px solid rgba(255,255,255,.12);
 }
+
+/* Location and Contact — coordinated rounded feature cards */
+.ez-location-section{
+  width:calc(100% - 10vw);
+  max-width:1240px;
+  margin:48px auto;
+  padding:36px;
+  grid-template-columns:.82fr 1.18fr;
+  gap:36px;
+  align-items:center;
+  border-radius:20px;
+  background:#26332F;
+  box-shadow:0 16px 38px rgba(22,35,30,.16);
+  overflow:hidden;
+}
+.ez-location-section::before{display:none}
+.ez-location-copy>.ez-kicker{color:#DCE9E1}
+.ez-location-copy h2{color:#FFFFFF}
+.ez-location-copy h2 em{color:#E2D1B5}
+.ez-location-address{border-color:rgba(237,243,239,.22)}
+.ez-location-address b{color:#FFFFFF}
+.ez-location-address>div>span{color:#E8EEE9}
+.ez-location-pin{background:#E2D1B5;color:#26332F;border-radius:9px}
+.ez-location-directions{background:#E2D1B5;color:#26332F;border-radius:7px}
+.ez-location-directions:hover{background:#F0E5D3;color:#26332F}
+.ez-location-copy>.ez-placeholder-note{color:#C7D2CB}
+.ez-location-map{height:360px;border:0;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.ez-location-map iframe{border-radius:14px}
+
+.ez-contact-section{
+  display:block;
+  width:calc(100% - 10vw);
+  max-width:1240px;
+  margin:48px auto;
+  padding:0;
+  background:transparent;
+}
+.ez-contact-copy{
+  max-width:none;
+  margin:0;
+  padding:38px 42px;
+  text-align:center;
+  border:1px solid #E6E0D4;
+  border-radius:20px;
+  background:#F3F0E8;
+  box-shadow:0 12px 32px rgba(40,48,39,.08);
+}
+.ez-contact-copy .ez-kicker{color:#7B8C7D}
+.ez-contact-copy h2{color:#26332F}
+.ez-contact-copy h2 em{color:#987C5D}
+.ez-contact-copy>p{color:#68756C}
+.ez-contact-actions{margin:20px auto 0}
+.ez-contact-action{
+  background:#FBF9F3;
+  border:1px solid #E5DED1;
+  border-radius:12px;
+  color:#26332F;
+  box-shadow:0 4px 12px rgba(40,48,39,.04);
+}
+.ez-contact-action b{color:#26332F}
+.ez-contact-action small{color:#778078}
+.ez-contact-action svg{color:#526B50}
+.ez-contact-note{color:#8B8D80}
+
+@media(max-width:760px){
+  .ez-location-section{
+    width:calc(100% - 32px);
+    margin:30px auto;
+    padding:25px 22px;
+    grid-template-columns:1fr;
+    gap:22px;
+  }
+  .ez-location-map{height:270px}
+  .ez-contact-section{
+    width:calc(100% - 32px);
+    margin:30px auto;
+    padding:0;
+  }
+  .ez-contact-copy{padding:30px 22px;border-radius:16px}
+}
+
