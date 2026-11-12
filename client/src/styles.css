@@ -1764,3 +1764,18 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   color:#d0d9dd;
   border-color:#68757d;
 }
+
+
+/* Track Booking CTA — match the graphite and steel card palette */
+.ez-public .ez-track-form .ez-primary-btn{
+  background:#c6d0d4;
+  color:#263238;
+  box-shadow:0 5px 14px rgba(10,18,22,.2);
+}
+.ez-public .ez-track-form .ez-primary-btn:hover{
+  background:#d8e0e3;
+}
+.ez-public .ez-track-form .ez-primary-btn:disabled{
+  background:#9eabb1;
+  color:#263238;
+}
