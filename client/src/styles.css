@@ -1418,19 +1418,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   background:#292F34;
   border-radius:18px 0 0 18px;
 }
-.ez-location-copy::after{
-  content:"";
-  position:absolute;
-  z-index:2;
-  top:-8%;
-  right:0;
-  width:2px;
-  height:116%;
-  background:#829098;
-  transform:rotate(7deg);
-  transform-origin:center;
-  opacity:.8;
-}
+.ez-location-copy::after{display:none}
 .ez-location-copy>.ez-kicker{color:#C6D0D4}
 .ez-location-copy h2{color:#FFFFFF}
 .ez-location-copy h2 em{color:#C6D0D4}
@@ -1510,14 +1498,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
     padding:28px 24px 32px;
     border-radius:16px 16px 0 0;
   }
-  .ez-location-copy::after{
-    top:auto;
-    right:5%;
-    bottom:0;
-    width:90%;
-    height:2px;
-    transform:rotate(-2deg);
-  }
+  .ez-location-copy::after{display:none}
   .ez-location-map{
     height:270px;
     min-height:270px;
