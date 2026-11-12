@@ -2159,3 +2159,35 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
     padding:18px 17px;
   }
 }
+
+
+/* Facilities cards — light forest-green palette */
+.ez-public .ez-facilities-grid .ez-facility-card{
+  background:
+    radial-gradient(circle at 100% 0%,rgba(91,127,101,.12),transparent 38%),
+    linear-gradient(135deg,#f8fbf6 0%,#eaf1e8 100%);
+  border-color:#c6d5c5;
+  box-shadow:0 3px 0 rgba(73,105,79,.08),0 9px 22px rgba(43,69,49,.055);
+}
+.ez-public .ez-facilities-grid .ez-facility-card:before{
+  border-color:rgba(76,119,86,.19);
+}
+.ez-public .ez-facilities-grid .ez-facility-card:after{
+  border-color:rgba(76,119,86,.13);
+}
+.ez-public .ez-facilities-grid .ez-facility-card>span{
+  background:linear-gradient(145deg,#e5eee2,#d5e3d3);
+  border-color:#bfd1bd;
+  color:#456c50;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(48,79,54,.07);
+}
+.ez-public .ez-facilities-grid .ez-facility-card b{
+  color:#234532;
+}
+.ez-public .ez-facilities-grid .ez-facility-card p{
+  color:#5d7162;
+}
+.ez-public .ez-facilities-grid .ez-facility-card:hover{
+  border-color:#9fb99f;
+  box-shadow:0 4px 0 rgba(73,105,79,.10),0 13px 27px rgba(43,69,49,.10);
+}
