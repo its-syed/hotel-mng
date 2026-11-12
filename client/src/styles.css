@@ -928,10 +928,16 @@ td{font-size:13px;padding:13px 10px}
 .ez-public .ez-hero-copy>p{max-width:470px;color:#f1f0e9;font-size:14px;line-height:1.65;margin:0}
 .ez-public main>.ez-book-wrap{
   position:relative;z-index:5;width:min(798px,calc(100% - 10vw));
-  margin:-235px auto 42px;padding:22px 34px 25px;
+  margin:-235px auto 42px;padding:7px 34px 8px;
   border:1px solid #e9e5dc;border-radius:8px;background:#fff;
   box-shadow:0 18px 55px rgba(29,48,38,.16);
 }
+.ez-public .ez-book-heading{margin-bottom:4px}
+.ez-public .ez-book-heading h2{font-size:26px;margin:2px 0}
+.ez-public .ez-search-form label{gap:5px}
+.ez-public .ez-search-form input,
+.ez-public .ez-search-form select,
+.ez-public .ez-search-form .ez-primary-btn{height:40px}
 @media(max-width:1050px){
   .ez-public main>.ez-hero{height:500px;min-height:460px;padding:65px 6vw 95px}
   .ez-public .ez-hero-copy{margin-left:1vw}
