@@ -2481,3 +2481,20 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-contact-action:hover svg{
   color:var(--ez-ivory)!important;
 }
+
+
+/* GOOD TO KNOW / FAQ — full-width ivory background */
+.ez-public .ez-faq{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:84px max(calc((100% - 1240px)/2),24px);
+  box-sizing:border-box;
+  background:var(--ez-ivory);
+}
+@media(max-width:760px){
+  .ez-public .ez-faq{
+    width:100%;
+    padding:65px 22px;
+  }
+}
