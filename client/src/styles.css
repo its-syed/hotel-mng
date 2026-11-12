@@ -2191,3 +2191,30 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   border-color:#9fb99f;
   box-shadow:0 4px 0 rgba(73,105,79,.10),0 13px 27px rgba(43,69,49,.10);
 }
+
+
+/* Facilities — jewellery-gold S-curve rings behind the content */
+.ez-public .ez-facilities-section{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+.ez-public .ez-facilities-gold-sweep{
+  position:absolute;
+  z-index:0;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  overflow:visible;
+  opacity:.72;
+}
+.ez-public .ez-facilities-content{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:760px){
+  .ez-public .ez-facilities-gold-sweep{
+    opacity:.55;
+  }
+}
