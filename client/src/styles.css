@@ -2839,3 +2839,131 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-nav{padding:0 20px}
   .ez-public .ez-nav-links{background:var(--ez-white);border-color:rgba(52,58,56,.14)}
 }
+
+
+/* EzyStay — Photography-led direction: let the hotel imagery do the work. */
+.ez-public main>.ez-hero{
+  height:min(78vh,760px)!important;
+  min-height:620px!important;
+  padding:70px max(calc((100% - 1240px)/2),24px) 170px!important;
+  align-items:center;
+}
+.ez-public .ez-hero-background img{
+  object-position:center 52%;
+  transform:scale(1.015);
+}
+.ez-public main>.ez-hero::after{
+  background:linear-gradient(90deg,rgba(16,31,25,.68) 0%,rgba(16,31,25,.35) 42%,rgba(16,31,25,.04) 78%)!important;
+}
+.ez-public .ez-hero-copy{
+  width:min(650px,58%);
+  max-width:650px;
+  margin:0!important;
+  transform:none!important;
+  padding:0;
+}
+.ez-public .ez-hero-copy h1{
+  font-size:clamp(54px,6.4vw,88px);
+  line-height:1.02;
+  letter-spacing:-2.4px;
+  text-shadow:0 3px 24px rgba(0,0,0,.12);
+}
+.ez-public .ez-hero-copy>p{font-size:15px;max-width:500px;line-height:1.8}
+.ez-public .ez-hero-dots{bottom:36px}
+.ez-public .ez-hero-arrow{width:46px;height:46px;border-radius:50%;backdrop-filter:blur(8px)}
+
+/* Booking remains easy to find, but no longer hides most of the hero image. */
+.ez-public main>.ez-book-wrap{
+  width:min(1040px,calc(100% - 64px));
+  margin:-105px auto 28px;
+  padding:24px 30px 26px;
+  border:1px solid rgba(36,61,51,.12);
+  border-radius:12px;
+  background:var(--ez-white);
+  box-shadow:0 18px 55px rgba(20,36,28,.15);
+}
+.ez-public .ez-book-heading{margin-bottom:12px}
+.ez-public .ez-book-heading h2{font-size:29px}
+
+/* Make the About photograph a prominent editorial feature. */
+.ez-public .ez-intro{gap:clamp(48px,7vw,110px);align-items:center}
+.ez-public .ez-intro-image{
+  min-height:590px;
+  margin:0 18px 0 0;
+  background-position:center;
+  box-shadow:0 24px 60px rgba(22,39,30,.14);
+}
+.ez-public .ez-intro-image:after{inset:18px -18px -18px 18px;border-color:rgba(196,154,98,.48)}
+.ez-public .ez-intro-image-caption{
+  left:24px;right:24px;bottom:24px;
+  padding:22px 24px;
+  background:rgba(25,48,39,.82);
+  backdrop-filter:blur(10px);
+}
+
+/* Room gallery becomes the visual centrepiece: larger images, quiet captions. */
+.ez-public .ez-room-preview-grid{
+  max-width:1240px;
+  gap:22px;
+  margin-top:42px;
+}
+.ez-public .ez-room-preview-grid article{
+  background:var(--ez-white)!important;
+  border:1px solid rgba(52,58,56,.12)!important;
+  border-radius:11px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(36,61,51,.08)!important;
+  transform:none;
+}
+.ez-public .ez-gallery-main{height:320px}
+.ez-public .ez-gallery-main img{transition:transform .65s cubic-bezier(.2,.7,.2,1)}
+.ez-public .ez-gallery-main:hover img{transform:scale(1.055)}
+.ez-public .ez-gallery-thumbs{padding:11px 13px 0;gap:8px}
+.ez-public .ez-gallery-thumbs button{width:64px;height:48px;border-radius:4px;overflow:hidden}
+.ez-public .ez-room-preview-grid .ez-room-preview-copy{
+  background:var(--ez-white)!important;
+  padding:20px 22px 24px;
+}
+.ez-public .ez-room-preview-grid .ez-room-preview-copy>span{
+  color:#7b887e!important;
+  -webkit-text-fill-color:#7b887e;
+}
+.ez-public .ez-room-preview-copy h3{font-size:27px;margin:8px 0 10px}
+.ez-public .ez-room-preview-copy p{font-size:12px;line-height:1.8}
+.ez-public .ez-demo-label{top:14px;left:14px;padding:7px 10px;border-radius:3px;letter-spacing:.1em}
+
+/* The location map and room imagery keep their natural visual weight. */
+.ez-public .ez-location-map{min-height:390px;border-width:6px;border-radius:12px}
+.ez-public .ez-location-map iframe{min-height:390px}
+.ez-public .ez-facilities-grid .ez-facility-card{box-shadow:0 5px 18px rgba(36,61,51,.055)!important}
+.ez-public .ez-review-card{box-shadow:0 8px 24px rgba(36,61,51,.06)!important}
+
+@media(max-width:1050px){
+  .ez-public main>.ez-hero{height:620px!important;min-height:570px!important;padding:65px 32px 145px!important}
+  .ez-public .ez-hero-copy{width:min(620px,75%)}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 48px);margin-top:-95px}
+  .ez-public .ez-intro-image{min-height:500px}
+  .ez-public .ez-gallery-main{height:270px}
+}
+@media(max-width:760px){
+  .ez-public main>.ez-hero{height:560px!important;min-height:530px!important;padding:55px 24px 135px!important}
+  .ez-public .ez-hero-copy{width:100%;max-width:560px}
+  .ez-public .ez-hero-copy h1{font-size:clamp(46px,10vw,66px);letter-spacing:-1.7px}
+  .ez-public .ez-hero-copy>p{font-size:13px}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 32px);margin-top:-82px;padding:21px 20px 23px}
+  .ez-public .ez-intro-image{min-height:390px;margin:0 10px 12px 0}
+  .ez-public .ez-room-preview-grid{gap:18px}
+  .ez-public .ez-gallery-main{height:250px}
+  .ez-public .ez-location-map,.ez-public .ez-location-map iframe{min-height:300px}
+}
+@media(max-width:520px){
+  .ez-public main>.ez-hero{height:500px!important;min-height:480px!important;padding:42px 20px 120px!important}
+  .ez-public .ez-hero-copy h1{font-size:clamp(42px,11vw,54px)}
+  .ez-public .ez-hero-dots{bottom:25px}
+  .ez-public main>.ez-book-wrap{width:calc(100% - 24px);margin-top:-70px;padding:18px 15px 20px}
+  .ez-public .ez-book-heading h2{font-size:24px}
+  .ez-public .ez-intro-image{min-height:320px;margin-right:8px}
+  .ez-public .ez-intro-image:after{inset:12px -8px -8px 8px}
+  .ez-public .ez-gallery-main{height:230px}
+  .ez-public .ez-gallery-thumbs button{width:54px;height:41px}
+}
