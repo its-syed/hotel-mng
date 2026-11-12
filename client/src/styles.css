@@ -1185,3 +1185,95 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-calendar-footer{margin-top:6px;padding-top:6px}
 .ez-calendar-footer button{font-size:10px}
 @media(max-width:520px){.ez-calendar-popover{width:min(264px,calc(100vw - 24px));max-width:calc(100vw - 24px)}}
+
+
+/* Booking room-type cards — Moody Luxury palette experiment */
+.ez-room-options{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  align-items:stretch;
+}
+.ez-room-option{
+  position:relative;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:0;
+  padding:0;
+  overflow:hidden;
+  border:1px solid transparent;
+  border-radius:10px;
+  color:#fff;
+  box-shadow:0 5px 16px rgba(25,39,30,.10);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.ez-room-option:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(25,39,30,.16);
+}
+.ez-room-option.room-type-standard{background:#536D5D;border-color:#536D5D}
+.ez-room-option.room-type-deluxe{background:#987C5D;border-color:#987C5D}
+.ez-room-option.room-type-suite{background:#626D59;border-color:#626D59}
+.ez-room-option.selected{
+  border-color:#F8F6F0;
+  box-shadow:0 0 0 3px #20382F,0 8px 22px rgba(25,39,30,.20);
+  background:inherit;
+}
+.ez-room-option>input{
+  position:absolute;
+  z-index:2;
+  top:12px;
+  right:12px;
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:#20382F;
+}
+.ez-room-option-photo{
+  flex:0 0 auto;
+  width:100%;
+  height:155px;
+  border-radius:0;
+  background:rgba(255,255,255,.12);
+}
+.ez-room-option-photo>span{
+  right:9px;
+  bottom:9px;
+  background:rgba(23,45,37,.88);
+  color:#fff;
+}
+.ez-room-info{
+  min-width:0;
+  padding:15px 16px 5px;
+  gap:6px;
+}
+.ez-room-info b{
+  color:#fff;
+  font:600 19px Georgia,serif;
+}
+.ez-room-info small{
+  color:rgba(255,255,255,.82);
+  font-size:11px;
+}
+.ez-room-price{
+  padding:5px 16px 16px;
+  text-align:left;
+  gap:3px;
+}
+.ez-room-price b{
+  color:#fff;
+  font:600 21px Georgia,serif;
+}
+.ez-room-price small{
+  color:rgba(255,255,255,.78);
+  font-size:10px;
+}
+@media(max-width:800px){
+  .ez-room-options{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .ez-room-options{grid-template-columns:1fr}
+  .ez-room-option-photo{height:180px}
+}
