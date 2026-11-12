@@ -2967,3 +2967,21 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-gallery-main{height:230px}
   .ez-public .ez-gallery-thumbs button{width:54px;height:41px}
 }
+
+
+/* Align the room and guest-review section headings to the left edge. */
+.ez-public .ez-rooms-section>div:first-of-type{
+  margin-left:0!important;
+  margin-right:auto!important;
+  text-align:left!important;
+}
+.ez-public .ez-reviews-heading{
+  margin-left:0!important;
+  margin-right:auto!important;
+  text-align:left!important;
+}
+.ez-public .ez-reviews-heading p{
+  margin-left:0!important;
+  margin-right:auto!important;
+  text-align:left!important;
+}
