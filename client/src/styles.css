@@ -1722,3 +1722,45 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 @media(max-width:760px){
   .ez-public .ez-track-card{padding:22px 18px;border-radius:13px}
 }
+
+
+/* Track Booking — graphite and steel card colour */
+.ez-public .ez-track-card{
+  background:linear-gradient(145deg,#38434a 0%,#292f34 100%);
+  border:1px solid #53616a;
+  box-shadow:0 16px 38px rgba(18,25,29,.2);
+}
+.ez-public .ez-track-form label span{
+  color:#e0e7ea;
+}
+.ez-public .ez-track-form input{
+  color:#263238;
+  background:#f4f6f6;
+  border-color:#cbd3d7;
+}
+.ez-public .ez-track-form input::placeholder{
+  color:#77848a;
+}
+.ez-public .ez-track-form input:focus{
+  border-color:#c6d0d4;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(198,208,212,.2);
+}
+.ez-public .ez-track-result{
+  color:#f3f6f7;
+  background:#46525a;
+  border-color:#66747c;
+}
+.ez-public .ez-track-result .ez-kicker,
+.ez-public .ez-track-result .ez-track-details,
+.ez-public .ez-track-result .ez-track-details span{
+  color:#d5dee2;
+}
+.ez-public .ez-track-result .ez-track-details strong,
+.ez-public .ez-track-result .ez-track-guest-name{
+  color:#fff;
+}
+.ez-public .ez-track-result .ez-track-help{
+  color:#d0d9dd;
+  border-color:#68757d;
+}
