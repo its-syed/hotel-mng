@@ -2015,3 +2015,36 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   border-radius:8px;
   overflow:hidden;
 }
+
+
+/* Asymmetrical metallic-gold double arch behind the About section */
+.ez-public .ez-intro{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+.ez-public .ez-about-gold-arches{
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  width:min(1120px,120vw);
+  height:auto;
+  top:-300px;
+  left:34%;
+  opacity:.9;
+  filter:drop-shadow(0 2px 5px rgba(145,103,43,.16));
+}
+.ez-public .ez-intro-image,
+.ez-public .ez-intro-copy{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:760px){
+  .ez-public .ez-about-gold-arches{
+    width:150vw;
+    max-width:none;
+    top:-150px;
+    left:8%;
+    opacity:.72;
+  }
+}
