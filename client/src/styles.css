@@ -2025,7 +2025,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 }
 .ez-public .ez-about-gold-arch{
   position:absolute;
-  z-index:0;
+  z-index:2;
   inset:0;
   width:100%;
   height:100%;
@@ -2035,7 +2035,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-intro-image,
 .ez-public .ez-intro-copy{
   position:relative;
-  z-index:1;
+  z-index:3;
 }
 @media(max-width:760px){
   .ez-public .ez-about-gold-arch{
