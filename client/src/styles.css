@@ -2042,3 +2042,25 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
     opacity:.82;
   }
 }
+
+
+/* Improve contrast of all About-section copy against its background. */
+.ez-public .ez-intro-copy .ez-kicker{
+  color:#6b4b22 !important;
+}
+.ez-public .ez-intro-copy h2{
+  color:#172f29 !important;
+}
+.ez-public .ez-intro-copy>p{
+  color:#394b43 !important;
+}
+.ez-public .ez-intro-copy .ez-feature-list b{
+  color:#263b32 !important;
+}
+.ez-public .ez-intro-copy .ez-feature-list small{
+  color:#53645a !important;
+}
+.ez-public .ez-intro-copy .ez-text-link{
+  color:#70451f !important;
+  border-bottom-color:#9a713d !important;
+}
