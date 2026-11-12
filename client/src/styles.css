@@ -1320,8 +1320,8 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   gap:36px;
   align-items:center;
   border-radius:20px;
-  background:#26332F;
-  box-shadow:0 16px 38px rgba(22,35,30,.16);
+  background:#E9E2D5;
+  box-shadow:0 10px 30px rgba(40,48,39,.07);
   overflow:hidden;
 }
 .ez-location-section::before{display:none}
@@ -1343,8 +1343,9 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   width:calc(100% - 10vw);
   max-width:1240px;
   margin:48px auto;
-  padding:0;
-  background:transparent;
+  padding:24px;
+  border-radius:20px;
+  background:#E9E2D5;
 }
 .ez-contact-copy{
   max-width:none;
@@ -1385,7 +1386,8 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-contact-section{
     width:calc(100% - 32px);
     margin:30px auto;
-    padding:0;
+    padding:16px;
+    border-radius:16px;
   }
   .ez-contact-copy{padding:30px 22px;border-radius:16px}
 }
