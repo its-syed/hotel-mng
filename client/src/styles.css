@@ -1301,7 +1301,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 }
 .ez-room-preview-grid .ez-gallery-expand{background:rgba(23,45,37,.9);color:#fff}
 .ez-room-preview-grid .ez-room-preview-copy{background:transparent;padding:17px 20px 22px}
-.ez-room-preview-grid .ez-room-preview-copy>span{display:inline-block;width:max-content;max-width:100%;padding:5px 9px;border:1px solid #D7C8AE;border-radius:3px;background:#F3EBDD;color:#20382F;font-size:10px;font-weight:800;letter-spacing:1.5px;line-height:1.35}
+.ez-room-preview-grid .ez-room-preview-copy>span{display:inline-block;width:max-content;max-width:100%;padding:5px 0;border:0;border-radius:0;background:transparent;color:#F3EBDD;font-size:10px;font-weight:800;letter-spacing:1.5px;line-height:1.35}
 .ez-room-preview-grid .ez-room-preview-copy h3{color:#fff}
 .ez-room-preview-grid .ez-room-preview-copy p{color:rgba(255,255,255,.86)}
 .ez-room-preview-grid .ez-amenity-tags span{
