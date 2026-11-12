@@ -78,19 +78,19 @@ export function PublicBooking(){
     <svg className="ez-about-gold-arch" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true" focusable="false">
      <defs>
       <linearGradient id="ezJewelleryGold" x1="0%" y1="0%" x2="100%" y2="100%">
-       <stop offset="0%" stopColor="#FFF7D1"/>
-       <stop offset="18%" stopColor="#D9A83E"/>
-       <stop offset="34%" stopColor="#FFF0A6"/>
-       <stop offset="52%" stopColor="#A96F16"/>
-       <stop offset="70%" stopColor="#F8D66E"/>
-       <stop offset="86%" stopColor="#B77B1D"/>
-       <stop offset="100%" stopColor="#FFE9A0"/>
+       <stop offset="0%" stopColor="#F3F1E8"/>
+       <stop offset="18%" stopColor="#243D33"/>
+       <stop offset="34%" stopColor="#F3F1E8"/>
+       <stop offset="52%" stopColor="#343A38"/>
+       <stop offset="70%" stopColor="#F3F1E8"/>
+       <stop offset="86%" stopColor="#243D33"/>
+       <stop offset="100%" stopColor="#F3F1E8"/>
       </linearGradient>
       <linearGradient id="ezGoldHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
-       <stop offset="0%" stopColor="#FFF8D8" stopOpacity=".9"/>
-       <stop offset="45%" stopColor="#FFF8D8" stopOpacity=".18"/>
-       <stop offset="72%" stopColor="#FFF8D8" stopOpacity=".8"/>
-       <stop offset="100%" stopColor="#FFF8D8" stopOpacity=".3"/>
+       <stop offset="0%" stopColor="#F3F1E8" stopOpacity=".9"/>
+       <stop offset="45%" stopColor="#F3F1E8" stopOpacity=".18"/>
+       <stop offset="72%" stopColor="#F3F1E8" stopOpacity=".8"/>
+       <stop offset="100%" stopColor="#F3F1E8" stopOpacity=".3"/>
       </linearGradient>
      </defs>
      <path d="M 0 900 C 250 470 500 -105 1600 900" fill="none" stroke="url(#ezJewelleryGold)" strokeWidth="10" strokeLinecap="round"/>
@@ -105,19 +105,19 @@ export function PublicBooking(){
     <svg className="ez-facilities-gold-sweep" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true" focusable="false">
      <defs>
       <linearGradient id="ezFacilitiesJewelleryGold" x1="0%" y1="0%" x2="100%" y2="100%">
-       <stop offset="0%" stopColor="#FFF7D1"/>
-       <stop offset="18%" stopColor="#D9A83E"/>
-       <stop offset="34%" stopColor="#FFF0A6"/>
-       <stop offset="52%" stopColor="#A96F16"/>
-       <stop offset="70%" stopColor="#F8D66E"/>
-       <stop offset="86%" stopColor="#B77B1D"/>
-       <stop offset="100%" stopColor="#FFE9A0"/>
+       <stop offset="0%" stopColor="#F3F1E8"/>
+       <stop offset="18%" stopColor="#243D33"/>
+       <stop offset="34%" stopColor="#F3F1E8"/>
+       <stop offset="52%" stopColor="#343A38"/>
+       <stop offset="70%" stopColor="#F3F1E8"/>
+       <stop offset="86%" stopColor="#243D33"/>
+       <stop offset="100%" stopColor="#F3F1E8"/>
       </linearGradient>
       <linearGradient id="ezFacilitiesGoldHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
-       <stop offset="0%" stopColor="#FFF8D8" stopOpacity=".9"/>
-       <stop offset="45%" stopColor="#FFF8D8" stopOpacity=".18"/>
-       <stop offset="72%" stopColor="#FFF8D8" stopOpacity=".8"/>
-       <stop offset="100%" stopColor="#FFF8D8" stopOpacity=".3"/>
+       <stop offset="0%" stopColor="#F3F1E8" stopOpacity=".9"/>
+       <stop offset="45%" stopColor="#F3F1E8" stopOpacity=".18"/>
+       <stop offset="72%" stopColor="#F3F1E8" stopOpacity=".8"/>
+       <stop offset="100%" stopColor="#F3F1E8" stopOpacity=".3"/>
       </linearGradient>
      </defs>
      <path d="M 0 450 C 390 -80 610 -80 800 450 C 990 980 1210 980 1600 450" fill="none" stroke="url(#ezFacilitiesJewelleryGold)" strokeWidth="10" strokeLinecap="round"/>
