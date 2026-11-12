@@ -2625,3 +2625,217 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-hero-copy{margin-left:20px}
   .ez-public .ez-footer{width:100%;max-width:none;margin:0;padding:24px 20px}
 }
+
+
+/* EzyStay — Modern Luxury visual refinement (keeps existing booking behaviour intact) */
+.ez-public{
+  --ez-forest:#243D33;
+  --ez-ivory:#F3F1E8;
+  --ez-charcoal:#343A38;
+  --ez-white:#FFFFFF;
+  --ez-sand:#E5E3D9;
+  --ez-sage:#A6B5A8;
+  --ez-bronze:#C49A62;
+  background:var(--ez-ivory);
+  color:var(--ez-charcoal);
+  overflow:visible;
+}
+
+/* Remove oversized ornamental strokes; let hotel photography lead. */
+.ez-public .ez-about-gold-arch,
+.ez-public .ez-facilities-gold-sweep{display:none!important}
+
+/* Full-width colour bands with a consistent, aligned content edge. */
+.ez-public .ez-book-wrap,
+.ez-public .ez-intro,
+.ez-public .ez-rooms-section,
+.ez-public .ez-location-section,
+.ez-public .ez-facilities-section,
+.ez-public .ez-reviews-section,
+.ez-public .ez-contact-section,
+.ez-public .ez-cta-band,
+.ez-public .ez-faq,
+.ez-public .ez-track-section,
+.ez-public .ez-footer{
+  width:100%;
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
+  box-sizing:border-box;
+  border-radius:0;
+  box-shadow:none;
+  clip-path:none;
+}
+.ez-public .ez-book-wrap{background:var(--ez-ivory);padding:64px max(calc((100% - 1100px)/2),24px)}
+.ez-public .ez-intro{background:var(--ez-white);padding:88px max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-rooms-section{background:var(--ez-ivory);padding:84px max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-location-section{background:var(--ez-forest);color:var(--ez-ivory);padding:84px max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-facilities-section{background:var(--ez-white);padding:84px max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-reviews-section{background:var(--ez-sand);padding:78px max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-contact-section{background:var(--ez-forest);color:var(--ez-ivory);padding:82px max(calc((100% - 1100px)/2),24px)}
+.ez-public .ez-cta-band{background:var(--ez-ivory);color:var(--ez-charcoal);padding:52px max(calc((100% - 1100px)/2),24px)}
+.ez-public .ez-faq{background:var(--ez-white);padding:82px max(calc((100% - 1100px)/2),24px)}
+.ez-public .ez-track-section{background:var(--ez-ivory);padding:82px max(calc((100% - 1100px)/2),24px)}
+.ez-public .ez-footer{background:var(--ez-charcoal);color:var(--ez-ivory);padding:27px max(calc((100% - 1240px)/2),24px)}
+
+/* Navigation and hero: understated chrome, strong photography and legible copy. */
+.ez-public .ez-utility-bar{background:var(--ez-charcoal);color:var(--ez-ivory)}
+.ez-public .ez-nav{width:100%;max-width:none;margin:0;padding:0 max(calc((100% - 1240px)/2),24px);background:var(--ez-white);border:0;border-bottom:1px solid rgba(52,58,56,.12)}
+.ez-public .ez-brand,
+.ez-public .ez-nav-links>a:not(.ez-nav-book){color:var(--ez-forest)}
+.ez-public .ez-hero{width:100%;max-width:none;margin:0}
+.ez-public .ez-hero-copy{margin-left:max(calc((100% - 1240px)/2),24px)}
+.ez-public .ez-hero-copy .ez-kicker,
+.ez-public .ez-hero-copy h1,
+.ez-public .ez-hero-copy h1 em,
+.ez-public .ez-hero-copy p{color:var(--ez-white)!important}
+.ez-public .ez-nav-book,
+.ez-public .ez-hero-cta,
+.ez-public .ez-primary-btn,
+.ez-public .ez-contact-action,
+.ez-public .ez-contact-actions a{
+  background:var(--ez-forest);
+  color:var(--ez-white)!important;
+  border:1px solid var(--ez-forest);
+  border-radius:7px;
+}
+.ez-public .ez-nav-book:hover,
+.ez-public .ez-hero-cta:hover,
+.ez-public .ez-primary-btn:hover{
+  background:var(--ez-charcoal);
+  border-color:var(--ez-charcoal);
+}
+
+/* Consistent heading hierarchy and restrained bronze details. */
+.ez-public h1,.ez-public h2,.ez-public h3{color:var(--ez-forest)}
+.ez-public .ez-kicker{color:var(--ez-forest)!important;letter-spacing:.14em}
+.ez-public .ez-location-section h2,
+.ez-public .ez-location-section h2 em,
+.ez-public .ez-location-section p,
+.ez-public .ez-location-section b,
+.ez-public .ez-location-section span,
+.ez-public .ez-location-section small,
+.ez-public .ez-contact-section h2,
+.ez-public .ez-contact-section h2 em,
+.ez-public .ez-contact-section p,
+.ez-public .ez-contact-section small{color:var(--ez-ivory)!important}
+.ez-public .ez-location-section .ez-kicker,
+.ez-public .ez-contact-section .ez-kicker{color:var(--ez-sage)!important}
+.ez-public .ez-review-stars{color:var(--ez-bronze)}
+.ez-public .ez-footer,
+.ez-public .ez-footer span,
+.ez-public .ez-footer a{color:var(--ez-ivory)!important}
+
+/* Booking form: white, crisp controls on a calm ivory band. */
+.ez-public .ez-book-heading h2,
+.ez-public .ez-book-heading .ez-kicker{color:var(--ez-forest)!important}
+.ez-public .ez-search-form,
+.ez-public .ez-guest-form,
+.ez-public .ez-confirmation,
+.ez-public .ez-room-option,
+.ez-public .ez-track-card,
+.ez-public .ez-track-result{
+  background:var(--ez-white);
+  color:var(--ez-charcoal);
+  border:1px solid rgba(52,58,56,.14);
+  border-radius:10px;
+  box-shadow:0 8px 24px rgba(36,61,51,.06);
+}
+.ez-public .ez-search-form input,
+.ez-public .ez-search-form select,
+.ez-public .ez-guest-fields input,
+.ez-public .ez-track-form input,
+.ez-public .ez-track-form select{
+  background:var(--ez-white);
+  color:var(--ez-charcoal);
+  border:1px solid #cbd2ca;
+  border-radius:6px;
+}
+.ez-public input:focus,
+.ez-public select:focus,
+.ez-public textarea:focus{
+  border-color:var(--ez-forest)!important;
+  box-shadow:0 0 0 3px rgba(36,61,51,.12)!important;
+  outline:none;
+}
+.ez-public .ez-room-option.selected{background:#edf2ed;border-color:var(--ez-forest);box-shadow:inset 3px 0 var(--ez-forest)}
+.ez-public .ez-date-time-note,
+.ez-public .ez-booking-disclaimer{color:var(--ez-charcoal)}
+
+/* Cards: clean white surfaces, subtle depth, no decorative texture. */
+.ez-public .ez-room-preview-grid article,
+.ez-public .ez-review-card,
+.ez-public .ez-facility-card,
+.ez-public .ez-contact-copy,
+.ez-public .ez-contact-action{
+  background:var(--ez-white);
+  color:var(--ez-charcoal);
+  border:1px solid rgba(52,58,56,.13);
+  border-radius:10px;
+  box-shadow:0 7px 22px rgba(36,61,51,.07);
+}
+.ez-public .ez-review-card p,
+.ez-public .ez-review-card>b,
+.ez-public .ez-review-card>small,
+.ez-public .ez-contact-copy h2,
+.ez-public .ez-contact-copy p,
+.ez-public .ez-contact-copy small,
+.ez-public .ez-contact-action b,
+.ez-public .ez-contact-action small{color:var(--ez-charcoal)!important}
+.ez-public .ez-contact-copy .ez-kicker{color:var(--ez-forest)!important}
+.ez-public .ez-contact-action>span:first-child,
+.ez-public .ez-facility-card>span,
+.ez-public .ez-room-icon{background:#edf1eb;color:var(--ez-forest);border:1px solid #d7e0d5;border-radius:8px}
+.ez-public .ez-facility-card{background:var(--ez-white)!important;border-color:rgba(52,58,56,.13)!important;box-shadow:0 7px 22px rgba(36,61,51,.07)!important}
+.ez-public .ez-facility-card:before,
+.ez-public .ez-facility-card:after{display:none!important}
+.ez-public .ez-facility-card b,
+.ez-public .ez-room-preview-copy h3{color:var(--ez-forest)}
+.ez-public .ez-facility-card p,
+.ez-public .ez-room-preview-copy p{color:#59645e}
+.ez-public .ez-amenity-tags span,
+.ez-public .ez-status-pill,
+.ez-public .ez-room-preview-copy>span{background:#edf1eb;color:var(--ez-forest);border-radius:5px}
+.ez-public .ez-location-map{background:var(--ez-white);border:4px solid rgba(243,241,232,.9);border-radius:10px;overflow:hidden}
+.ez-public .ez-location-directions{background:var(--ez-ivory);color:var(--ez-forest);border:1px solid var(--ez-ivory);border-radius:7px}
+.ez-public .ez-cta-band h2,
+.ez-public .ez-cta-band p,
+.ez-public .ez-cta-band .ez-kicker{color:var(--ez-charcoal)!important}
+.ez-public .ez-cta-band>a{background:var(--ez-forest);color:var(--ez-white)!important;border:1px solid var(--ez-forest);border-radius:7px;padding:13px 18px}
+.ez-public .ez-faq h2,
+.ez-public .ez-faq h3,
+.ez-public .ez-faq p,
+.ez-public .ez-faq summary{color:var(--ez-forest)}
+.ez-public .ez-faq-list details{background:transparent;border-color:var(--ez-sand)}
+.ez-public .ez-track-intro h2,
+.ez-public .ez-track-intro p{color:var(--ez-charcoal)}
+.ez-public .ez-track-form label span,
+.ez-public .ez-track-result,
+.ez-public .ez-track-result .ez-track-details,
+.ez-public .ez-track-result .ez-track-details span,
+.ez-public .ez-track-result .ez-track-help{color:var(--ez-charcoal)}
+.ez-public .ez-track-result{background:#f8f8f4;border-color:var(--ez-sand)}
+.ez-public .ez-menu-toggle,
+.ez-public .ez-gallery-arrow,
+.ez-public .ez-lightbox-close,
+.ez-public .ez-lightbox-arrow{background:var(--ez-forest);color:var(--ez-white);border-color:var(--ez-ivory)}
+.ez-public .ez-hero-arrow{background:rgba(36,61,51,.78);color:var(--ez-white);border-color:rgba(255,255,255,.65)}
+.ez-public .ez-hero-dots button.active{background:var(--ez-white)}
+.ez-public .ez-hero-dots button{background:rgba(255,255,255,.58)}
+.ez-public :focus-visible{outline-color:var(--ez-forest)!important}
+
+@media(max-width:760px){
+  .ez-public .ez-book-wrap{padding:48px 20px}
+  .ez-public .ez-intro,
+  .ez-public .ez-rooms-section,
+  .ez-public .ez-location-section,
+  .ez-public .ez-facilities-section,
+  .ez-public .ez-reviews-section,
+  .ez-public .ez-contact-section,
+  .ez-public .ez-cta-band,
+  .ez-public .ez-faq,
+  .ez-public .ez-track-section{padding:58px 20px}
+  .ez-public .ez-footer{padding:24px 20px}
+  .ez-public .ez-nav{padding:0 20px}
+  .ez-public .ez-nav-links{background:var(--ez-white);border-color:rgba(52,58,56,.14)}
+}
