@@ -1633,18 +1633,22 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-hero-controls{
   position:absolute;
   z-index:3;
-  right:clamp(24px,6vw,88px);
-  bottom:38px;
-  display:flex;
-  gap:9px;
+  inset:0;
+  pointer-events:none;
 }
 .ez-hero-arrow{
+  position:absolute;
+  top:50%;
   width:44px;height:44px;display:grid;place-items:center;
   border:1px solid rgba(255,255,255,.58);border-radius:50%;
   background:rgba(20,31,29,.36);color:#fff;backdrop-filter:blur(8px);
+  pointer-events:auto;
+  transform:translateY(-50%);
   transition:background .2s ease,transform .2s ease;
 }
-.ez-hero-arrow:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.ez-hero-arrow:first-child{left:clamp(18px,4vw,56px)}
+.ez-hero-arrow:last-child{right:clamp(18px,4vw,56px)}
+.ez-hero-arrow:hover{background:rgba(255,255,255,.2);transform:translateY(-50%) scale(1.05)}
 .ez-hero-dots{
   position:absolute;z-index:3;right:clamp(132px,12vw,196px);bottom:54px;
   display:flex;align-items:center;gap:8px;
@@ -1655,8 +1659,9 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 }
 .ez-hero-dots button.active{width:23px;border-radius:8px;background:#fff}
 @media(max-width:760px){
-  .ez-hero-controls{right:20px;bottom:22px;gap:7px}
   .ez-hero-arrow{width:38px;height:38px}
+  .ez-hero-arrow:first-child{left:12px}
+  .ez-hero-arrow:last-child{right:12px}
   .ez-hero-dots{right:112px;bottom:37px;gap:6px}
   .ez-hero-dots button{width:6px;height:6px}
   .ez-hero-dots button.active{width:18px}
