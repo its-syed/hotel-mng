@@ -1804,3 +1804,28 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
     line-height:1.16;
   }
 }
+
+
+/* Keep inset content sections on the same left/right alignment rails. */
+.ez-public .ez-location-section,
+.ez-public .ez-faq{
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-reviews-heading{
+  text-align:left;
+}
+@media(max-width:1050px){
+  .ez-public .ez-location-section,
+  .ez-public .ez-faq{
+    padding-left:28px;
+    padding-right:28px;
+  }
+}
+@media(max-width:760px){
+  .ez-public .ez-location-section,
+  .ez-public .ez-faq{
+    padding-left:22px;
+    padding-right:22px;
+  }
+}
