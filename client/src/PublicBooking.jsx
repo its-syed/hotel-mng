@@ -78,31 +78,24 @@ export function PublicBooking(){
     <svg className="ez-about-gold-arch" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true" focusable="false">
      <defs>
       <linearGradient id="ezJewelleryGold" x1="0%" y1="0%" x2="100%" y2="100%">
-       <stop offset="0%" stopColor="#FFF4C2"/>
-       <stop offset="13%" stopColor="#D6A63D"/>
-       <stop offset="27%" stopColor="#FFF0A6"/>
-       <stop offset="43%" stopColor="#A96F16"/>
-       <stop offset="58%" stopColor="#F8D66E"/>
-       <stop offset="74%" stopColor="#B77B1D"/>
-       <stop offset="88%" stopColor="#FFE9A0"/>
-       <stop offset="100%" stopColor="#8F5A10"/>
+       <stop offset="0%" stopColor="#FFF7D1"/>
+       <stop offset="18%" stopColor="#D9A83E"/>
+       <stop offset="34%" stopColor="#FFF0A6"/>
+       <stop offset="52%" stopColor="#A96F16"/>
+       <stop offset="70%" stopColor="#F8D66E"/>
+       <stop offset="86%" stopColor="#B77B1D"/>
+       <stop offset="100%" stopColor="#FFE9A0"/>
       </linearGradient>
-      <linearGradient id="ezGoldGlint" x1="0%" y1="0%" x2="100%" y2="0%">
-       <stop offset="0%" stopColor="#FFF8D8" stopOpacity="0"/>
-       <stop offset="34%" stopColor="#FFF8D8" stopOpacity=".95"/>
-       <stop offset="55%" stopColor="#FFF0B0" stopOpacity=".3"/>
-       <stop offset="100%" stopColor="#FFF8D8" stopOpacity="0"/>
+      <linearGradient id="ezGoldHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+       <stop offset="0%" stopColor="#FFF8D8" stopOpacity=".9"/>
+       <stop offset="45%" stopColor="#FFF8D8" stopOpacity=".18"/>
+       <stop offset="72%" stopColor="#FFF8D8" stopOpacity=".8"/>
+       <stop offset="100%" stopColor="#FFF8D8" stopOpacity=".3"/>
       </linearGradient>
-      <filter id="ezGoldGlow" x="-30%" y="-30%" width="160%" height="160%">
-       <feGaussianBlur stdDeviation="5"/>
-      </filter>
      </defs>
-     <path d="M -115 950 C -10 230 360 -110 1630 950" fill="none" stroke="#B77B1D" strokeWidth="19" opacity=".28" filter="url(#ezGoldGlow)"/>
-     <path d="M -115 950 C -10 230 360 -110 1630 950" fill="none" stroke="url(#ezJewelleryGold)" strokeWidth="9" strokeLinecap="round"/>
-     <path d="M -115 950 C -10 230 360 -110 1630 950" fill="none" stroke="url(#ezGoldGlint)" strokeWidth="2.2" strokeLinecap="round" opacity=".95"/>
-     <path d="M -55 975 C 45 300 415 -45 1575 975" fill="none" stroke="#8D5B14" strokeWidth="9" opacity=".22" filter="url(#ezGoldGlow)"/>
-     <path d="M -55 975 C 45 300 415 -45 1575 975" fill="none" stroke="url(#ezJewelleryGold)" strokeWidth="3.8" strokeLinecap="round"/>
-     <path d="M -55 975 C 45 300 415 -45 1575 975" fill="none" stroke="#FFF2B8" strokeWidth="1.15" strokeLinecap="round" opacity=".9"/>
+     <path d="M 0 900 C 150 185 500 -105 1600 900" fill="none" stroke="url(#ezJewelleryGold)" strokeWidth="10" strokeLinecap="round"/>
+     <path d="M 0 860 C 175 165 535 -115 1600 860" fill="none" stroke="url(#ezJewelleryGold)" strokeWidth="4" strokeLinecap="round"/>
+     <path d="M 0 900 C 150 185 500 -105 1600 900" fill="none" stroke="url(#ezGoldHighlight)" strokeWidth="2" strokeLinecap="round" opacity=".95"/>
     </svg>
     <div className="ez-intro-image"><div className="ez-intro-image-caption"><span>THE EZYSTAY EXPERIENCE</span><b>Your stay, made<br/>simpler from the start.</b></div></div><div className="ez-intro-copy"><span className="ez-kicker">OUR STORY</span><h2>About EzyStay</h2><p>EzyStay is a hotel offering welcoming rooms for guests seeking a comfortable place to stay. Whether you are visiting for a short getaway or a longer stay, settle in, unwind and enjoy a space to call your own while you are away from home.</p><div className="ez-feature-list"><div><span><BedDouble size={18}/></span><b>Room options to suit your stay</b></div><div><span><Clock3 size={18}/></span><b>A straightforward booking process</b></div><div><span><ShieldCheck size={18}/></span><b>Support from our hotel team</b></div></div><button className="ez-text-link" onClick={goBook}>Explore available rooms <ArrowRight size={16}/></button></div></section>
    <section className="ez-rooms-section" id="rooms"><span id="gallery" className="ez-anchor-target"/><div><span className="ez-kicker">A GOOD NIGHT STARTS HERE</span><h2>Find the room that fits.</h2></div><div className="ez-room-preview-grid">{ROOM_GALLERIES.map((room,i)=>{const active=galleryIndexes[room.id]||0;return <article key={room.id}><div className="ez-demo-gallery"><button type="button" className="ez-gallery-main" onClick={()=>setGallery({room:room.id,index:active})} aria-label={"View "+room.title+" room photo"}><img src={room.photos[active].src} alt={room.photos[active].alt}/><span className="ez-gallery-expand">View photos <ArrowUpRight size={14}/></span></button><div className="ez-gallery-thumbs">{room.photos.map((photo,index)=><button type="button" key={index} className={active===index?"active":""} onClick={()=>setGalleryIndexes(v=>({...v,[room.id]:index}))} aria-label={"Show "+room.title+" photo "+(index+1)}><img src={photo.src.replace("w=1200","w=240")} alt=""/></button>)}</div><span className="ez-demo-label">DEMO PHOTOS</span></div><div className="ez-room-preview-copy"><span>0{i+1} / ROOM COLLECTION</span><h3>{room.title}</h3><p>{room.description}</p><div className="ez-amenity-tags">{ROOM_AMENITIES.map(item=><span key={item}>{item}</span>)}</div></div></article>})}</div></section>
