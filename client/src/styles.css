@@ -1669,3 +1669,138 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 @media(prefers-reduced-motion:reduce){
   .ez-hero-background img,.ez-hero-arrow,.ez-hero-dots button{transition:none}
 }
+
+
+/* EzyStay booking website — reusable design system
+   Keep future public-site sections aligned to these shared tokens and type rules. */
+.ez-public{
+  --ez-container-width:1160px;
+  --ez-page-gutter:clamp(20px,5vw,72px);
+  --ez-section-title-size:clamp(32px,3.2vw,38px);
+  --ez-section-title-line:1.15;
+  --ez-subtitle-size:13px;
+  --ez-subtitle-line:1.75;
+  --ez-kicker-size:10px;
+  --ez-kicker-tracking:.16em;
+}
+.ez-public .ez-nav{
+  width:100%;
+  max-width:1224px;
+  padding-left:32px;
+  padding-right:32px;
+}
+.ez-public .ez-utility-bar{
+  padding-left:max(calc((100% - 1224px)/2 + 32px),24px);
+  padding-right:max(calc((100% - 1224px)/2 + 32px),24px);
+}
+.ez-public main>.ez-hero{
+  padding-left:max(calc((100% - var(--ez-container-width))/2),var(--ez-page-gutter));
+  padding-right:max(calc((100% - var(--ez-container-width))/2),var(--ez-page-gutter));
+}
+.ez-public .ez-hero-copy{margin-left:0}
+.ez-public .ez-intro{
+  max-width:var(--ez-container-width);
+  padding-left:0;
+  padding-right:0;
+}
+.ez-public .ez-rooms-section>div:first-of-type,
+.ez-public .ez-room-preview-grid,
+.ez-public .ez-room-note,
+.ez-public .ez-location-section,
+.ez-public .ez-facilities-heading,
+.ez-public .ez-facilities-grid,
+.ez-public .ez-facilities-section>.ez-placeholder-note,
+.ez-public .ez-reviews-heading,
+.ez-public .ez-review-grid,
+.ez-public .ez-contact-copy,
+.ez-public .ez-faq,
+.ez-public .ez-track-section>.ez-track-intro,
+.ez-public .ez-track-section>.ez-track-card{
+  max-width:var(--ez-container-width);
+}
+.ez-public .ez-rooms-section,
+.ez-public .ez-reviews-section,
+.ez-public .ez-contact-section,
+.ez-public .ez-facilities-section,
+.ez-public .ez-track-section{
+  padding-left:var(--ez-page-gutter);
+  padding-right:var(--ez-page-gutter);
+}
+.ez-public .ez-rooms-section>div:first-of-type,
+.ez-public .ez-facilities-heading,
+.ez-public .ez-reviews-heading,
+.ez-public .ez-contact-copy{
+  margin-left:auto;
+  margin-right:auto;
+}
+.ez-public .ez-review-grid{margin-left:auto;margin-right:auto}
+.ez-public .ez-kicker,
+.ez-public .ez-hero-copy .ez-kicker,
+.ez-public .ez-book-heading .ez-kicker,
+.ez-public .ez-available-title .ez-kicker,
+.ez-public .ez-intro-copy .ez-kicker,
+.ez-public .ez-rooms-section .ez-kicker,
+.ez-public .ez-location-copy .ez-kicker,
+.ez-public .ez-facilities-heading .ez-kicker,
+.ez-public .ez-reviews-heading .ez-kicker,
+.ez-public .ez-contact-copy .ez-kicker,
+.ez-public .ez-faq .ez-kicker,
+.ez-public .ez-track-intro .ez-kicker{
+  font-size:var(--ez-kicker-size);
+  font-weight:800;
+  letter-spacing:var(--ez-kicker-tracking);
+  line-height:1.3;
+}
+.ez-public .ez-intro-copy h2,
+.ez-public .ez-rooms-section h2,
+.ez-public .ez-location-copy h2,
+.ez-public .ez-facilities-heading h2,
+.ez-public .ez-reviews-heading h2,
+.ez-public .ez-contact-copy h2,
+.ez-public .ez-faq h2,
+.ez-public .ez-track-intro h2,
+.ez-public .ez-cta-band h2{
+  font-size:var(--ez-section-title-size);
+  line-height:var(--ez-section-title-line);
+  letter-spacing:-.7px;
+}
+.ez-public .ez-book-heading h2{
+  font-size:26px;
+  line-height:1.2;
+  letter-spacing:-.4px;
+}
+.ez-public .ez-intro-copy>p,
+.ez-public .ez-rooms-section>div:first-of-type>p,
+.ez-public .ez-location-copy>p,
+.ez-public .ez-facilities-heading>p,
+.ez-public .ez-contact-copy>p,
+.ez-public .ez-track-intro>p,
+.ez-public .ez-cta-band p{
+  font-size:var(--ez-subtitle-size);
+  line-height:var(--ez-subtitle-line);
+}
+.ez-public .ez-hero-copy>p{
+  font-size:14px;
+  line-height:1.7;
+}
+@media(max-width:1050px){
+  .ez-public .ez-nav{padding-left:28px;padding-right:28px}
+  .ez-public .ez-intro{padding-left:28px;padding-right:28px}
+}
+@media(max-width:760px){
+  .ez-public .ez-nav{padding-left:20px;padding-right:20px}
+  .ez-public .ez-intro{padding-left:22px;padding-right:22px}
+  .ez-public .ez-section-title,
+  .ez-public .ez-intro-copy h2,
+  .ez-public .ez-rooms-section h2,
+  .ez-public .ez-location-copy h2,
+  .ez-public .ez-facilities-heading h2,
+  .ez-public .ez-reviews-heading h2,
+  .ez-public .ez-contact-copy h2,
+  .ez-public .ez-faq h2,
+  .ez-public .ez-track-intro h2,
+  .ez-public .ez-cta-band h2{
+    font-size:32px;
+    line-height:1.16;
+  }
+}
