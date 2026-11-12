@@ -1219,7 +1219,6 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-room-option.selected{
   border-color:#F8F6F0;
   box-shadow:0 0 0 3px #20382F,0 8px 22px rgba(25,39,30,.20);
-  background:inherit;
 }
 .ez-room-option>input{
   position:absolute;
