@@ -1216,3 +1216,20 @@
   .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy p{font-size:15px!important}
   .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-amenity-tags span{font-size:11px!important;padding:7px 10px!important}
 }
+
+
+/* Direct booking action beneath the room showcase. */
+.ez-public .ez-room-book-cta{
+  display:flex;justify-content:center;align-items:center;
+  padding:28px 20px 8px;
+}
+.ez-public .ez-room-book-cta .ez-primary-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  min-width:210px;min-height:54px;padding:14px 28px;
+  border:0;cursor:pointer;font:600 13px 'DM Sans',Arial,sans-serif;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+@media(max-width:760px){
+  .ez-public .ez-room-book-cta{padding:20px 16px 4px}
+  .ez-public .ez-room-book-cta .ez-primary-btn{width:100%;max-width:340px}
+}
