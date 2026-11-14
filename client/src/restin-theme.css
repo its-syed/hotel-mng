@@ -1095,3 +1095,9 @@
   }
   .ez-public .ez-date-time-note{margin-top:6px!important}
 }
+
+
+/* Move the desktop booking panel 1cm lower, preserving its width and height. */
+@media(min-width:1051px){
+  .ez-public main>.ez-book-wrap{margin-top:-185px!important}
+}
