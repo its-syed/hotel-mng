@@ -929,3 +929,147 @@
   left:auto!important;
   top:50%!important;
 }
+
+/* Booking search refinement: stronger hierarchy across every field, not only the title. */
+.ez-public main>.ez-book-wrap{
+  padding:38px 42px 36px!important;
+}
+.ez-public .ez-book-heading{
+  align-items:center!important;
+  margin-bottom:25px!important;
+}
+.ez-public .ez-book-heading .ez-kicker{
+  display:block;
+  font-size:12px!important;
+  letter-spacing:.19em!important;
+  margin-bottom:7px;
+}
+.ez-public .ez-book-heading h2{
+  font-size:34px!important;
+  line-height:1.15!important;
+  margin:0!important;
+}
+.ez-public .ez-secure-note{
+  font-size:13px!important;
+  font-weight:500;
+  gap:9px!important;
+}
+.ez-public .ez-secure-note svg{width:19px;height:19px}
+.ez-public .ez-search-form{
+  grid-template-columns:1.2fr 1.2fr .85fr auto!important;
+  gap:16px!important;
+  align-items:end!important;
+}
+.ez-public .ez-search-form label{
+  gap:9px!important;
+  min-width:0;
+}
+.ez-public .ez-search-form label>span{
+  font-size:13px!important;
+  line-height:1.35!important;
+  font-weight:650!important;
+  letter-spacing:.025em!important;
+  color:#49483f!important;
+  gap:8px!important;
+}
+.ez-public .ez-search-form label>span svg{
+  width:17px;height:17px;
+}
+.ez-public .ez-search-form select,
+.ez-public .ez-date-trigger{
+  box-sizing:border-box;
+  width:100%;
+  min-height:60px!important;
+  height:60px!important;
+  padding:0 17px!important;
+  border:1px solid #d9d5cc!important;
+  border-radius:11px!important;
+  background:#fbfaf7!important;
+  color:#292923!important;
+  font-family:'DM Sans',Arial,sans-serif!important;
+  font-size:16px!important;
+  font-weight:550!important;
+  line-height:1.35!important;
+  box-shadow:0 2px 7px rgba(35,31,25,.035)!important;
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.ez-public .ez-date-trigger{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  text-align:left!important;
+  gap:12px!important;
+}
+.ez-public .ez-date-trigger>span{
+  color:#292923!important;
+  font-size:16px!important;
+  font-weight:550!important;
+  letter-spacing:0!important;
+}
+.ez-public .ez-date-trigger>span.is-empty{
+  color:#858176!important;
+  font-weight:450!important;
+}
+.ez-public .ez-date-trigger svg{
+  width:19px!important;height:19px!important;
+  color:#a66e50!important;
+}
+.ez-public .ez-search-form select{
+  appearance:auto;
+  cursor:pointer;
+}
+.ez-public .ez-search-form select:focus,
+.ez-public .ez-date-trigger:focus-visible{
+  outline:none!important;
+  border-color:#a66e50!important;
+  background:#fffefd!important;
+  box-shadow:0 0 0 4px rgba(166,110,80,.13)!important;
+}
+.ez-public .ez-date-time-note{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:19px 0 0!important;
+  color:#625e54!important;
+  font-size:14px!important;
+  line-height:1.6!important;
+  font-weight:500!important;
+}
+.ez-public .ez-date-time-note svg{
+  width:17px;height:17px;flex:0 0 auto;
+  color:#a66e50!important;
+}
+.ez-public .ez-date-time-note span{
+  color:#b4a99b;
+  margin:0 2px;
+}
+.ez-public .ez-auto-check-status{
+  min-height:60px!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:0 22px!important;
+  white-space:nowrap;
+  font-size:11px!important;
+}
+@media(max-width:1050px){
+  .ez-public main>.ez-book-wrap{padding:30px 28px!important}
+  .ez-public .ez-search-form{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .ez-public .ez-auto-check-status{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .ez-public main>.ez-book-wrap{padding:25px 18px 27px!important}
+  .ez-public .ez-book-heading{align-items:flex-start!important;gap:12px!important}
+  .ez-public .ez-book-heading h2{font-size:30px!important}
+  .ez-public .ez-secure-note{font-size:12px!important}
+  .ez-public .ez-search-form{grid-template-columns:1fr 1fr!important;gap:14px 11px!important}
+  .ez-public .ez-search-form label>span{font-size:12px!important}
+  .ez-public .ez-date-trigger,.ez-public .ez-search-form select{
+    min-height:56px!important;height:56px!important;padding:0 12px!important;font-size:14px!important;
+  }
+  .ez-public .ez-date-trigger>span{font-size:14px!important}
+  .ez-public .ez-date-time-note{font-size:13px!important;flex-wrap:wrap}
+  .ez-public .ez-auto-check-status{grid-column:1/-1;min-height:54px!important}
+}
+
