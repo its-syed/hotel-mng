@@ -384,3 +384,73 @@
   .ez-public .ez-hero-background img,.ez-public .ez-gallery-main img,
   .ez-public .ez-nav-links>a{transition:none!important}
 }
+
+
+/* Final design layer: imported after the site's legacy stylesheet so this
+   direction wins over older public-site rules. */
+.ez-public{background:#f7f5ef!important;color:#26352e!important}
+.ez-public .ez-utility-bar{background:#243d33!important;color:#f4f0e6!important}
+.ez-public .ez-nav{position:sticky!important;top:0;z-index:50!important;background:#fffefa!important;box-shadow:0 5px 22px rgba(28,43,34,.045)!important}
+.ez-public main>.ez-hero{
+  display:grid!important;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;
+  align-items:center!important;height:620px!important;min-height:560px!important;
+  padding:60px max(calc((100% - 1240px)/2),5vw)!important;
+  background:#f7f5ef!important;isolation:isolate;
+}
+.ez-public .ez-hero-background{
+  inset:0 0 0 auto!important;width:59%!important;height:100%!important;
+  border-radius:0!important;overflow:hidden!important;
+}
+.ez-public .ez-hero-background img{object-position:center!important;filter:none!important}
+.ez-public main>.ez-hero::after{
+  background:linear-gradient(90deg,#f7f5ef 0%,#f7f5ef 34%,rgba(247,245,239,.92) 43%,rgba(247,245,239,.12) 66%,rgba(20,35,27,.04) 100%)!important;
+}
+.ez-public .ez-hero-copy{grid-column:1;grid-row:1;width:min(510px,100%)!important;max-width:510px!important;margin:0!important;padding:0!important}
+.ez-public .ez-hero-copy .ez-kicker{color:#a77d48!important;letter-spacing:.22em!important}
+.ez-public .ez-hero-copy h1{
+  color:#243d33!important;font:500 clamp(54px,6vw,82px)/1.02 'Playfair Display',Georgia,serif!important;
+  letter-spacing:-.045em!important;text-shadow:none!important;margin:18px 0!important;
+}
+.ez-public .ez-hero-copy h1 em{color:#a77d48!important}
+.ez-public .ez-hero-copy>p{color:#69746b!important;max-width:390px!important;font-size:14px!important;line-height:1.9!important}
+.ez-public .ez-hero-controls,.ez-public .ez-hero-dots{z-index:3!important}
+.ez-public .ez-hero-arrow{border-radius:50%!important}
+.ez-public main>.ez-book-wrap{
+  width:min(1120px,calc(100% - 64px))!important;margin:-54px auto 30px!important;
+  padding:28px 34px 30px!important;background:#fffefa!important;
+  border:1px solid #e5e0d5!important;border-top:3px solid #ad8754!important;
+  border-radius:3px!important;box-shadow:0 18px 50px rgba(37,52,43,.12)!important;
+}
+.ez-public .ez-intro{background:#fffefa!important;padding:100px max(calc((100% - 1200px)/2),5vw)!important}
+.ez-public .ez-intro-image{min-height:510px!important;border-radius:2px!important}
+.ez-public .ez-rooms-section{background:#f7f5ef!important;padding:92px max(calc((100% - 1200px)/2),5vw)!important}
+.ez-public .ez-room-preview-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.ez-public .ez-room-preview-grid article{border-radius:3px!important}
+.ez-public .ez-gallery-main{height:285px!important}
+.ez-public .ez-facilities-section{background:#eeece4!important}
+.ez-public .ez-reviews-section{background:#e8e4d9!important}
+.ez-public .ez-location-section,.ez-public .ez-contact-section{background:#243d33!important}
+.ez-public .ez-track-card{border-radius:3px!important}
+.ez-public .ez-footer{background:#192c24!important}
+@media(max-width:1050px){
+ .ez-public main>.ez-hero{height:560px!important;min-height:520px!important;padding:48px 28px!important}
+ .ez-public .ez-hero-background{width:60%!important}
+ .ez-public main>.ez-book-wrap{width:calc(100% - 48px)!important;margin-top:-35px!important;padding:24px!important}
+}
+@media(max-width:760px){
+ .ez-public .ez-nav{position:relative!important}
+ .ez-public main>.ez-hero{
+   display:flex!important;align-items:flex-end!important;height:560px!important;min-height:520px!important;
+   padding:0 24px 76px!important;background:#243d33!important;
+ }
+ .ez-public .ez-hero-background{inset:0!important;width:100%!important;height:100%!important}
+ .ez-public main>.ez-hero::after{background:linear-gradient(0deg,rgba(20,38,29,.88),rgba(20,38,29,.28) 70%,rgba(20,38,29,.08))!important}
+ .ez-public .ez-hero-copy{width:100%!important;max-width:560px!important}
+ .ez-public .ez-hero-copy h1{color:#fff!important;font-size:clamp(44px,10vw,62px)!important}
+ .ez-public .ez-hero-copy h1 em{color:#e1c69e!important}
+ .ez-public .ez-hero-copy>p{color:#f1f0e9!important}
+ .ez-public main>.ez-book-wrap{width:calc(100% - 28px)!important;margin:18px auto 24px!important;padding:22px 17px!important}
+ .ez-public .ez-room-preview-grid{grid-template-columns:1fr!important}
+ .ez-public .ez-gallery-main{height:260px!important}
+ .ez-public .ez-intro{padding:62px 22px!important}
+}
