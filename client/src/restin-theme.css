@@ -1233,3 +1233,11 @@
   .ez-public .ez-room-book-cta{padding:20px 16px 4px}
   .ez-public .ez-room-book-cta .ez-primary-btn{width:100%;max-width:340px}
 }
+
+
+/* Lift the hero headline clear of the overlapping availability panel. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-copy{
+    transform:translateY(-46px)!important;
+  }
+}
