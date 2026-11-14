@@ -679,7 +679,6 @@
    Temporary visual layer. Remove this block to restore the
    previous Restin-inspired look; no booking logic is changed.
    ========================================================= */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap');
 
 .ez-public{
   --restin-ink:#28251f;
