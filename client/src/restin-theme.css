@@ -499,3 +499,142 @@
 .ez-public .ez-room-photo-next{right:12px}
 .ez-public .ez-room-photo-arrow:focus-visible{outline:2px solid #ad8754;outline-offset:3px}
 @media(max-width:760px){.ez-public .ez-room-photo-arrow{top:calc(130px - 20px);width:36px;height:38px}}
+
+
+/* Final consistency pass: availability results and booking-status navigation. */
+.ez-public .ez-available,
+.ez-public .ez-available *{
+  font-family:'DM Sans',Arial,sans-serif!important;
+}
+.ez-public .ez-available-title h3{
+  font-family:'Playfair Display',Georgia,serif!important;
+  font-size:24px!important;
+  font-weight:500!important;
+  line-height:1.2!important;
+  color:#263f34!important;
+}
+.ez-public .ez-room-info b,
+.ez-public .ez-room-price b{
+  font-family:'Playfair Display',Georgia,serif!important;
+  font-size:17px!important;
+  font-weight:500!important;
+  line-height:1.3!important;
+  color:#263f34!important;
+}
+.ez-public .ez-room-info small,
+.ez-public .ez-room-price small,
+.ez-public .ez-available-title>span{
+  font-family:'DM Sans',Arial,sans-serif!important;
+  font-size:12px!important;
+  font-weight:400!important;
+  line-height:1.5!important;
+  color:#68746b!important;
+}
+.ez-public .ez-room-option{
+  color:#343a38!important;
+}
+.ez-public .ez-room-option.selected .ez-room-info b,
+.ez-public .ez-room-option.selected .ez-room-price b{
+  color:#243d33!important;
+}
+
+/* Keep Track Booking visibly distinct within the cream navigation band. */
+@media(min-width:1051px){
+  .ez-public .ez-nav-links>a[href="#track"]{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:42px!important;
+    padding:11px 13px!important;
+    background:#e3e8df!important;
+    border:1px solid #cbd5c9!important;
+    color:#243d33!important;
+    font-size:12px!important;
+    font-weight:700!important;
+    letter-spacing:.025em!important;
+    border-radius:2px!important;
+    white-space:nowrap!important;
+  }
+  .ez-public .ez-nav-links>a[href="#track"]:hover{
+    background:#243d33!important;
+    border-color:#243d33!important;
+    color:#fff!important;
+  }
+  .ez-public .ez-nav-links .ez-nav-account{
+    background:#fffefa!important;
+    color:#243d33!important;
+    border:1px solid #c9cfc5!important;
+    font-family:'DM Sans',Arial,sans-serif!important;
+    font-weight:700!important;
+  }
+  .ez-public .ez-nav-links .ez-nav-account:hover{
+    background:#243d33!important;
+    border-color:#243d33!important;
+    color:#fff!important;
+  }
+}
+.ez-public .ez-track-card{
+  background:#263f34!important;
+  border:1px solid #405a4c!important;
+  color:#f3f1e8!important;
+}
+.ez-public .ez-track-card .ez-track-form label,
+.ez-public .ez-track-card .ez-track-form label span{
+  color:#f3f1e8!important;
+  font-family:'DM Sans',Arial,sans-serif!important;
+}
+.ez-public .ez-track-card .ez-track-form input{
+  background:#fbfaf6!important;
+  color:#263a31!important;
+  border:1px solid #d9d4c8!important;
+  font-family:'DM Sans',Arial,sans-serif!important;
+}
+.ez-public .ez-track-card .ez-track-form input::placeholder{
+  color:#858b82!important;
+  opacity:1!important;
+}
+.ez-public .ez-track-card .ez-track-form .ez-primary-btn{
+  background:#d1b58a!important;
+  color:#263f34!important;
+  border:1px solid #d1b58a!important;
+}
+.ez-public .ez-track-card .ez-track-form .ez-primary-btn:hover{
+  background:#e0c79f!important;
+  color:#263f34!important;
+  border-color:#e0c79f!important;
+}
+.ez-public .ez-track-card .ez-track-result{
+  background:#f8f7f1!important;
+  border:1px solid #deded4!important;
+  color:#263a31!important;
+}
+.ez-public .ez-track-card .ez-track-result h3,
+.ez-public .ez-track-card .ez-track-result .ez-kicker,
+.ez-public .ez-track-card .ez-track-result .ez-track-details,
+.ez-public .ez-track-card .ez-track-result .ez-track-details span,
+.ez-public .ez-track-card .ez-track-result .ez-track-details strong,
+.ez-public .ez-track-card .ez-track-result .ez-track-help{
+  color:#263a31!important;
+}
+.ez-public .ez-track-card .ez-track-result .ez-kicker{
+  color:#8a7048!important;
+}
+.ez-public .ez-track-card .ez-track-result .ez-status-pill{
+  color:#263a31!important;
+}
+.ez-public .ez-track-card .ez-error{
+  color:#9c3428!important;
+  background:#f9e8e4!important;
+}
+@media(max-width:1050px){
+  .ez-public .ez-nav-links>a[href="#track"]{
+    background:#e3e8df!important;
+    color:#243d33!important;
+    border:1px solid #cbd5c9!important;
+  }
+  .ez-public .ez-nav-links .ez-nav-account{
+    background:#fffefa!important;
+    color:#243d33!important;
+    border:1px solid #c9cfc5!important;
+  }
+}
