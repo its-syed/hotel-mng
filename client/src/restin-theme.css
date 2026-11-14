@@ -638,3 +638,13 @@
     border:1px solid #c9cfc5!important;
   }
 }
+
+
+/* Account-based booking tracking section */
+.ez-public .ez-track-bookings{padding:76px 7%;background:#203b31;color:#f7f2e8}
+.ez-public .ez-track-bookings-inner{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:32px}
+.ez-public .ez-track-bookings .ez-kicker{color:#c6a66b}
+.ez-public .ez-track-bookings h2{margin:12px 0 10px;color:#fff;font-family:var(--ez-heading-font,Georgia,serif);font-size:clamp(30px,4vw,46px);font-weight:500}
+.ez-public .ez-track-bookings p{margin:0;max-width:620px;color:#e5e0d5;line-height:1.7}
+.ez-public .ez-track-bookings .ez-primary-btn{flex:0 0 auto;white-space:nowrap}
+@media(max-width:700px){.ez-public .ez-track-bookings{padding:54px 6%}.ez-public .ez-track-bookings-inner{align-items:flex-start;flex-direction:column;gap:22px}.ez-public .ez-track-bookings .ez-primary-btn{width:100%;justify-content:center}}
