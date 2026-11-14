@@ -64,16 +64,31 @@ model Room {
   updatedAt          DateTime           @updatedAt
 }
 
-model Guest {
-  id           String        @id @default(cuid())
+model GuestAccount {
+  id           String   @id @default(cuid())
   fullName     String
-  phone        String
-  email        String?
-  idType       String?
-  idNumber     String?
-  reservations Reservation[]
-  payments     Payment[]
-  createdAt    DateTime      @default(now())
+  phone        String   @unique
+  email        String   @unique
+  passwordHash String
+  active       Boolean  @default(true)
+  guestRecords Guest[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Guest {
+  id             String        @id @default(cuid())
+  fullName       String
+  phone          String
+  email          String?
+  idType         String?
+  idNumber       String?
+  guestAccountId String?
+  guestAccount   GuestAccount? @relation(fields: [guestAccountId], references: [id])
+  reservations   Reservation[]
+  payments       Payment[]
+  createdAt      DateTime      @default(now())
+  @@index([guestAccountId])
 }
 
 model Reservation {
