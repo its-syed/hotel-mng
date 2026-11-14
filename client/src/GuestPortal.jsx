@@ -1,5 +1,5 @@
 import React,{useEffect,useState} from "react";
-import {ArrowLeft,ArrowRight,CalendarDays,CheckCircle2,LockKeyhole,LogOut,UserRound,X} from "lucide-react";
+import {ArrowLeft,ArrowRight,CalendarDays,CheckCircle2,Eye,EyeOff,LockKeyhole,LogOut,UserRound,X} from "lucide-react";
 
 const API=import.meta.env.VITE_API_URL||"/api";
 const money=value=>"₹"+Number(value||0).toLocaleString("en-IN");
@@ -7,15 +7,17 @@ const date=value=>value?new Date(value).toLocaleDateString("en-IN",{day:"2-digit
 const statusText=value=>({PENDING:"Awaiting confirmation",CONFIRMED:"Confirmed",CHECKED_IN:"Checked in",CHECKED_OUT:"Completed",CANCELLED:"Cancelled",NO_SHOW:"No-show"}[value]||value);
 
 export default function GuestPortal(){
- const [open,setOpen]=useState(false),[view,setView]=useState("login"),[token,setToken]=useState(()=>localStorage.getItem("ezystay_guest_token")||""),[profile,setProfile]=useState(null),[bookings,setBookings]=useState([]),[name,setName]=useState(""),[phone,setPhone]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState(""),[otp,setOtp]=useState(""),[otpSent,setOtpSent]=useState(false),[otpHint,setOtpHint]=useState(""),[otpBookings,setOtpBookings]=useState([]),[error,setError]=useState(""),[busy,setBusy]=useState(false);
+ const [open,setOpen]=useState(false),[view,setView]=useState("login"),[token,setToken]=useState(()=>localStorage.getItem("ezystay_guest_token")||""),[profile,setProfile]=useState(null),[bookings,setBookings]=useState([]),[name,setName]=useState(""),[phone,setPhone]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState(""),[showPassword,setShowPassword]=useState(false),[otp,setOtp]=useState(""),[otpSent,setOtpSent]=useState(false),[otpHint,setOtpHint]=useState(""),[otpBookings,setOtpBookings]=useState([]),[error,setError]=useState(""),[busy,setBusy]=useState(false);
  async function api(path,options={}){const response=await fetch(API+path,{headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},...options});const data=await response.json();if(!response.ok)throw new Error(data.error||"Something went wrong");return data}
  async function loadAccount(activeToken=token){const headers={Authorization:"Bearer "+activeToken};const [me,items]=await Promise.all([fetch(API+"/guest/me",{headers}),fetch(API+"/guest/bookings",{headers})]);const user=await me.json(),list=await items.json();if(!me.ok)throw new Error(user.error||"Please sign in again");if(!items.ok)throw new Error(list.error||"Could not load bookings");setProfile(user);setBookings(list.bookings||[]);localStorage.setItem("ezystay_guest_profile",JSON.stringify(user));window.dispatchEvent(new Event("ezystay-guest-auth"))}
  useEffect(()=>{if(!token)return;loadAccount().catch(()=>{localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null)})},[]);
+ useEffect(()=>{const openFromBooking=()=>openPortal();window.addEventListener("ezystay-open-guest-portal",openFromBooking);return()=>window.removeEventListener("ezystay-open-guest-portal",openFromBooking)},[token]);
+ useEffect(()=>{const refreshBookings=()=>{if(token)loadAccount(token).catch(()=>{})};window.addEventListener("ezystay-booking-created",refreshBookings);return()=>window.removeEventListener("ezystay-booking-created",refreshBookings)},[token]);
  async function submitAuth(event){event.preventDefault();setBusy(true);setError("");try{const path=view==="register"?"/guest/auth/register":"/guest/auth/login";const body=view==="register"?{fullName:name,phone,email,password}:{email,password};const data=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.setItem("ezystay_guest_token",data.token);setToken(data.token);setProfile(data.user);setPassword("");await loadAccount(data.token);setView("account")}catch(e){setError(e.message)}finally{setBusy(false)}}
  async function requestOtp(event){event.preventDefault();setBusy(true);setError("");setOtpHint("");try{const data=await api("/public/guest-otp/request",{method:"POST",body:JSON.stringify({phone})});setOtpSent(true);setOtpHint(data.devOtp?"Development OTP: "+data.devOtp:data.message||"Verification code sent.")}catch(e){setError(e.message)}finally{setBusy(false)}}
  async function verifyOtp(event){event.preventDefault();setBusy(true);setError("");try{const data=await api("/public/guest-otp/verify",{method:"POST",body:JSON.stringify({phone,code:otp})});setOtpBookings(data.bookings||[]);setOtpSent(false);setOtpHint(data.bookings?.length?"Your bookings are ready below.":"We could not find any bookings for that mobile number.")}catch(e){setError(e.message)}finally{setBusy(false)}}
  function logout(){localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null);setBookings([]);setView("login");window.dispatchEvent(new Event("ezystay-guest-auth"))}
- function openPortal(){setOpen(true);setError("");setView(token?"account":"login")}
+ function openPortal(){setOpen(true);setError("");setShowPassword(false);setView(token?"account":"login")}
  return <>
   <button type="button" className="ez-nav-account" onClick={openPortal}><UserRound size={15}/>{token?"My Account":"Sign in"}</button>
   {open&&<div className="ez-guest-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}><section className="ez-guest-dialog" role="dialog" aria-modal="true" aria-label="EzyStay guest account">
@@ -36,10 +38,10 @@ export default function GuestPortal(){
     <form onSubmit={submitAuth}>
      {view==="register"&&<><label>Full name<input required autoComplete="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Your full name"/></label><label>Mobile number<input required type="tel" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Your mobile number"/></label></>}
      <label>Email address<input required type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label>
-     <label>Password<input required type="password" minLength={8} autoComplete={view==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder={view==="register"?"At least 8 characters":"Your password"}/></label>
+     <label>Password<div className="ez-guest-password-wrap"><input required type={showPassword?"text":"password"} minLength={8} autoComplete={view==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder={view==="register"?"At least 8 characters":"Your password"}/><button type="button" className="ez-guest-password-toggle" onClick={()=>setShowPassword(value=>!value)} aria-label={showPassword?"Hide password":"Show password"} aria-pressed={showPassword}>{showPassword?<EyeOff size={17}/>:<Eye size={17}/>}</button></div></label>
      <button className="ez-guest-primary" disabled={busy}>{busy?"Please wait…":view==="register"?"Create my account":"Sign in"} <ArrowRight size={16}/></button>
     </form>
-    <button type="button" className="ez-guest-find-link" onClick={()=>{setView("find");setError("");setOtpBookings([]);setOtpSent(false)}}><LockKeyhole size={15}/> Booked without an account? Find my booking</button>
+    <button type="button" className="ez-guest-find-link" onClick={()=>{setView("find");setError("");setOtpBookings([]);setOtpSent(false)}}><LockKeyhole size={15}/> Looking for an older booking? Find it by phone</button>
    </div>}
   </section></div>}
  </>;
