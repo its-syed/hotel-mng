@@ -124,10 +124,10 @@ app.get("/api/public/availability",asyncRoute(async(req,res)=>{
 app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const account=await guestAccountFromRequest(req,res);if(res.headersSent)return;
  const fullName=account?.fullName||req.body.fullName;
- const phone=account?.phone||req.body.phone;
+ const phone=account?.phone||normalizePhone(req.body.phone);
  const email=account?.email||req.body.email;
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
- if(!fullName||!phone||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
+ if(!fullName||phone.length<10||phone.length>15||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
  if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
  if(room.occupancyStatus==="OCCUPIED"){
