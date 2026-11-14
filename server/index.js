@@ -44,6 +44,7 @@ const guestAccountFromRequest=async(req,res)=>{
  }catch{res.status(401).json({error:"Your guest session is invalid. Please sign in again"});return null;}
 };
 const normalizePhone=value=>String(value||"").replace(/\D/g,"");
+const isValidIndianMobile=value=>/^[6-9]\d{9}$/.test(normalizePhone(value));
 const authenticate=asyncRoute(async(req,res,next)=>{
  if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true};return next();}
  const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
@@ -65,7 +66,7 @@ app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
  const phone=normalizePhone(req.body.phone);
  const email=String(req.body.email||"").trim().toLowerCase();
  const password=String(req.body.password||"");
- if(!fullName||phone.length<10||phone.length>15||!/^\S+@\S+\.\S+$/.test(email)||password.length<8)
+ if(!fullName||!isValidIndianMobile(phone)||!/^\S+@\S+\.\S+$/.test(email)||password.length<8)
   return res.status(400).json({error:"Enter your name, a valid phone number, email and a password of at least 8 characters"});
  const existing=await prisma.guestAccount.findFirst({where:{OR:[{email},{phone}]}});
  if(existing)return res.status(409).json({error:"An account already exists with this email or phone number. Please sign in instead."});
@@ -91,7 +92,7 @@ const guestOtpStore=new Map();
 const guestOtpEnabled=process.env.NODE_ENV!=="production"&&process.env.DEV_GUEST_OTP==="true";
 app.post("/api/public/guest-otp/request",asyncRoute(async(req,res)=>{
  const phone=normalizePhone(req.body.phone);
- if(phone.length<10||phone.length>15)return res.status(400).json({error:"Enter a valid mobile number"});
+ if(!isValidIndianMobile(phone))return res.status(400).json({error:"Enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9"});
  if(!guestOtpEnabled)return res.status(503).json({error:"Phone verification is not configured yet. Please use your booking reference or sign in to your guest account."});
  const previous=guestOtpStore.get(phone);
  if(previous&&Date.now()-previous.sentAt<30000)return res.status(429).json({error:"Please wait 30 seconds before requesting another code"});
@@ -128,7 +129,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const phone=account.phone;
  const email=account.email;
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
- if(!fullName||phone.length<10||phone.length>15||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
+ if(!fullName||!isValidIndianMobile(phone)||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"A valid Indian mobile number and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
  if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
  if(room.occupancyStatus==="OCCUPIED"){
@@ -144,7 +145,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
  const code=String(req.body.bookingCode||"").trim().toUpperCase();
  const phone=String(req.body.phone||"").replace(/\D/g,"");
- if(!code||!phone)return res.status(400).json({error:"Enter your booking reference and phone number"});
+ if(!code||!isValidIndianMobile(phone))return res.status(400).json({error:"Enter your booking reference and a valid 10-digit Indian mobile number"});
  const booking=await prisma.reservation.findUnique({where:{bookingCode:code},include:{guest:true,room:true}});
  const savedPhone=String(booking?.guest?.phone||"").replace(/\D/g,"");
  const phoneMatches=savedPhone===phone||(savedPhone.length>=10&&phone.length>=10&&savedPhone.slice(-10)===phone.slice(-10));
@@ -325,8 +326,9 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
 
 app.get("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.guest.findMany({orderBy:{createdAt:"desc"}}))));
 app.post("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
-  const {fullName,phone,email,idType,idNumber}=req.body;
-  if(!fullName||!phone) return res.status(400).json({error:"Guest name and phone are required"});
+  const {fullName,email,idType,idNumber}=req.body;
+  const phone=normalizePhone(req.body.phone);
+  if(!fullName||!isValidIndianMobile(phone)) return res.status(400).json({error:"Enter a guest name and a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9"});
   res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
 }));
 
