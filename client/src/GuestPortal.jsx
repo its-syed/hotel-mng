@@ -1,0 +1,46 @@
+import React,{useEffect,useState} from "react";
+import {ArrowLeft,ArrowRight,CalendarDays,CheckCircle2,LockKeyhole,LogOut,UserRound,X} from "lucide-react";
+
+const API=import.meta.env.VITE_API_URL||"/api";
+const money=value=>"₹"+Number(value||0).toLocaleString("en-IN");
+const date=value=>value?new Date(value).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
+const statusText=value=>({PENDING:"Awaiting confirmation",CONFIRMED:"Confirmed",CHECKED_IN:"Checked in",CHECKED_OUT:"Completed",CANCELLED:"Cancelled",NO_SHOW:"No-show"}[value]||value);
+
+export default function GuestPortal(){
+ const [open,setOpen]=useState(false),[view,setView]=useState("login"),[token,setToken]=useState(()=>localStorage.getItem("ezystay_guest_token")||""),[profile,setProfile]=useState(null),[bookings,setBookings]=useState([]),[name,setName]=useState(""),[phone,setPhone]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState(""),[otp,setOtp]=useState(""),[otpSent,setOtpSent]=useState(false),[otpHint,setOtpHint]=useState(""),[otpBookings,setOtpBookings]=useState([]),[error,setError]=useState(""),[busy,setBusy]=useState(false);
+ async function api(path,options={}){const response=await fetch(API+path,{headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},...options});const data=await response.json();if(!response.ok)throw new Error(data.error||"Something went wrong");return data}
+ async function loadAccount(activeToken=token){const headers={Authorization:"Bearer "+activeToken};const [me,items]=await Promise.all([fetch(API+"/guest/me",{headers}),fetch(API+"/guest/bookings",{headers})]);const user=await me.json(),list=await items.json();if(!me.ok)throw new Error(user.error||"Please sign in again");if(!items.ok)throw new Error(list.error||"Could not load bookings");setProfile(user);setBookings(list.bookings||[]);localStorage.setItem("ezystay_guest_profile",JSON.stringify(user));window.dispatchEvent(new Event("ezystay-guest-auth"))}
+ useEffect(()=>{if(!token)return;loadAccount().catch(()=>{localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null)})},[]);
+ async function submitAuth(event){event.preventDefault();setBusy(true);setError("");try{const path=view==="register"?"/guest/auth/register":"/guest/auth/login";const body=view==="register"?{fullName:name,phone,email,password}:{email,password};const data=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.setItem("ezystay_guest_token",data.token);setToken(data.token);setProfile(data.user);setPassword("");await loadAccount(data.token);setView("account")}catch(e){setError(e.message)}finally{setBusy(false)}}
+ async function requestOtp(event){event.preventDefault();setBusy(true);setError("");setOtpHint("");try{const data=await api("/public/guest-otp/request",{method:"POST",body:JSON.stringify({phone})});setOtpSent(true);setOtpHint(data.devOtp?"Development OTP: "+data.devOtp:data.message||"Verification code sent.")}catch(e){setError(e.message)}finally{setBusy(false)}}
+ async function verifyOtp(event){event.preventDefault();setBusy(true);setError("");try{const data=await api("/public/guest-otp/verify",{method:"POST",body:JSON.stringify({phone,code:otp})});setOtpBookings(data.bookings||[]);setOtpSent(false);setOtpHint("Your bookings are ready below.")}catch(e){setError(e.message)}finally{setBusy(false)}}
+ function logout(){localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null);setBookings([]);setView("login");window.dispatchEvent(new Event("ezystay-guest-auth"))}
+ function openPortal(){setOpen(true);setError("");setView(token?"account":"login")}
+ return <>
+  <button type="button" className="ez-nav-account" onClick={openPortal}><UserRound size={15}/>{token?"My Account":"Sign in"}</button>
+  {open&&<div className="ez-guest-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}><section className="ez-guest-dialog" role="dialog" aria-modal="true" aria-label="EzyStay guest account">
+   <div className="ez-guest-dialog-head"><div><span className="ez-guest-eyebrow">EZYSTAY GUEST PORTAL</span><h2>{view==="account"?"Your stays, together.":view==="find"?"Find your booking.":"Welcome to EzyStay."}</h2></div><button type="button" className="ez-guest-close" onClick={()=>setOpen(false)} aria-label="Close"><X size={20}/></button></div>
+   {error&&<p className="ez-guest-error" role="alert">{error}</p>}
+   {view==="account"&&profile?<div className="ez-guest-account">
+    <div className="ez-guest-profile"><span className="ez-guest-avatar"><UserRound size={22}/></span><div><b>{profile.fullName}</b><span>{profile.email} · {profile.phone}</span></div><button type="button" onClick={logout} aria-label="Sign out"><LogOut size={17}/></button></div>
+    <div className="ez-guest-summary"><div><strong>{bookings.length}</strong><span>Total bookings</span></div><div><strong>{bookings.filter(b=>["PENDING","CONFIRMED","CHECKED_IN"].includes(b.status)).length}</strong><span>Active bookings</span></div></div>
+    <div className="ez-guest-booking-heading"><h3>My bookings</h3><span>Most recent first</span></div>
+    {bookings.length?bookings.map(item=><article className="ez-guest-booking" key={item.bookingCode}><div className="ez-guest-booking-top"><div><b>{item.category} room · {item.room}</b><small>{item.bookingCode}</small></div><span className={"ez-guest-status "+String(item.status).toLowerCase()}>{statusText(item.status)}</span></div><div className="ez-guest-booking-dates"><span><CalendarDays size={14}/> {date(item.checkIn)} – {date(item.checkOut)}</span><strong>{money(item.totalAmount)}</strong></div></article>):<p className="ez-guest-empty">No bookings are linked to this account yet. Your next reservation will appear here.</p>}
+   </div>:view==="find"?<div className="ez-guest-auth">
+    {!otpSent?<form onSubmit={requestOtp}><p>Enter the mobile number used for your reservation. We'll verify it before showing matching bookings.</p><label>Mobile number<input required type="tel" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter booking phone number"/></label><button className="ez-guest-primary" disabled={busy}>{busy?"Sending…":"Send verification code"} <ArrowRight size={16}/></button></form>:<form onSubmit={verifyOtp}><p>Enter the 6-digit code for <b>{phone}</b>.</p><label>Verification code<input required inputMode="numeric" maxLength={6} value={otp} onChange={e=>setOtp(e.target.value.replace(/\\D/g,""))} placeholder="6-digit code"/></label><button className="ez-guest-primary" disabled={busy}>{busy?"Verifying…":"Verify and find bookings"} <ArrowRight size={16}/></button></form>}
+    {otpHint&&<p className="ez-guest-hint">{otpHint}</p>}
+    {otpBookings.length>0&&<div className="ez-guest-found"><h3>Bookings found</h3>{otpBookings.map(item=><article className="ez-guest-booking" key={item.bookingCode}><div className="ez-guest-booking-top"><div><b>{item.category} room · {item.room}</b><small>{item.bookingCode}</small></div><span className={"ez-guest-status "+String(item.status).toLowerCase()}>{statusText(item.status)}</span></div><div className="ez-guest-booking-dates"><span><CalendarDays size={14}/> {date(item.checkIn)} – {date(item.checkOut)}</span><strong>{money(item.totalAmount)}</strong></div></article>)}</div>}
+    <button type="button" className="ez-guest-back" onClick={()=>{setView("login");setError("");setOtpSent(false);setOtpBookings([])}}><ArrowLeft size={15}/> Back to sign in</button>
+   </div>:<div className="ez-guest-auth">
+    <div className="ez-guest-tabs"><button type="button" className={view==="login"?"active":""} onClick={()=>{setView("login");setError("")}}>Sign in</button><button type="button" className={view==="register"?"active":""} onClick={()=>{setView("register");setError("")}}>Create account</button></div>
+    <form onSubmit={submitAuth}>
+     {view==="register"&&<><label>Full name<input required autoComplete="name" value={name} onChange={e=>setName(e.target.value)} placeholder="Your full name"/></label><label>Mobile number<input required type="tel" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Your mobile number"/></label></>}
+     <label>Email address<input required type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label>
+     <label>Password<input required type="password" minLength={8} autoComplete={view==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder={view==="register"?"At least 8 characters":"Your password"}/></label>
+     <button className="ez-guest-primary" disabled={busy}>{busy?"Please wait…":view==="register"?"Create my account":"Sign in"} <ArrowRight size={16}/></button>
+    </form>
+    <button type="button" className="ez-guest-find-link" onClick={()=>{setView("find");setError("");setOtpBookings([]);setOtpSent(false)}}><LockKeyhole size={15}/> Booked without an account? Find my booking</button>
+   </div>}
+  </section></div>}
+ </>;
+}
