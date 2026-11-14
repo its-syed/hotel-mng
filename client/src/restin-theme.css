@@ -1249,3 +1249,21 @@
     transform:translateX(76px)!important;
   }
 }
+
+
+/* Keep the room booking action beside the room information. */
+.ez-public .ez-room-details-row{
+  display:flex!important;align-items:flex-end!important;justify-content:space-between!important;
+  gap:32px!important;width:100%;
+}
+.ez-public .ez-room-details-content{flex:1 1 auto;min-width:0;}
+.ez-public .ez-room-details-row .ez-room-book-cta{
+  flex:0 0 auto;justify-content:flex-end!important;align-self:flex-end!important;
+  padding:0 0 2px!important;
+}
+.ez-public .ez-room-details-row .ez-room-book-cta .ez-primary-btn{white-space:nowrap;}
+@media(max-width:760px){
+  .ez-public .ez-room-details-row{flex-direction:column!important;align-items:stretch!important;gap:20px!important;}
+  .ez-public .ez-room-details-row .ez-room-book-cta{justify-content:flex-start!important;padding:0!important;}
+  .ez-public .ez-room-details-row .ez-room-book-cta .ez-primary-btn{width:100%;max-width:340px;}
+}
