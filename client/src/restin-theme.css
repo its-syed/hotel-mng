@@ -1101,3 +1101,8 @@
 @media(min-width:1051px){
   .ez-public main>.ez-book-wrap{margin-top:-185px!important}
 }
+
+
+/* Slightly reduce the booking panel heading typography. */
+.ez-public .ez-book-heading .ez-kicker{font-size:10px!important;margin-bottom:5px!important}
+.ez-public .ez-book-heading h2{font-size:26px!important;line-height:1.15!important}
