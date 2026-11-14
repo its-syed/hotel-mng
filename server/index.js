@@ -123,9 +123,10 @@ app.get("/api/public/availability",asyncRoute(async(req,res)=>{
 }));
 app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const account=await guestAccountFromRequest(req,res);if(res.headersSent)return;
- const fullName=account?.fullName||req.body.fullName;
- const phone=account?.phone||normalizePhone(req.body.phone);
- const email=account?.email||req.body.email;
+ if(!account)return res.status(401).json({error:"Please sign in or create an EzyStay account before booking"});
+ const fullName=account.fullName;
+ const phone=account.phone;
+ const email=account.email;
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
  if(!fullName||phone.length<10||phone.length>15||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
@@ -137,7 +138,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]}});
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
- const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account?.id||null}});const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
+ const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account.id}});const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
