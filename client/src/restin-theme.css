@@ -648,3 +648,27 @@
 .ez-public .ez-track-bookings p{margin:0;max-width:620px;color:#e5e0d5;line-height:1.7}
 .ez-public .ez-track-bookings .ez-primary-btn{flex:0 0 auto;white-space:nowrap}
 @media(max-width:700px){.ez-public .ez-track-bookings{padding:54px 6%}.ez-public .ez-track-bookings-inner{align-items:flex-start;flex-direction:column;gap:22px}.ez-public .ez-track-bookings .ez-primary-btn{width:100%;justify-content:center}}
+
+
+/* Reference-number booking tracking */
+.ez-public .ez-track-bookings-inner{align-items:flex-start}
+.ez-public .ez-track-reference{flex:1 1 620px;min-width:0}
+.ez-public .ez-track-account{flex:0 1 350px;padding:28px;border:1px solid rgba(230,220,196,.25);background:rgba(255,255,255,.045)}
+.ez-public .ez-track-account h3{margin:10px 0;color:#fff;font-family:var(--ez-heading-font,Georgia,serif);font-size:25px;font-weight:500}
+.ez-public .ez-track-account p{margin-bottom:20px}
+.ez-public .ez-track-form{margin-top:22px;max-width:690px}
+.ez-public .ez-track-form label{display:block;margin-bottom:9px;color:#f7f2e8;font-size:13px;font-weight:600}
+.ez-public .ez-track-input-row{display:flex;gap:10px}
+.ez-public .ez-track-input-row input{flex:1;min-width:0;height:50px;padding:0 15px;border:1px solid #d5cbb7;border-radius:3px;background:#fffefa;color:#243d33;font:inherit;letter-spacing:.04em;text-transform:uppercase}
+.ez-public .ez-track-input-row input::placeholder{color:#85877e}
+.ez-public .ez-track-input-row .ez-primary-btn{justify-content:center}
+.ez-public .ez-track-error{margin-top:12px!important;color:#ffd0c7!important}
+.ez-public .ez-track-result{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px;padding:20px;background:#f7f2e8;color:#243d33}
+.ez-public .ez-track-result>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ez-public .ez-track-result span{font-size:12px;color:#667267}
+.ez-public .ez-track-result strong{font-size:15px;overflow-wrap:anywhere}
+.ez-public .ez-track-status{color:#243d33}
+.ez-public .ez-track-status.pending{color:#946a24}
+.ez-public .ez-track-status.confirmed,.ez-public .ez-track-status.checked_in,.ez-public .ez-track-status.checked_out{color:#276348}
+.ez-public .ez-track-status.cancelled,.ez-public .ez-track-status.no_show{color:#a13f35}
+@media(max-width:700px){.ez-public .ez-track-input-row{flex-direction:column}.ez-public .ez-track-input-row .ez-primary-btn{width:100%}.ez-public .ez-track-result{grid-template-columns:1fr}.ez-public .ez-track-account{width:100%;box-sizing:border-box}}
