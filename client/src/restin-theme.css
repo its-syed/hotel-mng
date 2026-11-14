@@ -484,3 +484,8 @@
 .ez-guest-password-toggle{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:38px;height:36px;display:grid;place-items:center;border:0;background:transparent;color:#68756b;cursor:pointer}
 .ez-guest-password-toggle:hover{color:#243d33}
 @media(max-width:760px){.ez-public .ez-signin-required{align-items:stretch;flex-direction:column;padding:20px}.ez-public .ez-signin-required .ez-primary-btn{width:100%;justify-content:center}}
+
+.ez-public .ez-booking-account-details{display:grid;gap:5px;margin:8px 0 20px;padding:14px 16px;background:#f2f0e9;border:1px solid #e3ded2}
+.ez-public .ez-booking-account-details b{color:#243d33;font-size:14px}
+.ez-public .ez-booking-account-details span{color:#68746b;font-size:12px}
+.ez-public .ez-booking-account-details small{color:#8b8d83;font-size:10px}
