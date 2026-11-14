@@ -144,13 +144,10 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
  const code=String(req.body.bookingCode||"").trim().toUpperCase();
- const phone=String(req.body.phone||"").replace(/\D/g,"");
- if(!code||!isValidIndianMobile(phone))return res.status(400).json({error:"Enter your booking reference and a valid 10-digit Indian mobile number"});
- const booking=await prisma.reservation.findUnique({where:{bookingCode:code},include:{guest:true,room:true}});
- const savedPhone=String(booking?.guest?.phone||"").replace(/\D/g,"");
- const phoneMatches=savedPhone===phone||(savedPhone.length>=10&&phone.length>=10&&savedPhone.slice(-10)===phone.slice(-10));
- if(!booking||!phoneMatches)return res.status(404).json({error:"We couldn't find a booking with those details. Check your reference and phone number."});
- res.json({bookingCode:booking.bookingCode,status:booking.status,guest:booking.guest.fullName,room:booking.room.number,category:booking.room.category,checkIn:booking.checkIn,checkOut:booking.checkOut,totalAmount:booking.totalAmount,adults:booking.adults,children:booking.children,createdAt:booking.createdAt});
+ if(!code||code.length>40)return res.status(400).json({error:"Enter a valid booking reference number"});
+ const booking=await prisma.reservation.findUnique({where:{bookingCode:code},include:{room:true}});
+ if(!booking)return res.status(404).json({error:"We couldn't find a booking with that reference number. Check it and try again."});
+ res.json({bookingCode:booking.bookingCode,status:booking.status,room:booking.room.number,category:booking.room.category,checkIn:booking.checkIn,checkOut:booking.checkOut});
 }));
 app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
 
