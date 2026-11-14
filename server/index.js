@@ -22,7 +22,7 @@ const jwtSecret=JWT_SECRET||"development-only-change-me";
 const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},jwtSecret,{expiresIn:"12h"});
 const guestTokenFor=account=>jwt.sign({sub:account.id,type:"guest"},jwtSecret,{expiresIn:"30d"});
 const guestAuthenticate=asyncRoute(async(req,res,next)=>{
- const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
  if(!token)return res.status(401).json({error:"Please sign in to your guest account"});
  try{
   const payload=jwt.verify(token,jwtSecret);
@@ -33,7 +33,7 @@ const guestAuthenticate=asyncRoute(async(req,res,next)=>{
  }catch{return res.status(401).json({error:"Your guest session expired. Please sign in again"});}
 });
 const guestAccountFromRequest=async(req,res)=>{
- const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
  if(!token)return null;
  try{
   const payload=jwt.verify(token,jwtSecret);
@@ -43,7 +43,7 @@ const guestAccountFromRequest=async(req,res)=>{
   return account;
  }catch{res.status(401).json({error:"Your guest session is invalid. Please sign in again"});return null;}
 };
-const normalizePhone=value=>String(value||"").replace(/\\D/g,"");
+const normalizePhone=value=>String(value||"").replace(/\D/g,"");
 const authenticate=asyncRoute(async(req,res,next)=>{
  if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true};return next();}
  const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
@@ -65,7 +65,7 @@ app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
  const phone=normalizePhone(req.body.phone);
  const email=String(req.body.email||"").trim().toLowerCase();
  const password=String(req.body.password||"");
- if(!fullName||phone.length<10||phone.length>15||!/^\\S+@\\S+\\.\\S+$/.test(email)||password.length<8)
+ if(!fullName||phone.length<10||phone.length>15||!/^\S+@\S+\.\S+$/.test(email)||password.length<8)
   return res.status(400).json({error:"Enter your name, a valid phone number, email and a password of at least 8 characters"});
  const existing=await prisma.guestAccount.findFirst({where:{OR:[{email},{phone}]}});
  if(existing)return res.status(409).json({error:"An account already exists with this email or phone number. Please sign in instead."});
