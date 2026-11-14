@@ -1106,3 +1106,51 @@
 /* Slightly reduce the booking panel heading typography. */
 .ez-public .ez-book-heading .ez-kicker{font-size:10px!important;margin-bottom:5px!important}
 .ez-public .ez-book-heading h2{font-size:26px!important;line-height:1.15!important}
+
+ 
+/* Single-room showcase with segmented room-type navigation. */
+.ez-public .ez-room-type-switch{
+  display:flex;justify-content:center;align-items:center;gap:8px;
+  margin:28px auto 24px;flex-wrap:wrap;
+}
+.ez-public .ez-room-type-switch button{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid #d9d5cc;background:transparent;color:#5f6259;
+  padding:11px 19px;border-radius:999px;cursor:pointer;
+  font:600 13px/1.2 'DM Sans',Arial,sans-serif;
+  transition:background .2s ease,color .2s ease,border-color .2s ease;
+}
+.ez-public .ez-room-type-switch button span{font-size:10px;letter-spacing:.08em;color:#a66e50}
+.ez-public .ez-room-type-switch button.active,
+.ez-public .ez-room-type-switch button[aria-selected="true"]{
+  background:#243d33;border-color:#243d33;color:#fff;
+}
+.ez-public .ez-room-type-switch button.active span,
+.ez-public .ez-room-type-switch button[aria-selected="true"] span{color:#e4c49b}
+.ez-public .ez-room-preview-grid.ez-room-preview-single{
+  display:block!important;max-width:1040px;margin:0 auto!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single article{
+  display:grid!important;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  align-items:stretch;gap:0;max-width:100%;margin:0 auto;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-demo-gallery{min-width:0}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(24px,4vw,48px)!important;
+}
+.ez-public .ez-room-type-navigation{
+  display:flex;align-items:center;justify-content:center;gap:24px;margin:22px auto 0;
+  color:#77766d;font:500 12px 'DM Sans',Arial,sans-serif;
+}
+.ez-public .ez-room-type-navigation button{
+  display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;
+  color:#243d33;padding:8px 4px;cursor:pointer;font:600 12px 'DM Sans',Arial,sans-serif;
+}
+.ez-public .ez-room-type-navigation button:hover{color:#a66e50}
+@media(max-width:760px){
+  .ez-public .ez-room-type-switch{gap:6px;margin:20px auto}
+  .ez-public .ez-room-type-switch button{padding:10px 13px;font-size:12px}
+  .ez-public .ez-room-preview-grid.ez-room-preview-single article{grid-template-columns:1fr}
+  .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy{padding:22px!important}
+}
