@@ -1154,3 +1154,37 @@
   .ez-public .ez-room-preview-grid.ez-room-preview-single article{grid-template-columns:1fr}
   .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy{padding:22px!important}
 }
+
+
+/* Room showcase: large full-width photography, room details underneath. */
+.ez-public .ez-room-preview-grid.ez-room-preview-single article{
+  display:flex!important;flex-direction:column!important;gap:0!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-demo-gallery{
+  width:100%!important;min-width:0!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-gallery-main{
+  display:block!important;width:100%!important;
+  height:clamp(360px,52vw,620px)!important;min-height:360px!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-gallery-main img{
+  display:block;width:100%!important;height:100%!important;object-fit:cover!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-photo-arrow{
+  top:50%!important;transform:translateY(-50%)!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-photo-arrow:hover{
+  transform:translateY(-50%) scale(1.06)!important;
+}
+.ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy{
+  width:100%!important;box-sizing:border-box;
+  padding:30px clamp(22px,4vw,48px) 34px!important;
+}
+@media(max-width:760px){
+  .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-gallery-main{
+    height:clamp(260px,72vw,420px)!important;min-height:260px!important;
+  }
+  .ez-public .ez-room-preview-grid.ez-room-preview-single .ez-room-preview-copy{
+    padding:22px!important;
+  }
+}
