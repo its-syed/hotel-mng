@@ -8,8 +8,9 @@ const parseKey=value=>{if(!value)return null;const [y,m,d]=String(value).slice(0
 const monthLabel=d=>d.toLocaleDateString("en-IN",{month:"long",year:"numeric"});
 const displayDate=value=>{const d=parseKey(value);return d?d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):""};
 
-export default function DatePicker({value="",onChange,min="",placeholder="Pick a date",className="",disabled=false,required=false,ariaLabel="Choose date",id}) {
+export default function DatePicker({value="",onChange,min="",placeholder="Pick a date",className="",disabled=false,required=false,ariaLabel="Choose date",id,openRequest=0}) {
  const [open,setOpen]=useState(false);
+ useEffect(()=>{if(openRequest)setOpen(true)},[openRequest]);
  const [visible,setVisible]=useState(()=>parseKey(value)||parseKey(min)||new Date());
  const [popoverStyle,setPopoverStyle]=useState(null);
  const root=useRef(null);
