@@ -1241,3 +1241,11 @@
     transform:translateY(-46px)!important;
   }
 }
+
+
+/* Shift the desktop availability panel 2cm to the right without resizing it. */
+@media(min-width:1051px){
+  .ez-public main>.ez-book-wrap{
+    transform:translateX(76px)!important;
+  }
+}
