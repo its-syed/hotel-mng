@@ -932,11 +932,11 @@
 
 /* Booking search refinement: stronger hierarchy across every field, not only the title. */
 .ez-public main>.ez-book-wrap{
-  padding:38px 42px 36px!important;
+  padding:27px 32px 30px!important;
 }
 .ez-public .ez-book-heading{
   align-items:center!important;
-  margin-bottom:25px!important;
+  margin-bottom:17px!important;
 }
 .ez-public .ez-book-heading .ez-kicker{
   display:block;
@@ -1054,12 +1054,12 @@
   font-size:11px!important;
 }
 @media(max-width:1050px){
-  .ez-public main>.ez-book-wrap{padding:30px 28px!important}
+  .ez-public main>.ez-book-wrap{padding:24px!important}
   .ez-public .ez-search-form{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .ez-public .ez-auto-check-status{grid-column:1/-1}
 }
 @media(max-width:700px){
-  .ez-public main>.ez-book-wrap{padding:25px 18px 27px!important}
+  .ez-public main>.ez-book-wrap{padding:22px 17px!important}
   .ez-public .ez-book-heading{align-items:flex-start!important;gap:12px!important}
   .ez-public .ez-book-heading h2{font-size:30px!important}
   .ez-public .ez-secure-note{font-size:12px!important}
