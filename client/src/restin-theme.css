@@ -916,3 +916,16 @@
   .ez-public .ez-hero-copy{width:100%!important;max-width:100%!important}
   .ez-public .ez-hero-copy h1{font-size:clamp(48px,12vw,72px)!important}
 }
+
+
+/* Keep carousel arrows at the horizontal edges, vertically centred. */
+.ez-public .ez-hero-arrow:first-child{
+  left:clamp(18px,4vw,56px)!important;
+  right:auto!important;
+  top:50%!important;
+}
+.ez-public .ez-hero-arrow:last-child{
+  right:clamp(18px,4vw,56px)!important;
+  left:auto!important;
+  top:50%!important;
+}
