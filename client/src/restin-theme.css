@@ -1072,17 +1072,3 @@
   .ez-public .ez-date-time-note{font-size:13px!important;flex-wrap:wrap}
   .ez-public .ez-auto-check-status{grid-column:1/-1;min-height:54px!important}
 }
-
-/* Room collection switcher: one focused room type at a time. */
-.ez-public .ez-room-tabs{display:flex;align-items:center;justify-content:center;gap:9px;width:max-content;max-width:100%;margin:28px auto 30px;padding:6px;border:1px solid #e4e0d8;border-radius:999px;background:#f1efe9}
-.ez-public .ez-room-tabs button{display:flex;align-items:center;gap:9px;min-height:44px;padding:0 23px;border:1px solid transparent;border-radius:999px;background:transparent;color:#625f56;font:600 13px/1 'DM Sans',Arial,sans-serif;cursor:pointer;transition:background .2s ease,color .2s ease,box-shadow .2s ease}
-.ez-public .ez-room-tabs button span{color:#a66e50;font-size:10px;letter-spacing:.08em}
-.ez-public .ez-room-tabs button.active{background:#292923;color:#fffaf2;border-color:#292923;box-shadow:0 4px 12px rgba(35,31,25,.13)}
-.ez-public .ez-room-tabs button.active span{color:#d7ad91}
-.ez-public .ez-room-preview-grid{width:min(1040px,100%)!important;max-width:1040px!important;grid-template-columns:minmax(0,1fr)!important;margin:0 auto!important}
-.ez-public .ez-room-preview-grid article{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(280px,.88fr);align-items:stretch;overflow:hidden}
-.ez-public .ez-room-preview-grid .ez-demo-gallery{min-width:0}
-.ez-public .ez-room-preview-grid .ez-gallery-main{height:100%;min-height:390px}
-.ez-public .ez-room-preview-grid .ez-room-preview-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(28px,4vw,52px)!important}
-.ez-public .ez-room-preview-copy h3{font-size:clamp(28px,3vw,38px)!important}
-@media(max-width:700px){.ez-public .ez-room-tabs{width:100%;justify-content:space-between;gap:3px;margin:22px auto;padding:4px}.ez-public .ez-room-tabs button{flex:1;justify-content:center;gap:5px;min-height:42px;padding:0 9px;font-size:12px}.ez-public .ez-room-preview-grid article{grid-template-columns:1fr}.ez-public .ez-room-preview-grid .ez-gallery-main{height:260px;min-height:260px}.ez-public .ez-room-preview-grid .ez-room-preview-copy{padding:22px!important}}
