@@ -18,7 +18,32 @@ app.get("/api/health", (_req,res) => res.json({ ok:true, service:"StaySuite HMS 
 
 const JWT_SECRET=process.env.JWT_SECRET;
 if(!JWT_SECRET) console.warn("JWT_SECRET is not configured. Set it before use.");
-const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},JWT_SECRET||"development-only-change-me",{expiresIn:"12h"});
+const jwtSecret=JWT_SECRET||"development-only-change-me";
+const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},jwtSecret,{expiresIn:"12h"});
+const guestTokenFor=account=>jwt.sign({sub:account.id,type:"guest"},jwtSecret,{expiresIn:"30d"});
+const guestAuthenticate=asyncRoute(async(req,res,next)=>{
+ const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ if(!token)return res.status(401).json({error:"Please sign in to your guest account"});
+ try{
+  const payload=jwt.verify(token,jwtSecret);
+  if(payload.type!=="guest")return res.status(401).json({error:"Invalid guest session"});
+  const account=await prisma.guestAccount.findUnique({where:{id:payload.sub}});
+  if(!account||!account.active)return res.status(401).json({error:"Guest account is inactive"});
+  req.guestAccount=account;next();
+ }catch{return res.status(401).json({error:"Your guest session expired. Please sign in again"});}
+});
+const guestAccountFromRequest=async(req,res)=>{
+ const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ if(!token)return null;
+ try{
+  const payload=jwt.verify(token,jwtSecret);
+  if(payload.type!=="guest")throw new Error("Invalid guest session");
+  const account=await prisma.guestAccount.findUnique({where:{id:payload.sub}});
+  if(!account||!account.active)throw new Error("Guest account is inactive");
+  return account;
+ }catch{res.status(401).json({error:"Your guest session is invalid. Please sign in again"});return null;}
+};
+const normalizePhone=value=>String(value||"").replace(/\\D/g,"");
 const authenticate=asyncRoute(async(req,res,next)=>{
  if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true};return next();}
  const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
@@ -34,6 +59,57 @@ app.post("/api/auth/login",asyncRoute(async(req,res)=>{
  res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role}});
 }));
 app.get("/api/auth/me",authenticate,(req,res)=>res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role}));
+
+app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
+ const fullName=String(req.body.fullName||"").trim();
+ const phone=normalizePhone(req.body.phone);
+ const email=String(req.body.email||"").trim().toLowerCase();
+ const password=String(req.body.password||"");
+ if(!fullName||phone.length<10||phone.length>15||!/^\\S+@\\S+\\.\\S+$/.test(email)||password.length<8)
+  return res.status(400).json({error:"Enter your name, a valid phone number, email and a password of at least 8 characters"});
+ const existing=await prisma.guestAccount.findFirst({where:{OR:[{email},{phone}]}});
+ if(existing)return res.status(409).json({error:"An account already exists with this email or phone number. Please sign in instead."});
+ const account=await prisma.guestAccount.create({data:{fullName,phone,email,passwordHash:await bcrypt.hash(password,12)}});
+ res.status(201).json({token:guestTokenFor(account),user:{id:account.id,fullName:account.fullName,phone:account.phone,email:account.email}});
+}));
+app.post("/api/guest/auth/login",asyncRoute(async(req,res)=>{
+ const email=String(req.body.email||"").trim().toLowerCase();
+ const password=String(req.body.password||"");
+ if(!email||!password)return res.status(400).json({error:"Email and password are required"});
+ const account=await prisma.guestAccount.findUnique({where:{email}});
+ if(!account||!account.active||!(await bcrypt.compare(password,account.passwordHash)))return res.status(401).json({error:"Invalid email or password"});
+ res.json({token:guestTokenFor(account),user:{id:account.id,fullName:account.fullName,phone:account.phone,email:account.email}});
+}));
+app.get("/api/guest/me",guestAuthenticate,(req,res)=>res.json({id:req.guestAccount.id,fullName:req.guestAccount.fullName,phone:req.guestAccount.phone,email:req.guestAccount.email}));
+app.get("/api/guest/bookings",guestAuthenticate,asyncRoute(async(req,res)=>{
+ const guests=await prisma.guest.findMany({where:{guestAccountId:req.guestAccount.id},include:{reservations:{include:{room:true},orderBy:{createdAt:"desc"}}}});
+ const bookings=guests.flatMap(g=>g.reservations.map(r=>({bookingCode:r.bookingCode,status:r.status,guest:g.fullName,room:r.room.number,category:r.room.category,checkIn:r.checkIn,checkOut:r.checkOut,totalAmount:r.totalAmount,adults:r.adults,children:r.children,createdAt:r.createdAt}))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+ res.json({bookings});
+}));
+
+const guestOtpStore=new Map();
+const guestOtpEnabled=process.env.NODE_ENV!=="production"&&process.env.DEV_GUEST_OTP==="true";
+app.post("/api/public/guest-otp/request",asyncRoute(async(req,res)=>{
+ const phone=normalizePhone(req.body.phone);
+ if(phone.length<10||phone.length>15)return res.status(400).json({error:"Enter a valid mobile number"});
+ if(!guestOtpEnabled)return res.status(503).json({error:"Phone verification is not configured yet. Please use your booking reference or sign in to your guest account."});
+ const previous=guestOtpStore.get(phone);
+ if(previous&&Date.now()-previous.sentAt<30000)return res.status(429).json({error:"Please wait 30 seconds before requesting another code"});
+ guestOtpStore.set(phone,{code:"123456",sentAt:Date.now(),expiresAt:Date.now()+10*60*1000,attempts:0});
+ res.json({success:true,message:"Development OTP generated. Use 123456 to test.",devOtp:"123456"});
+}));
+app.post("/api/public/guest-otp/verify",asyncRoute(async(req,res)=>{
+ const phone=normalizePhone(req.body.phone),code=String(req.body.code||"").trim();
+ const saved=guestOtpStore.get(phone);
+ if(!saved||saved.expiresAt<Date.now()||saved.attempts>=5)return res.status(400).json({error:"Your code has expired. Request a new code."});
+ if(code!==saved.code){saved.attempts+=1;return res.status(400).json({error:"That verification code is incorrect"});}
+ guestOtpStore.delete(phone);
+ const candidates=await prisma.guest.findMany({where:{phone:{contains:phone.slice(-10)}},include:{reservations:{include:{room:true},orderBy:{createdAt:"desc"}}}});
+ const matching=candidates.filter(g=>normalizePhone(g.phone)===phone||normalizePhone(g.phone).slice(-10)===phone.slice(-10));
+ const bookings=matching.flatMap(g=>g.reservations.map(r=>({bookingCode:r.bookingCode,status:r.status,guest:g.fullName,room:r.room.number,category:r.room.category,checkIn:r.checkIn,checkOut:r.checkOut,totalAmount:r.totalAmount,adults:r.adults,children:r.children,createdAt:r.createdAt}))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+ res.json({success:true,bookings});
+}));
+
 app.get("/api/public/availability",asyncRoute(async(req,res)=>{
  const {checkIn,checkOut}=req.query;const start=new Date(checkIn),end=new Date(checkOut);
  if(!checkIn||!checkOut||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Choose valid check-in and check-out dates"});
@@ -46,7 +122,11 @@ app.get("/api/public/availability",asyncRoute(async(req,res)=>{
  res.json(rooms.filter(r=>!busy.has(r.id)&&(r.occupancyStatus!=="OCCUPIED"||activeStayRooms.has(r.id))).map(r=>({id:r.id,number:r.number,category:r.category,rate:r.rate})));
 }));
 app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
- const {fullName,phone,email,roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
+ const account=await guestAccountFromRequest(req,res);if(res.headersSent)return;
+ const fullName=account?.fullName||req.body.fullName;
+ const phone=account?.phone||req.body.phone;
+ const email=account?.email||req.body.email;
+ const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
  if(!fullName||!phone||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Complete guest details and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
  if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
@@ -57,7 +137,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]}});
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
- const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null}});const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
+ const result=await prisma.$transaction(async tx=>{const guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account?.id||null}});const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
