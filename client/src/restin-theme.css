@@ -1081,3 +1081,17 @@
     margin:-223px auto 0!important;
   }
 }
+
+
+/* Reduce the desktop booking panel's vertical footprint by about 2cm. */
+@media(min-width:1051px){
+  .ez-public main>.ez-book-wrap{padding-top:0!important;padding-bottom:0!important}
+  .ez-public .ez-book-heading{margin-bottom:8px!important}
+  .ez-public .ez-book-heading h2{font-size:30px!important}
+  .ez-public .ez-search-form select,
+  .ez-public .ez-date-trigger,
+  .ez-public .ez-auto-check-status{
+    min-height:44px!important;height:44px!important;
+  }
+  .ez-public .ez-date-time-note{margin-top:6px!important}
+}
