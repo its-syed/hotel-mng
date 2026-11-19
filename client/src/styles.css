@@ -2798,6 +2798,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-room-preview-copy>span{background:#edf1eb;color:var(--ez-forest);border-radius:5px}
 .ez-public .ez-location-map{background:var(--ez-white);border:4px solid rgba(243,241,232,.9);border-radius:10px;overflow:hidden}
 .ez-public .ez-location-directions{background:var(--ez-ivory);color:var(--ez-forest);border:1px solid var(--ez-ivory);border-radius:7px}
+.ez-public .ez-location-copy > a.ez-location-directions{display:inline-flex!important;visibility:visible!important;opacity:1!important;position:relative;z-index:5;align-items:center;gap:10px;margin:8px 0 4px;padding:13px 18px;background:var(--ez-ivory)!important;color:var(--ez-forest)!important;border:1px solid var(--ez-ivory)!important;text-decoration:none!important;line-height:1.3;white-space:nowrap;cursor:pointer}
 .ez-public .ez-cta-band h2,
 .ez-public .ez-cta-band p,
 .ez-public .ez-cta-band .ez-kicker{color:var(--ez-charcoal)!important}
