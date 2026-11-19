@@ -1280,3 +1280,7 @@
 /* Slightly reduce the check-in / check-out timing note. */
 .ez-public .ez-date-time-note{font-size:11px!important;}
 .ez-public .ez-date-time-note svg{width:13px!important;height:13px!important;}
+
+
+/* Add breathing room above the PLAN YOUR STAY heading. */
+.ez-public main>.ez-book-wrap{padding-top:24px!important;}
