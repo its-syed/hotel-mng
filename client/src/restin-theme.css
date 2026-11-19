@@ -1487,3 +1487,14 @@
     white-space:normal!important;
   }
 }
+
+
+/* Availability results: keep room prices crisp and easy to scan in DM Sans. */
+.ez-public .ez-room-option .ez-room-price b{
+  font-family:'DM Sans',Arial,sans-serif!important;
+  font-size:18px!important;
+  font-weight:700!important;
+  letter-spacing:-.025em!important;
+  line-height:1.25!important;
+  font-variant-numeric:tabular-nums!important;
+}
