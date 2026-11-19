@@ -1441,3 +1441,15 @@
     right:calc(70% + 12px)!important;
   }
 }
+
+/* Raise the customer booking search panel by 2cm (about 76px). */
+@media(min-width:1051px){
+  .ez-public main>.ez-book-wrap{
+    transform:translate(76px,-76px)!important;
+  }
+}
+@media(max-width:1050px){
+  .ez-public main>.ez-book-wrap{
+    transform:translateY(-76px)!important;
+  }
+}
