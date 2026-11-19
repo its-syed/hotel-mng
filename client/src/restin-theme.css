@@ -1350,3 +1350,10 @@
   justify-content:flex-start!important;
   line-height:0!important;
 }
+
+
+/* Keep the first hero headline phrase on a single line at every viewport. */
+.ez-public .ez-hero-copy h1 .ez-hero-headline-first-line{
+  display:inline-block!important;
+  white-space:nowrap!important;
+}
