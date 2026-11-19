@@ -1472,3 +1472,18 @@
     line-height:1.65!important;
   }
 }
+
+/* Give the hero description enough actual width to wrap into two lines. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-copy{
+    width:min(600px,46%)!important;
+    max-width:600px!important;
+  }
+  .ez-public .ez-hero-copy>p{
+    width:100%!important;
+    max-width:580px!important;
+    font-size:13px!important;
+    line-height:1.65!important;
+    white-space:normal!important;
+  }
+}
