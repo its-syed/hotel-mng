@@ -3231,3 +3231,21 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 /* Slightly reduce the Check availability heading size. */
 @media(min-width:651px){.ez-public .ez-book-heading h2{font-size:27px}}
+
+
+/* Ensure the Get directions label has a strong readable foreground on its light button. */
+.ez-public .ez-location-copy > a.ez-location-directions,
+.ez-public .ez-location-copy > a.ez-location-directions:link,
+.ez-public .ez-location-copy > a.ez-location-directions:visited,
+.ez-public .ez-location-copy > a.ez-location-directions:hover,
+.ez-public .ez-location-copy > a.ez-location-directions:focus-visible {
+  background-color: #F3F1E8 !important;
+  color: #243D33 !important;
+  -webkit-text-fill-color: #243D33 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+.ez-public .ez-location-copy > a.ez-location-directions svg {
+  color: #243D33 !important;
+  stroke: #243D33 !important;
+}
