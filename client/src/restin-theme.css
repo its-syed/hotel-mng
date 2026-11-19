@@ -1362,3 +1362,12 @@
   display:inline-block!important;
   white-space:nowrap!important;
 }
+
+
+/* Move the complete desktop hero welcome copy upward into the available space.
+   The booking search panel remains completely untouched. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-copy{
+    transform:translateY(-105px)!important;
+  }
+}
