@@ -1284,3 +1284,14 @@
 
 /* Add breathing room above the PLAN YOUR STAY heading. */
 .ez-public main>.ez-book-wrap{padding-top:24px!important;}
+
+
+/* Keep the overlapping availability panel below the full hero message. */
+@media(min-width:1051px){
+  .ez-public main>.ez-book-wrap{
+    margin-top:-88px!important;
+  }
+  .ez-public .ez-hero-copy{
+    transform:translateY(-24px)!important;
+  }
+}
