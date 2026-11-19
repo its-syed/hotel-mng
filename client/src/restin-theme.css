@@ -1503,7 +1503,7 @@
 /* Keep the My Account title and close control visible while the dialog scrolls. */
 .ez-guest-dialog-head{
   position:sticky;
-  top:0;
+  top:-30px;
   z-index:5;
   background:#f8f7f1;
   padding-top:30px;
@@ -1560,6 +1560,7 @@
 }
 @media(max-width:720px){
   .ez-guest-dialog-head{
+    top:-22px;
     padding-top:22px;
     margin-top:-22px;
   }
