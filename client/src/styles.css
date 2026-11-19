@@ -3071,3 +3071,50 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   line-height: 1.5;
   font-weight: 400;
 }
+
+
+/* Track Booking: keep the returned details readable and show lookup errors. */
+.ez-public .ez-track-result{
+  background:#f7f8f3!important;
+  color:#293d37!important;
+  border:1px solid #e5e9df!important;
+}
+.ez-public .ez-track-result .ez-track-result-top h3{
+  color:#25473c!important;
+}
+.ez-public .ez-track-result .ez-track-details span{
+  color:#748178!important;
+}
+.ez-public .ez-track-result .ez-track-details strong{
+  color:#344b40!important;
+}
+.ez-public .ez-track-result .ez-status-pill{
+  color:#8b653b!important;
+  background:#f3ead9!important;
+}
+.ez-public .ez-track-result .ez-status-pill.confirmed,
+.ez-public .ez-track-result .ez-status-pill.checked_in,
+.ez-public .ez-track-result .ez-status-pill.checked_out{
+  color:#39724d!important;
+  background:#e4f0e6!important;
+}
+.ez-public .ez-track-result .ez-status-pill.cancelled,
+.ez-public .ez-track-result .ez-status-pill.no_show{
+  color:#a04f42!important;
+  background:#f9e8e4!important;
+}
+.ez-public .ez-track-result .ez-track-help{
+  color:#748178!important;
+  border-color:#e2e7de!important;
+}
+.ez-public .ez-track-error{
+  display:block!important;
+  margin:12px 0 0!important;
+  padding:10px 12px!important;
+  border:1px solid #e6c7bf!important;
+  border-radius:7px!important;
+  background:#fff4f1!important;
+  color:#9b3f32!important;
+  font-size:13px!important;
+  line-height:1.5!important;
+}
