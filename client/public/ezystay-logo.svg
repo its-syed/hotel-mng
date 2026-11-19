@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 190" role="img" aria-labelledby="title">
+  <title id="title">EzyStay</title>
+  <g fill="none" stroke="#17452f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M48 66 120 22l72 44"/>
+    <path d="M65 106v-9a9 9 0 0 1 9-9h15a13 13 0 0 1 13 13v5"/>
+    <path d="M65 105h102a13 13 0 0 1 13 13v13H65z"/>
+    <path d="M65 105v27M180 118v14"/>
+  </g>
+  <text x="120" y="174" text-anchor="middle" fill="#17452f" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="600" letter-spacing="-1.2">EzyStay</text>
+</svg>
