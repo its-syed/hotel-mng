@@ -3249,3 +3249,21 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   color: #243D33 !important;
   stroke: #243D33 !important;
 }
+
+
+/* Get directions: white label and icon on a forest-green button. */
+.ez-public .ez-location-copy > a.ez-location-directions,
+.ez-public .ez-location-copy > a.ez-location-directions:link,
+.ez-public .ez-location-copy > a.ez-location-directions:visited,
+.ez-public .ez-location-copy > a.ez-location-directions:hover,
+.ez-public .ez-location-copy > a.ez-location-directions:focus-visible {
+  background-color: #243D33 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+}
+.ez-public .ez-location-copy > a.ez-location-directions svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
