@@ -1267,23 +1267,3 @@
   .ez-public .ez-room-details-row .ez-room-book-cta{justify-content:flex-start!important;padding:0!important;}
   .ez-public .ez-room-details-row .ez-room-book-cta .ez-primary-btn{width:100%;max-width:340px;}
 }
-
-/* PLAN YOUR STAY: remove individual field boxes while keeping the search layout unchanged. */
-.ez-public .ez-search-form .ez-date-trigger,
-.ez-public .ez-search-form select{
-  border:0!important;
-  border-color:transparent!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  padding-left:0!important;
-  padding-right:0!important;
-}
-.ez-public .ez-search-form .ez-date-trigger:focus,
-.ez-public .ez-search-form .ez-date-trigger:focus-visible,
-.ez-public .ez-search-form select:focus{
-  outline:none!important;
-  border:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-}
