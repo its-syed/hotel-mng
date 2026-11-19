@@ -1458,3 +1458,8 @@
 .ez-public .ez-book-heading h2{
   font-size:24px!important;
 }
+
+/* Add a small bottom gap below the check-in / check-out timing note. */
+.ez-public .ez-date-time-note{
+  padding-bottom:5px!important;
+}
