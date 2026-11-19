@@ -1284,3 +1284,24 @@
 
 /* Add breathing room above the PLAN YOUR STAY heading. */
 .ez-public main>.ez-book-wrap{padding-top:24px!important;}
+
+
+/* Hero copy fit: keep the welcome text clear of the booking panel.
+   Intentionally does not alter the booking panel's position, size or alignment. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-copy{
+    width:min(560px,68%)!important;
+    max-width:560px!important;
+    transform:translateY(-72px)!important;
+  }
+  .ez-public .ez-hero-copy h1{
+    font-size:clamp(52px,5.2vw,72px)!important;
+    line-height:1.04!important;
+    margin:12px 0 13px!important;
+  }
+  .ez-public .ez-hero-copy>p{
+    max-width:360px!important;
+    font-size:13px!important;
+    line-height:1.7!important;
+  }
+}
