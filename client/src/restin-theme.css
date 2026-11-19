@@ -1463,3 +1463,12 @@
 .ez-public .ez-date-time-note{
   padding-bottom:5px!important;
 }
+
+/* Keep the hero supporting sentence to two comfortable lines on desktop. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-copy>p{
+    max-width:480px!important;
+    font-size:14px!important;
+    line-height:1.65!important;
+  }
+}
