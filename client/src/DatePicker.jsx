@@ -37,8 +37,9 @@ export default function DatePicker({value="",onChange,min="",placeholder="Pick a
   };
   place();
   window.addEventListener("resize",place);
-  window.addEventListener("scroll",place,true);
-  return()=>{window.removeEventListener("resize",place);window.removeEventListener("scroll",place,true)};
+  const closeOnScroll=()=>setOpen(false);
+  window.addEventListener("scroll",closeOnScroll,true);
+  return()=>{window.removeEventListener("resize",place);window.removeEventListener("scroll",closeOnScroll,true)};
  },[open]);
 
  useEffect(()=>{
