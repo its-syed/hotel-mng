@@ -3118,3 +3118,111 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   font-size:13px!important;
   line-height:1.5!important;
 }
+
+/* Track Booking section — current PublicBooking.jsx markup */
+.ez-public .ez-track-bookings{
+  width:100%;
+  padding:76px max(5vw,24px);
+  background:var(--ez-ivory,#f3f1e8);
+}
+.ez-public .ez-track-bookings-inner{
+  width:min(1240px,100%);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(260px,.85fr);
+  gap:clamp(24px,5vw,64px);
+  align-items:start;
+}
+.ez-public .ez-track-reference,
+.ez-public .ez-track-account{
+  min-width:0;
+}
+.ez-public .ez-track-reference h2{
+  margin:12px 0;
+  color:var(--ez-forest,#243d33);
+  font-family:inherit;
+  font-size:clamp(30px,3.5vw,42px);
+  line-height:1.12;
+}
+.ez-public .ez-track-reference>p,
+.ez-public .ez-track-account p{
+  color:var(--ez-charcoal,#343a38);
+  font-size:14px;
+  line-height:1.75;
+  max-width:620px;
+}
+.ez-public .ez-track-form{
+  display:block;
+  margin-top:24px;
+}
+.ez-public .ez-track-form>label{
+  display:block;
+  margin-bottom:8px;
+  color:var(--ez-charcoal,#343a38);
+  font-size:12px;
+  font-weight:700;
+}
+.ez-public .ez-track-input-row{
+  display:flex;
+  align-items:stretch;
+  gap:10px;
+}
+.ez-public .ez-track-input-row input{
+  flex:1 1 auto;
+  width:100%;
+  min-width:0;
+  height:48px;
+  padding:0 14px;
+  border:1px solid #d9ded5;
+  border-radius:4px;
+  background:#fff;
+  color:#293d37;
+  font:inherit;
+}
+.ez-public .ez-track-input-row .ez-primary-btn{
+  flex:0 0 auto;
+  min-height:48px;
+  white-space:nowrap;
+}
+.ez-public .ez-track-account{
+  padding:26px;
+  border:1px solid rgba(36,61,51,.16);
+  background:rgba(255,255,255,.58);
+}
+.ez-public .ez-track-account h3{
+  margin:12px 0;
+  color:var(--ez-forest,#243d33);
+  font-size:22px;
+  line-height:1.2;
+}
+.ez-public .ez-track-account .ez-primary-btn{margin-top:10px}
+.ez-public .ez-track-bookings .ez-track-error{
+  display:block;
+  margin:12px 0 0;
+  padding:12px 14px;
+  border:1px solid #e6c7bf;
+  border-radius:4px;
+  background:#fff4f1;
+  color:#9b3f32;
+  font-size:13px;
+  line-height:1.5;
+}
+.ez-public .ez-track-bookings .ez-track-result{
+  display:block;
+  margin-top:18px;
+  padding:18px;
+  border:1px solid #e5e9df;
+  background:#fff;
+  color:#293d37;
+}
+.ez-public .ez-track-bookings .ez-track-result-top h3{color:#25473c}
+@media(max-width:760px){
+  .ez-public .ez-track-bookings{padding:54px 20px}
+  .ez-public .ez-track-bookings-inner{grid-template-columns:1fr;gap:24px}
+  .ez-public .ez-track-account{padding:20px}
+}
+@media(max-width:520px){
+  .ez-public .ez-track-input-row{flex-direction:column}
+  .ez-public .ez-track-input-row .ez-primary-btn{width:100%;justify-content:center}
+}
+
