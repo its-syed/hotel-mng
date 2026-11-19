@@ -1305,3 +1305,31 @@
     line-height:1.7!important;
   }
 }
+
+
+/* Compact stacked EzyStay identity: icon above the wordmark. */
+.ez-public .ez-brand{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  line-height:0;
+}
+.ez-public .ez-brand-logo{
+  display:block;
+  width:82px;
+  height:76px;
+  max-width:82px;
+  object-fit:contain;
+}
+.ez-public .ez-footer .ez-brand-logo-footer{
+  width:76px;
+  height:70px;
+  max-width:76px;
+}
+@media(max-width:1050px){
+  .ez-public .ez-brand-logo{width:76px;height:72px;max-width:76px}
+}
+@media(max-width:520px){
+  .ez-public .ez-brand-logo{width:68px;height:66px;max-width:68px}
+}
