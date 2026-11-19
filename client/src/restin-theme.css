@@ -1371,3 +1371,22 @@
     transform:translateY(-105px)!important;
   }
 }
+
+
+/* Desktop editorial hero: give the photograph 70% of the banner while keeping the welcome copy on the left. */
+@media(min-width:1051px){
+  .ez-public .ez-hero-background{
+    width:70%!important;
+  }
+  .ez-public main>.ez-hero::after{
+    background:linear-gradient(90deg,#f7f5ef 0%,#f7f5ef 24%,rgba(247,245,239,.96) 30%,rgba(247,245,239,.72) 35%,rgba(247,245,239,.18) 42%,rgba(247,245,239,0) 48%)!important;
+  }
+  .ez-public .ez-hero-copy{
+    width:min(520px,40%)!important;
+    max-width:520px!important;
+  }
+  .ez-public .ez-hero-arrow:first-child{
+    left:auto!important;
+    right:calc(70% + 12px)!important;
+  }
+}
