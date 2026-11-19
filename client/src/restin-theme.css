@@ -1267,3 +1267,12 @@
   .ez-public .ez-room-details-row .ez-room-book-cta{justify-content:flex-start!important;padding:0!important;}
   .ez-public .ez-room-details-row .ez-room-book-cta .ez-primary-btn{width:100%;max-width:340px;}
 }
+
+/* Remove only the secondary frame around the availability fields.
+   Individual date and guest controls retain their own borders and styling. */
+.ez-public .ez-search-form{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
