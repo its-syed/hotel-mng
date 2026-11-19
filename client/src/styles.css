@@ -3048,3 +3048,26 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-amenity-tags span {
   font-size: 11px;
 }
+
+
+/* Keep the booking confirmation and stay-total summary in the standard UI font. */
+.ez-public .ez-confirmation h3,
+.ez-public .ez-submit-row > div > b,
+.ez-public .ez-submit-row > div > small {
+  font-family: Inter, Arial, sans-serif !important;
+}
+.ez-public .ez-confirmation h3 {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.ez-public .ez-submit-row > div > b {
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+.ez-public .ez-submit-row > div > small {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 400;
+}
