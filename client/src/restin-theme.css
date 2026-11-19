@@ -1599,3 +1599,76 @@
 .ez-public .ez-track-result-close:hover{
   background:rgba(36,61,51,.1);
 }
+
+
+/* Navigation refinements: clear active tab, forest booking CTA, balanced account control. */
+.ez-public .ez-nav-links>a:not(.ez-nav-book){
+  position:relative;
+  color:#625f56;
+  transition:color .2s ease;
+}
+.ez-public .ez-nav-links>a:not(.ez-nav-book):hover,
+.ez-public .ez-nav-links>a:not(.ez-nav-book).active{
+  color:#243d33!important;
+}
+.ez-public .ez-nav-links>a:not(.ez-nav-book)::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:5px;
+  height:2px;
+  background:#496b55;
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:transform .22s ease;
+}
+.ez-public .ez-nav-links>a:not(.ez-nav-book):hover::after,
+.ez-public .ez-nav-links>a:not(.ez-nav-book).active::after{
+  transform:scaleX(1);
+}
+.ez-public .ez-nav-links .ez-nav-book{
+  min-height:48px!important;
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#243d33!important;
+  border:1px solid #243d33!important;
+  color:#fffefa!important;
+  border-radius:999px;
+}
+.ez-public .ez-nav-links .ez-nav-book:hover{
+  background:#304f40!important;
+  border-color:#304f40!important;
+}
+.ez-public .ez-nav-links .ez-nav-account{
+  min-height:48px!important;
+  box-sizing:border-box;
+  padding:12px 16px!important;
+  border:1px solid #d5d8cf!important;
+  background:#fffefa!important;
+  color:#294437!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:2px;
+}
+.ez-public .ez-nav-links .ez-nav-account:hover{
+  background:#f0f1e9!important;
+  border-color:#bfc9bd!important;
+  color:#243d33!important;
+}
+@media(max-width:1050px){
+  .ez-public .ez-nav-links>a:not(.ez-nav-book)::after{
+    bottom:7px;
+    right:auto;
+    width:34px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .ez-public .ez-nav-links>a:not(.ez-nav-book),
+  .ez-public .ez-nav-links>a:not(.ez-nav-book)::after{
+    transition:none!important;
+  }
+}
