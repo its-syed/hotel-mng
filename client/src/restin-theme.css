@@ -1498,3 +1498,69 @@
   line-height:1.25!important;
   font-variant-numeric:tabular-nums!important;
 }
+
+
+/* Keep the My Account title and close control visible while the dialog scrolls. */
+.ez-guest-dialog-head{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#f8f7f1;
+  padding-top:30px;
+  margin-top:-30px;
+}
+
+/* Keep expanded booking details aligned within the same card width and inset. */
+.ez-guest-booking-group{
+  width:100%;
+  min-width:0;
+}
+.ez-guest-selected-booking{
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:15px;
+  border:1px solid #e0e1d9;
+  border-top:0;
+  background:#f8f7f1;
+  overflow-wrap:anywhere;
+}
+.ez-guest-selected-booking .ez-guest-booking-heading{
+  align-items:center;
+  gap:12px;
+  margin:0 0 14px;
+}
+.ez-guest-selected-booking .ez-guest-booking-heading h3{
+  font-size:19px;
+}
+.ez-guest-selected-booking .ez-guest-booking-heading button{
+  flex:0 0 auto;
+  border:0;
+  background:transparent;
+  color:#53675a;
+  font:600 11px/1.3 Arial,sans-serif;
+  cursor:pointer;
+}
+.ez-guest-selected-booking>p{
+  margin:13px 0 0;
+  color:#707a71;
+  font-size:11px;
+  line-height:1.5;
+  text-align:left;
+}
+.ez-guest-selected-booking .ez-guest-booking-dates{
+  align-items:flex-start;
+  margin-top:10px;
+  padding-top:10px;
+}
+.ez-guest-selected-booking .ez-guest-back{
+  justify-content:flex-start;
+  padding:14px 0 0;
+}
+@media(max-width:720px){
+  .ez-guest-dialog-head{
+    padding-top:22px;
+    margin-top:-22px;
+  }
+}
