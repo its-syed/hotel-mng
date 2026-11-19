@@ -23,21 +23,21 @@ const SAMPLE_REVIEWS=[
 ];
 const ROOM_AMENITIES=["Wi-Fi","Air conditioning","Attached bathroom","Television"];
 const ROOM_GALLERIES=[
- {id:"standard",title:"Standard",description:"Simple comfort for an easy, restful stay.",photos:[
-  {src:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85",alt:"Bright hotel bedroom with a neatly made bed"},
-  {src:"https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85",alt:"Comfortable hotel room with warm lighting"},
-  {src:"https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85",alt:"Hotel bedroom interior with bedside lighting"}
- ]},
- {id:"deluxe",title:"Deluxe",description:"A little extra room to settle in and unwind.",photos:[
-  {src:"https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85",alt:"Deluxe-style hotel room with a large bed"},
-  {src:"https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85",alt:"Modern hotel room with elegant furnishings"},
-  {src:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85",alt:"Inviting hotel bedroom with natural light"}
- ]},
- {id:"suite",title:"Suite",description:"More space for a stay that calls for it.",photos:[
-  {src:"https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85",alt:"Spacious suite-style interior with a lounge area"},
-  {src:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85",alt:"Suite-style bedroom with a king bed"},
-  {src:"https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85",alt:"Comfortable upscale hotel interior"}
- ]}
+  {id:"standard",title:"Standard",description:"Simple comfort for an easy, restful stay.",photos:[
+   {src:"https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=85",alt:"Bright standard hotel bedroom with a neatly made bed"},
+   {src:"https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=85",alt:"Comfortable standard hotel room with warm lighting"},
+   {src:"https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85",alt:"Standard hotel bedroom interior with bedside lighting"}
+  ]},
+  {id:"deluxe",title:"Deluxe",description:"A little extra room to settle in and unwind.",photos:[
+   {src:"https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1200&q=85",alt:"Deluxe hotel room with elegant furnishings"},
+   {src:"https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=85",alt:"Refined deluxe bedroom with a spacious layout"},
+   {src:"https://images.unsplash.com/photo-1595576508898-0ad5c879a061?auto=format&fit=crop&w=1200&q=85",alt:"Deluxe guest room with contemporary decor"}
+  ]},
+  {id:"suite",title:"Suite",description:"More space for a stay that calls for it.",photos:[
+   {src:"https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85",alt:"Spacious suite interior with a lounge area"},
+   {src:"https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=85",alt:"Suite bedroom with a generous, elegant layout"},
+   {src:"https://images.unsplash.com/photo-1564078516393-cf04bd966897?auto=format&fit=crop&w=1200&q=85",alt:"Upscale suite bedroom with warm contemporary styling"}
+  ]}
 ];
 
 const HERO_PHOTOS=[
