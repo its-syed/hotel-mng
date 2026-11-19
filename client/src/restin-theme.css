@@ -1333,3 +1333,20 @@
 @media(max-width:520px){
   .ez-public .ez-brand-logo{width:68px;height:66px;max-width:68px}
 }
+
+
+/* Footer logo contrast: use the warm light mark on the dark footer background. */
+.ez-public .ez-footer .ez-brand-logo-footer{
+  width:92px!important;
+  height:76px!important;
+  max-width:92px!important;
+  object-fit:contain!important;
+  filter:brightness(0) invert(1)!important;
+  opacity:.92;
+}
+.ez-public .ez-footer .ez-brand{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  line-height:0!important;
+}
