@@ -1453,3 +1453,8 @@
     transform:translateY(-76px)!important;
   }
 }
+
+/* Slightly reduce the Check availability heading in the booking panel. */
+.ez-public .ez-book-heading h2{
+  font-size:24px!important;
+}
