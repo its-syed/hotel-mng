@@ -3226,3 +3226,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-track-input-row .ez-primary-btn{width:100%;justify-content:center}
 }
 
+
+
+/* Slightly reduce the Check availability heading size. */
+@media(min-width:651px){.ez-public .ez-book-heading h2{font-size:27px}}
