@@ -10,16 +10,18 @@ const displayDate=value=>{const d=parseKey(value);return d?d.toLocaleDateString(
 
 export default function DatePicker({value="",onChange,min="",placeholder="Pick a date",className="",disabled=false,required=false,ariaLabel="Choose date",id,openRequest=0}) {
  const [open,setOpen]=useState(false);
- useEffect(()=>{if(openRequest)setOpen(true)},[openRequest]);
  const [visible,setVisible]=useState(()=>parseKey(value)||parseKey(min)||new Date());
  const [popoverStyle,setPopoverStyle]=useState(null);
  const root=useRef(null);
  const popover=useRef(null);
+ const showCalendar=()=>{window.dispatchEvent(new CustomEvent("ezystay-date-picker-open",{detail:root.current}));setOpen(true)};
+ useEffect(()=>{if(openRequest)showCalendar()},[openRequest]);
+ useEffect(()=>{const closeOther=e=>{if(e.detail!==root.current)setOpen(false)};window.addEventListener("ezystay-date-picker-open",closeOther);return()=>window.removeEventListener("ezystay-date-picker-open",closeOther)},[]);
  const selected=parseKey(value), minimum=parseKey(min);
  useEffect(()=>{if(value){const next=parseKey(value);if(next)setVisible(next)}},[value]);
 
  // Render the popup in the document layer so forms, modals and cards cannot clip it.
- // Keep it anchored to the trigger and choose the side with the most usable space.
+ // Keep it anchored to the trigger and consistently place it above.
  useLayoutEffect(()=>{
   if(!open)return;
   const place=()=>{
@@ -29,9 +31,7 @@ export default function DatePicker({value="",onChange,min="",placeholder="Pick a
    const margin=12,gap=6;
    const width=Math.min(264,window.innerWidth-margin*2);
    const height=panel.getBoundingClientRect().height;
-   const below=window.innerHeight-anchor.bottom-margin-gap;
-   const above=anchor.top-margin-gap;
-   const top=below>=height||below>=above?anchor.bottom+gap:Math.max(margin,anchor.top-gap-height);
+   const top=Math.max(margin,anchor.top-gap-height);
    const left=Math.max(margin,Math.min(anchor.left,window.innerWidth-width-margin));
    setPopoverStyle({position:"fixed",top,left,width,visibility:"visible"});
   };
@@ -60,7 +60,7 @@ export default function DatePicker({value="",onChange,min="",placeholder="Pick a
   <div className="ez-calendar-footer"><button type="button" onClick={()=>choose(new Date())} disabled={!!(minimum&&new Date()<new Date(minimum.getFullYear(),minimum.getMonth(),minimum.getDate()))}>Today</button>{value&&<button type="button" onClick={()=>{onChange?.("");setOpen(false)}}>Clear</button>}</div>
  </div>,document.body);
  return <div className={"ez-date-picker "+className} ref={root}>
-  <button id={id} type="button" className="ez-date-trigger" disabled={disabled} aria-label={ariaLabel} aria-haspopup="dialog" aria-expanded={open} onClick={()=>setOpen(v=>!v)}>
+  <button id={id} type="button" className="ez-date-trigger" disabled={disabled} aria-label={ariaLabel} aria-haspopup="dialog" aria-expanded={open} onClick={()=>{if(open)setOpen(false);else showCalendar()}}>
    <span className={value?"":"is-empty"}>{value?displayDate(value):placeholder}</span><CalendarDays size={16}/>
   </button>
   {calendar}
