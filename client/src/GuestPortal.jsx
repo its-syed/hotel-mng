@@ -1,4 +1,5 @@
 import React,{useEffect,useState} from "react";
+import {createPortal} from "react-dom";
 import {ArrowRight,CalendarDays,CheckCircle2,Eye,EyeOff,LogOut,UserRound,X} from "lucide-react";
 
 const API=import.meta.env.VITE_API_URL||"/api";
@@ -11,6 +12,7 @@ export default function GuestPortal(){
  async function api(path,options={}){const response=await fetch(API+path,{headers:{"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})},...options});const data=await response.json();if(!response.ok)throw new Error(data.error||"Something went wrong");return data}
  async function loadAccount(activeToken=token){const headers={Authorization:"Bearer "+activeToken};const [me,items]=await Promise.all([fetch(API+"/guest/me",{headers}),fetch(API+"/guest/bookings",{headers})]);const user=await me.json(),list=await items.json();if(!me.ok)throw new Error(user.error||"Please sign in again");if(!items.ok)throw new Error(list.error||"Could not load bookings");setProfile(user);setBookings(list.bookings||[]);localStorage.setItem("ezystay_guest_profile",JSON.stringify(user));window.dispatchEvent(new Event("ezystay-guest-auth"));return list.bookings||[]}
  useEffect(()=>{if(!token)return;loadAccount().catch(()=>{localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null)})},[]);
+ useEffect(()=>{if(!open)return;const previousOverflow=document.body.style.overflow;document.body.style.overflow="hidden";const closeOnEscape=event=>{if(event.key==="Escape")setOpen(false)};window.addEventListener("keydown",closeOnEscape);return()=>{document.body.style.overflow=previousOverflow;window.removeEventListener("keydown",closeOnEscape)}},[open]);
  useEffect(()=>{const openFromBooking=()=>openPortal();window.addEventListener("ezystay-open-guest-portal",openFromBooking);return()=>window.removeEventListener("ezystay-open-guest-portal",openFromBooking)},[token]);
  useEffect(()=>{const refreshBookings=()=>{if(token)loadAccount(token).catch(()=>{})};window.addEventListener("ezystay-booking-created",refreshBookings);return()=>window.removeEventListener("ezystay-booking-created",refreshBookings)},[token]);
  async function submitAuth(event){event.preventDefault();setBusy(true);setError("");try{const path=view==="register"?"/guest/auth/register":"/guest/auth/login";const body=view==="register"?{fullName:name,phone,email,password}:{email,password};const data=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.setItem("ezystay_guest_token",data.token);setToken(data.token);setProfile(data.user);setPassword("");await loadAccount(data.token);setView("account");setOpen(false)}catch(e){setError(e.message)}finally{setBusy(false)}}
@@ -18,7 +20,7 @@ export default function GuestPortal(){
  function openPortal(){setOpen(true);setError("");setShowPassword(false);setView(token?"account":"login")}
  return <>
   <button type="button" className="ez-nav-account" onClick={openPortal}><UserRound size={15}/>{token?"My Account":"Sign in"}</button>
-  {open&&<div className="ez-guest-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}><section className="ez-guest-dialog" role="dialog" aria-modal="true" aria-label="EzyStay guest account">
+  {open&&createPortal(<div className="ez-guest-overlay" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}><section className="ez-guest-dialog" role="dialog" aria-modal="true" aria-label="EzyStay guest account">
    <div className="ez-guest-dialog-head"><div><span className="ez-guest-eyebrow">EZYSTAY GUEST PORTAL</span><h2>{view==="account"?"Your stays, together.":"Welcome to EzyStay."}</h2></div><button type="button" className="ez-guest-close" onClick={()=>setOpen(false)} aria-label="Close"><X size={20}/></button></div>
    {error&&<p className="ez-guest-error" role="alert">{error}</p>}
    {view==="account"&&profile?<div className="ez-guest-account">
@@ -37,6 +39,6 @@ export default function GuestPortal(){
     </form>
 
    </div>}
-  </section></div>}
+  </section></div>,document.body)}
  </>;
 }
