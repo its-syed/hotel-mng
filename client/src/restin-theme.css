@@ -1565,3 +1565,37 @@
     margin-top:-22px;
   }
 }
+
+
+/* Close control for the booking reference lookup result. */
+.ez-public .ez-track-result .ez-track-result-top{
+  grid-column:1/-1;
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.ez-public .ez-track-result-actions{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-end;
+  gap:10px;
+}
+.ez-public .ez-track-result-close{
+  display:grid;
+  place-items:center;
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
+  padding:0;
+  border:1px solid rgba(36,61,51,.25);
+  border-radius:50%;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+.ez-public .ez-track-result-close:hover{
+  background:rgba(36,61,51,.1);
+}
