@@ -1390,3 +1390,54 @@
     right:calc(70% + 12px)!important;
   }
 }
+
+
+/* Improve desktop hero readability: reserve a clean cream text zone on the left,
+   with a softer transition into the wider photograph on the right. */
+@media(min-width:1051px){
+  .ez-public main>.ez-hero{
+    isolation:isolate!important;
+  }
+  .ez-public .ez-hero-background{
+    z-index:-1!important;
+    inset:0 0 0 auto!important;
+    width:70%!important;
+  }
+  .ez-public main>.ez-hero::after{
+    z-index:0!important;
+    background:linear-gradient(
+      90deg,
+      #f7f5ef 0%,
+      #f7f5ef 29%,
+      rgba(247,245,239,.98) 33%,
+      rgba(247,245,239,.88) 36%,
+      rgba(247,245,239,.48) 40%,
+      rgba(247,245,239,0) 45%
+    )!important;
+  }
+  .ez-public .ez-hero-copy{
+    position:relative!important;
+    z-index:2!important;
+    width:min(500px,38%)!important;
+    max-width:500px!important;
+    flex:0 0 auto!important;
+  }
+  .ez-public .ez-hero-copy .ez-kicker{
+    color:#a77d48!important;
+    text-shadow:none!important;
+  }
+  .ez-public .ez-hero-copy h1{
+    color:#243d33!important;
+    text-shadow:none!important;
+  }
+  .ez-public .ez-hero-copy h1 em{
+    color:#a77d48!important;
+  }
+  .ez-public .ez-hero-copy>p{
+    color:#59675d!important;
+    text-shadow:none!important;
+  }
+  .ez-public .ez-hero-arrow:first-child{
+    right:calc(70% + 12px)!important;
+  }
+}
