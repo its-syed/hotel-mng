@@ -407,7 +407,9 @@ app.post("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(as
 app.get("/api/room-rack", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
   const mode=["daily","weekly","monthly"].includes(req.query.mode)?req.query.mode:"daily";
   const start=dayStart(req.query.date||new Date());
-  const days=mode==="daily"?1:mode==="weekly"?7:30;
+  if(mode==="weekly")start.setDate(start.getDate()-((start.getDay()+6)%7));
+  if(mode==="monthly")start.setDate(1);
+  const days=mode==="daily"?1:mode==="weekly"?7:new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
   const end=new Date(start);end.setDate(end.getDate()+days);
   const [rooms,reservations]=await Promise.all([
     prisma.room.findMany({orderBy:[{floor:"asc"},{number:"asc"}]}),
