@@ -3321,3 +3321,10 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-facilities-grid,
   .ez-public .ez-review-grid{width:100%}
 }
+
+
+/* Align the Location and FAQ section headings with the shared content edge. */
+.ez-public .ez-location-copy{padding-left:0!important}
+.ez-public .ez-faq>div:first-child{margin-left:0!important;padding-left:0!important}
+.ez-public .ez-faq>div:first-child>.ez-kicker,
+.ez-public .ez-faq>div:first-child>h2{margin-left:0!important}
