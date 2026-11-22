@@ -1672,3 +1672,28 @@
     transition:none!important;
   }
 }
+
+/* Final heading alignment: this stylesheet loads after styles.css, so keep
+   these overrides here to prevent the earlier theme gutters from winning. */
+.ez-public .ez-location-section{
+  padding-left:max(calc((100% - 1240px)/2),24px)!important;
+  padding-right:max(calc((100% - 1240px)/2),24px)!important;
+}
+.ez-public .ez-location-copy{
+  padding-left:0!important;
+  padding-right:0!important;
+}
+.ez-public .ez-faq{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:none!important;
+  padding-left:max(calc((100% - 1240px)/2),24px)!important;
+  padding-right:max(calc((100% - 1240px)/2),24px)!important;
+}
+@media(max-width:760px){
+  .ez-public .ez-location-section,
+  .ez-public .ez-faq{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+}
