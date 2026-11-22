@@ -3330,8 +3330,6 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-faq>div:first-child>h2{margin-left:0!important}
 
 
-/* Briefly highlight the full reservation row opened from its notification. */
-.table-wrap tbody tr.reservation-highlight{animation:reservationRowHighlight 4s ease-out both;}
-.table-wrap tbody tr.reservation-highlight>td{background-color:transparent!important;}
+/* Keep the reservation opened from a notification highlighted until another is selected. */
+.table-wrap tbody tr.reservation-highlight>td{background-color:#dcefe4!important;}
 .table-wrap tbody tr.reservation-highlight>td:first-child{box-shadow:inset 3px 0 0 #3d8068;}
-@keyframes reservationRowHighlight{0%,18%{background-color:#dcefe4;}100%{background-color:transparent;}}
