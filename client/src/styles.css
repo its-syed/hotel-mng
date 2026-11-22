@@ -3219,7 +3219,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-track-bookings .ez-track-result-top h3{color:#25473c}
 @media(max-width:760px){
   .ez-public .ez-track-bookings{padding:54px 20px}
-  .ez-public .ez-track-bookings-inner{grid-template-columns:1fr;gap:12px}
+  .ez-public .ez-track-bookings-inner{grid-template-columns:1fr;row-gap:4px}
   .ez-public .ez-track-account{padding:20px}
 }
 @media(max-width:520px){
@@ -3337,8 +3337,4 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 
-/* Mobile: tighten the transition from Track Booking into the About section. */
-@media(max-width:760px){
-  .ez-public main>.ez-track-bookings{padding-bottom:16px!important;}
-  .ez-public main>.ez-track-bookings+.ez-intro{padding-top:16px!important;}
-}
+
