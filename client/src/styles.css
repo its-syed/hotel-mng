@@ -1169,7 +1169,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-date-trigger{min-height:43px;border-color:#d9ded6;border-radius:5px;font-size:12px}
 .ez-public .ez-date-trigger svg{color:#49665B}
 .ez-public .ez-date-picker{min-width:0}
-.rack-date-picker{width:180px}
+.rack-date-picker{width:180px}.rack-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}.rack-period-nav{display:flex;align-items:center;gap:8px;min-height:36px}.rack-period-nav>b{min-width:150px;text-align:center;font-size:11px;color:#40545b;font-weight:700}.rack-nav-btn,.rack-today-btn{height:34px;border:1px solid var(--line);background:#fff;border-radius:8px;color:#52666d;display:inline-flex;align-items:center;justify-content:center}.rack-nav-btn{width:34px}.rack-nav-btn:hover,.rack-today-btn:hover{border-color:#b7d7d2;background:#f3f8f6;color:var(--teal)}.rack-today-btn{padding:0 11px;font-size:10px;font-weight:700}
 @keyframes ezCalendarIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:520px){.ez-calendar-popover{width:min(276px,calc(100vw - 44px))}.ez-date-time-field{grid-template-columns:minmax(0,1fr) 100px}}
 
@@ -3356,3 +3356,5 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 
+
+@media(max-width:700px){.rack-toolbar{width:100%;justify-content:flex-start;gap:9px}.rack-period-nav{width:100%;justify-content:flex-start}.rack-period-nav>b{min-width:0;flex:1;text-align:center}.rack-date-picker{width:180px}}
