@@ -3277,3 +3277,47 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   .ez-public .ez-lightbox{padding-left:24px;padding-right:24px}
   .ez-public .ez-lightbox-content>div{padding-left:10px;padding-right:10px;gap:10px}
 }
+
+
+/* Final alignment pass: use one true 1240px content boundary across sections.
+   These rules intentionally sit after the legacy theme layers above. */
+.ez-public .ez-intro,
+.ez-public .ez-rooms-section,
+.ez-public .ez-location-section,
+.ez-public .ez-facilities-section,
+.ez-public .ez-reviews-section,
+.ez-public .ez-contact-section,
+.ez-public .ez-faq,
+.ez-public .ez-track-section {
+  box-sizing:border-box;
+  width:100%;
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
+  padding-left:max(calc((100% - 1240px)/2),24px);
+  padding-right:max(calc((100% - 1240px)/2),24px);
+}
+.ez-public .ez-intro{margin-top:0}
+.ez-public .ez-location-section{position:relative}
+.ez-public .ez-contact-copy{box-sizing:border-box;width:100%;max-width:1240px;margin-left:auto;margin-right:auto}
+.ez-public .ez-reviews-heading{width:100%;max-width:1240px;margin-left:auto;margin-right:auto}
+.ez-public .ez-review-grid{width:100%;max-width:1240px;margin-left:auto;margin-right:auto}
+.ez-public .ez-room-preview-grid,
+.ez-public .ez-facilities-grid{width:100%;max-width:1240px;margin-left:auto;margin-right:auto}
+.ez-public .ez-faq{display:grid}
+@media(max-width:760px){
+  .ez-public .ez-intro,
+  .ez-public .ez-rooms-section,
+  .ez-public .ez-location-section,
+  .ez-public .ez-facilities-section,
+  .ez-public .ez-reviews-section,
+  .ez-public .ez-contact-section,
+  .ez-public .ez-faq,
+  .ez-public .ez-track-section{
+    padding-left:22px;
+    padding-right:22px;
+  }
+  .ez-public .ez-room-preview-grid,
+  .ez-public .ez-facilities-grid,
+  .ez-public .ez-review-grid{width:100%}
+}
