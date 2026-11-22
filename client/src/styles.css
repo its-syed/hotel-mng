@@ -3267,3 +3267,13 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
 }
+
+/* Keep room-gallery captions comfortably inside the lightbox edges. */
+.ez-public .ez-lightbox-content{width:min(100%,1050px);min-width:0;box-sizing:border-box}
+.ez-public .ez-lightbox-content>div{box-sizing:border-box;width:100%;min-width:0;padding:0 14px;gap:16px}
+.ez-public .ez-lightbox-content>div b,
+.ez-public .ez-lightbox-content>div span{min-width:0;overflow-wrap:anywhere}
+@media(max-width:650px){
+  .ez-public .ez-lightbox{padding-left:24px;padding-right:24px}
+  .ez-public .ez-lightbox-content>div{padding-left:10px;padding-right:10px;gap:10px}
+}
