@@ -1704,3 +1704,23 @@
     padding-right:22px!important;
   }
 }
+
+
+/* Keep the availability button label inside its bounds on narrow screens. */
+@media(max-width:700px){
+  .ez-public .ez-search-form .ez-auto-check-status{
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    padding:0 12px!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    line-height:1.25!important;
+    font-size:12px!important;
+    gap:8px!important;
+  }
+  .ez-public .ez-search-form .ez-auto-check-status svg{
+    flex:0 0 auto!important;
+  }
+}
