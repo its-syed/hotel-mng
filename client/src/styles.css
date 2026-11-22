@@ -3335,9 +3335,10 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .table-wrap tbody tr.reservation-highlight>td:first-child{box-shadow:inset 3px 0 0 #3d8068;}
 
 
-/* Mobile Track Booking: reduce the empty space after the whole section, not between its columns. */
+
+
+/* Mobile: tighten the transition from Track Booking into the About section. */
 @media(max-width:760px){
-  .ez-public main>.ez-track-bookings{
-    padding-bottom:24px!important;
-  }
+  .ez-public main>.ez-track-bookings{padding-bottom:16px!important;}
+  .ez-public main>.ez-track-bookings+.ez-intro{padding-top:16px!important;}
 }
