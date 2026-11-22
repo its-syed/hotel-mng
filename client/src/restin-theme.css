@@ -1724,3 +1724,36 @@
     flex:0 0 auto!important;
   }
 }
+
+
+/* Guest portal: active-booking shortcut and destination highlight. */
+.ez-guest-active-count{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+  border-radius:5px;
+}
+.ez-guest-active-count strong{
+  text-decoration:underline;
+  text-decoration-color:rgba(36,61,51,.35);
+  text-underline-offset:4px;
+}
+.ez-guest-active-count:hover strong,
+.ez-guest-active-count:focus-visible strong{
+  color:#243D33;
+  text-decoration-color:#243D33;
+}
+.ez-guest-booking.active-booking{
+  border-left:3px solid #477b62!important;
+  background:#f1f6f0!important;
+}
+.ez-guest-booking.active-booking-focus{
+  outline:2px solid #477b62!important;
+  outline-offset:3px;
+  background:#e4f0e5!important;
+}
