@@ -3333,3 +3333,11 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 /* Keep the reservation opened from a notification highlighted until another is selected. */
 .table-wrap tbody tr.reservation-highlight>td{background-color:#dcefe4!important;}
 .table-wrap tbody tr.reservation-highlight>td:first-child{box-shadow:inset 3px 0 0 #3d8068;}
+
+
+/* Mobile Track Booking: reduce the empty space after the whole section, not between its columns. */
+@media(max-width:760px){
+  .ez-public main>.ez-track-bookings{
+    padding-bottom:24px!important;
+  }
+}
