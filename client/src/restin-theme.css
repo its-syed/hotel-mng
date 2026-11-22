@@ -1448,9 +1448,16 @@
     transform:translate(76px,-76px)!important;
   }
 }
-@media(max-width:1050px){
+@media(min-width:701px) and (max-width:1050px){
   .ez-public main>.ez-book-wrap{
     transform:translateY(-76px)!important;
+  }
+}
+/* On phones, keep the booking panel's intended small hero overlap.
+   The additional 76px lift is reserved for tablet-sized layouts. */
+@media(max-width:700px){
+  .ez-public main>.ez-book-wrap{
+    transform:none!important;
   }
 }
 
