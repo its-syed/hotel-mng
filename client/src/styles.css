@@ -3219,8 +3219,26 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .ez-public .ez-track-bookings .ez-track-result-top h3{color:#25473c}
 @media(max-width:760px){
   .ez-public .ez-track-bookings{padding:54px 20px}
-  .ez-public .ez-track-bookings-inner{grid-template-columns:1fr;row-gap:4px}
-  .ez-public .ez-track-account{padding:20px}
+  .ez-public .ez-track-bookings-inner{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:16px;
+  }
+  .ez-public .ez-track-reference{
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:0!important;
+    flex:0 0 auto;
+  }
+  .ez-public .ez-track-account{
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:20px;
+    flex:0 0 auto;
+  }
 }
 @media(max-width:520px){
   .ez-public .ez-track-input-row{flex-direction:column}
