@@ -114,7 +114,7 @@ export default function App(){
    notify("Guest checked out and final amount saved");
   }catch(err){notify(err.message)}finally{setBusy(false)}
  }
- function markWebsiteRequestViewed(id){const read=new Set(JSON.parse(localStorage.getItem("ezystay_read_website_requests")||"[]"));read.add(id);localStorage.setItem("ezystay_read_website_requests",JSON.stringify([...read]));setUnreadRequestIds(ids=>ids.filter(x=>x!==id));setNotificationOpen(false);setReservationFilter("ALL");setSearch("");setHighlightedReservationId(id);setPage("Reservations");}
+ function markWebsiteRequestViewed(id){const read=new Set(JSON.parse(localStorage.getItem("ezystay_read_website_requests")||"[]"));read.add(id);localStorage.setItem("ezystay_read_website_requests",JSON.stringify([...read]));setUnreadRequestIds(ids=>ids.filter(x=>x!==id));setNotificationOpen(false);const selected=websiteRequests.find(r=>r.id===id);if(selected)setReservations(current=>current.some(r=>r.id===id)?current:[selected,...current]);setReservationFilter("ALL");setSearch("");setHighlightedReservationId(id);setPage("Reservations");}
  async function act(fn,message){setBusy(true);try{const result=await fn();await refresh();notify(typeof message==="function"?message(result):message);setModal("")}catch(e){notify(e.message)}finally{setBusy(false)}}
  const today=dateKey(new Date());
  const filteredRooms=rooms.filter(r=>{const effectiveStatus=r.reservedToday&&r.occupancyStatus==="AVAILABLE"?"RESERVED":r.occupancyStatus;return (roomFilter==="ALL"||effectiveStatus===roomFilter)&&(roomHkFilter==="ALL"||r.housekeepingStatus===roomHkFilter)&&(roomCategoryFilter==="ALL"||String(r.category).toUpperCase()===roomCategoryFilter)&&((r.number+" "+r.category).toLowerCase().includes(search.toLowerCase()));});
