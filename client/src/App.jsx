@@ -123,7 +123,8 @@ export default function App(){
  const todayActivities=reservations.flatMap(r=>[{type:"Check-in",at:r.checkedInAt,guest:r.guest?.fullName,room:r.room?.number,id:r.id+"-in"},{type:"Check-out",at:r.checkedOutAt,guest:r.guest?.fullName,room:r.room?.number,id:r.id+"-out"}].filter(a=>a.at&&dateKey(a.at)===today)).sort((a,b)=>new Date(a.at)-new Date(b.at));
  const pageTitle=page==="Room Rack"?"Room Rack":page;
  const role=user?.role||"RECEPTIONIST";
- const can=permission=>role==="ADMIN"||(user?.permissions||[]).includes("*")||(user?.permissions||[]).includes(permission);\n const canSee=label=>{const item=nav.find(n=>n[0]===label);return !!item&&(can(item[2])||(item[3]&&can(item[3])));};
+ const can=permission=>role==="ADMIN"||(user?.permissions||[]).includes("*")||(user?.permissions||[]).includes(permission);
+ const canSee=label=>{const item=nav.find(n=>n[0]===label);return !!item&&(can(item[2])||(item[3]&&can(item[3])));};
  function open(type,initial={}){setForm(initial);setModal(type);setShowGuestCreate(false);if(type==="removeRooms")setSelectedRoomIds([])}
  function field(name,value){setForm(f=>({...f,[name]:value}))}
  async function saveForm(e){e.preventDefault();const f=form;
