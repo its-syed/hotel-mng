@@ -1,8 +1,10 @@
 import React,{useEffect,useState} from "react";
 import {createPortal} from "react-dom";
+import {io} from "socket.io-client";
 import {ArrowRight,CalendarDays,CheckCircle2,Eye,EyeOff,LogOut,UserRound,X} from "lucide-react";
 
 const API=import.meta.env.VITE_API_URL||"/api";
+const SOCKET_URL=API.replace(/\/api\/?$/,"")||window.location.origin;
 const money=value=>"₹"+Number(value||0).toLocaleString("en-IN");
 const date=value=>value?new Date(value).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}):"—";
 const statusText=value=>({PENDING:"Awaiting confirmation",CONFIRMED:"Confirmed",CHECKED_IN:"Checked in",CHECKED_OUT:"Completed",CANCELLED:"Cancelled",NO_SHOW:"No-show"}[value]||value);
@@ -16,6 +18,7 @@ export default function GuestPortal(){
  useEffect(()=>{if(!open)return;const previousOverflow=document.body.style.overflow;document.body.style.overflow="hidden";const closeOnEscape=event=>{if(event.key==="Escape")setOpen(false)};window.addEventListener("keydown",closeOnEscape);return()=>{document.body.style.overflow=previousOverflow;window.removeEventListener("keydown",closeOnEscape)}},[open]);
  useEffect(()=>{const openFromBooking=()=>openPortal();window.addEventListener("ezystay-open-guest-portal",openFromBooking);return()=>window.removeEventListener("ezystay-open-guest-portal",openFromBooking)},[token]);
  useEffect(()=>{const refreshBookings=()=>{if(token)loadAccount(token).catch(()=>{})};window.addEventListener("ezystay-booking-created",refreshBookings);return()=>window.removeEventListener("ezystay-booking-created",refreshBookings)},[token]);
+ useEffect(()=>{if(!token)return;const socket=io(SOCKET_URL,{auth:{token}});const refresh=()=>loadAccount(token).catch(()=>{});socket.on("reservation:updated",refresh);return()=>{socket.off("reservation:updated",refresh);socket.disconnect()}},[token]);
  async function submitAuth(event){event.preventDefault();setBusy(true);setError("");try{const path=view==="register"?"/guest/auth/register":"/guest/auth/login";const body=view==="register"?{fullName:name,phone,email,password}:{email,password};const data=await api(path,{method:"POST",body:JSON.stringify(body)});localStorage.setItem("ezystay_guest_token",data.token);setToken(data.token);setProfile(data.user);setPassword("");await loadAccount(data.token);setView("account");setOpen(false)}catch(e){setError(e.message)}finally{setBusy(false)}}
  function logout(){localStorage.removeItem("ezystay_guest_token");localStorage.removeItem("ezystay_guest_profile");setToken("");setProfile(null);setBookings([]);setView("login");window.dispatchEvent(new Event("ezystay-guest-auth"))}
  function openPortal(){setOpen(true);setError("");setShowPassword(false);setView(token?"account":"login")}
