@@ -3386,3 +3386,9 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .role-create-actions{display:flex;align-items:center;gap:8px}
 @media(max-width:520px){.role-save-row{align-items:flex-start;flex-direction:column}.role-create-actions{width:100%}.role-create-actions .btn{flex:1}}
 @media(max-width:900px){.role-layout{grid-template-columns:1fr}.role-permission-groups{grid-template-columns:1fr}}
+
+.hk-dirty-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:20px;background:#f3e5d9;color:#8a4d22;font-size:11px;font-weight:800}
+.hk-dirty-room-list{display:grid;gap:8px}
+.hk-dirty-room-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 13px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.hk-dirty-room-row>div{display:grid;gap:3px}.hk-dirty-room-row b{font-size:13px}.hk-dirty-room-row small{font-size:11px;color:var(--muted)}
+@media(max-width:650px){.hk-dirty-room-row{align-items:flex-start;flex-direction:column}.hk-dirty-room-row .btn{width:100%}}
