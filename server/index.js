@@ -168,7 +168,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
  if(!fullName||!isValidIndianMobile(phone)||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"A valid Indian mobile number and valid stay dates are required"});
  const room=await prisma.room.findUnique({where:{id:roomId}});
- if(!room||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
+ if(!room||room.archivedAt||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
  if(room.occupancyStatus==="OCCUPIED"){
   const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
   if(!activeStay?.checkOut||activeStay.checkOut>start)return res.status(409).json({error:"This room is currently occupied through the selected check-in date"});
