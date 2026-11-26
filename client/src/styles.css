@@ -959,7 +959,7 @@ td{font-size:13px;padding:13px 10px}
 
 
 /* EzyStay HMS custom dropdowns */
-.custom-select{position:relative;display:block;width:100%;min-width:0}
+.custom-select{width:100%;min-width:0}.custom-select-trigger{width:100%;min-width:0}.custom-select-search{position:sticky;top:-5px;z-index:1;display:flex;align-items:center;gap:8px;padding:8px 9px;margin:-5px -5px 5px;background:#fff;border-bottom:1px solid #edf1f0;color:#829399}.custom-select-search input{width:100%;min-width:0;border:0!important;outline:0!important;box-shadow:none!important;padding:5px 2px!important;font-size:12px!important;background:transparent!important}.custom-select-no-results{padding:12px 10px;color:#829399;font-size:12px;text-align:center}.custom-select{position:relative;display:block;width:100%;min-width:0}
 .custom-select-trigger{width:100%;min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:linear-gradient(180deg,#fff,#fbfcfc);color:#344950;font-size:13px;font-weight:500;line-height:1.35;text-align:left;box-shadow:0 1px 2px rgba(24,48,54,.035);transition:border-color .16s ease,background .16s ease,box-shadow .16s ease}
 .custom-select-trigger:hover:not(:disabled){border-color:#b9cdca;background:#fff}
 .custom-select-trigger:focus-visible{outline:none;border-color:#68a9a1;box-shadow:0 0 0 3px rgba(22,124,120,.12)}
