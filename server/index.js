@@ -151,7 +151,7 @@ app.post("/api/public/guest-otp/verify",asyncRoute(async(req,res)=>{
 app.get("/api/public/availability",asyncRoute(async(req,res)=>{
  const {checkIn,checkOut}=req.query;const start=new Date(checkIn),end=new Date(checkOut);
  if(!checkIn||!checkOut||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Choose valid check-in and check-out dates"});
- const rooms=await prisma.room.findMany({where:{occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
+ const rooms=await prisma.room.findMany({where:{archivedAt:null,occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
  const conflicts=await prisma.reservation.findMany({where:{status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]},select:{roomId:true}});
  const busy=new Set(conflicts.map(x=>x.roomId));
  const occupiedIds=rooms.filter(r=>r.occupancyStatus==="OCCUPIED").map(r=>r.id);
@@ -194,10 +194,10 @@ app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) =
   const today = dayStart();
   const tomorrow = dayEnd();
   const [total, occupied, availableBase, outOfOrder, clean, dirty, cleaning, arrivals, departures, checkIns, checkOuts, tasks, reservedTodayRows] = await Promise.all([
-    prisma.room.count(), prisma.room.count({where:{occupancyStatus:"OCCUPIED"}}),
-    prisma.room.count({where:{occupancyStatus:{in:["AVAILABLE","RESERVED"]}}}), prisma.room.count({where:{occupancyStatus:"OUT_OF_ORDER"}}),
-    prisma.room.count({where:{housekeepingStatus:"CLEAN"}}),
-    prisma.room.count({where:{housekeepingStatus:"DIRTY"}}), prisma.room.count({where:{housekeepingStatus:"CLEANING"}}),
+    prisma.room.count({where:{archivedAt:null}}), prisma.room.count({where:{archivedAt:null,occupancyStatus:"OCCUPIED"}}),
+    prisma.room.count({where:{archivedAt:null,occupancyStatus:{in:["AVAILABLE","RESERVED"]}}}), prisma.room.count({where:{archivedAt:null,occupancyStatus:"OUT_OF_ORDER"}}),
+    prisma.room.count({where:{archivedAt:null,housekeepingStatus:"CLEAN"}}),
+    prisma.room.count({where:{archivedAt:null,housekeepingStatus:"DIRTY"}}), prisma.room.count({where:{archivedAt:null,housekeepingStatus:"CLEANING"}}),
     prisma.reservation.count({where:{checkIn:{gte:today,lt:tomorrow},status:"CONFIRMED"}}),
     prisma.reservation.count({where:{checkOut:{gte:today,lt:tomorrow},status:{in:["CONFIRMED","CHECKED_IN"]}}}),
     prisma.reservation.count({where:{checkedInAt:{gte:today,lt:tomorrow}}}),
@@ -211,7 +211,7 @@ app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) =
 }));
 
 app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
-  const where = {};
+  const where = {archivedAt:req.query.archived==="true"?{not:null}:null};
   if (req.query.housekeepingStatus) where.housekeepingStatus = req.query.housekeepingStatus;
   if (req.query.floor) where.floor = Number(req.query.floor);
   const today=dayStart(), tomorrow=dayEnd();
@@ -250,22 +250,32 @@ app.post("/api/rooms/bulk", allow("rooms.create"), asyncRoute(async (req,res) =>
   const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
   res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
 }));
-app.post("/api/rooms/bulk-delete", allow("rooms.delete"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk-archive", allow("rooms.delete"), asyncRoute(async (req,res) => {
   const roomIds=[...new Set((Array.isArray(req.body.roomIds)?req.body.roomIds:[]).filter(id=>typeof id==="string"))];
   if(!roomIds.length)return res.status(400).json({error:"Select at least one room"});
-  const selected=await prisma.room.findMany({where:{id:{in:roomIds}},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
-  if(selected.length!==roomIds.length)return res.status(404).json({error:"One or more selected rooms were not found. Refresh and try again."});
-  const protectedRooms=selected.filter(room=>room.reservations.length||room.tasks.length);
-  if(protectedRooms.length)return res.status(409).json({error:"Cannot delete rooms with reservation or housekeeping history: "+protectedRooms.map(room=>room.number).join(", ")+". Remove them from the selection and try again."});
-  await prisma.room.deleteMany({where:{id:{in:roomIds}}});
-  res.json({success:true,deleted:roomIds.length,message:roomIds.length+" room(s) removed"});
+  const selected=await prisma.room.findMany({where:{id:{in:roomIds},archivedAt:null},include:{reservations:{where:{status:{in:["PENDING","CONFIRMED","CHECKED_IN"]}},select:{id:true},take:1},tasks:{where:{status:{not:"COMPLETED"}},select:{id:true},take:1}}});
+  if(selected.length!==roomIds.length)return res.status(404).json({error:"One or more selected rooms were not found or are already archived. Refresh and try again."});
+  const unavailable=selected.filter(room=>room.occupancyStatus==="OCCUPIED"||room.reservations.length||room.tasks.length);
+  if(unavailable.length)return res.status(409).json({error:"Cannot archive rooms with an active stay, upcoming reservation or unfinished housekeeping task: "+unavailable.map(room=>room.number).join(", ")+". Complete or move those operations first."});
+  await prisma.room.updateMany({where:{id:{in:roomIds},archivedAt:null},data:{archivedAt:new Date()}});
+  res.json({success:true,archived:roomIds.length,message:roomIds.length+" room(s) archived. Their history has been preserved."});
+}));
+app.patch("/api/rooms/:id/restore", allow("rooms.update"), asyncRoute(async (req,res) => {
+  const room=await prisma.room.findUnique({where:{id:req.params.id}});
+  if(!room)return res.status(404).json({error:"Room not found"});
+  if(!room.archivedAt)return res.status(409).json({error:"This room is already active"});
+  const restored=await prisma.room.update({where:{id:room.id},data:{archivedAt:null}});
+  res.json({success:true,room:restored,message:"Room "+room.number+" restored"});
 }));
 app.delete("/api/rooms/:id", allow("rooms.delete"), asyncRoute(async (req,res) => {
-  const room=await prisma.room.findUnique({where:{id:req.params.id},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
+  const room=await prisma.room.findUnique({where:{id:req.params.id}});
   if(!room)return res.status(404).json({error:"Room not found"});
-  if(room.reservations.length||room.tasks.length)return res.status(409).json({error:"This room has reservation or housekeeping history and cannot be deleted. Mark it Out of Order instead."});
-  await prisma.room.delete({where:{id:req.params.id}});
-  res.json({success:true});
+  if(room.archivedAt)return res.status(409).json({error:"This room is already archived"});
+  if(room.occupancyStatus==="OCCUPIED")return res.status(409).json({error:"An occupied room cannot be archived"});
+  const [activeReservations,openTasks]=await Promise.all([prisma.reservation.count({where:{roomId:room.id,status:{in:["PENDING","CONFIRMED","CHECKED_IN"]}}}),prisma.housekeepingTask.count({where:{roomId:room.id,status:{not:"COMPLETED"}}})]);
+  if(activeReservations||openTasks)return res.status(409).json({error:"This room has active reservations or unfinished housekeeping tasks and cannot be archived"});
+  const archived=await prisma.room.update({where:{id:room.id},data:{archivedAt:new Date()}});
+  res.json({success:true,room:archived,message:"Room archived. Its history has been preserved."});
 }));
 app.patch("/api/rooms/:id", allow("rooms.update"), asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","notes"];
@@ -292,6 +302,7 @@ app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (re
   if(checkOut&&(!Number.isFinite(end.getTime())||!(end>start))) return res.status(400).json({error:"Check-out must be after check-in"});
   const room=await prisma.room.findUnique({where:{id:roomId}});
   if(!room) return res.status(404).json({error:"Room not found"});
+  if(room.archivedAt) return res.status(409).json({error:"Archived rooms cannot be used for bookings or housekeeping"});
   if(room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
   if(bookingSource==="WALK_IN"&&room.occupancyStatus==="OCCUPIED") return res.status(409).json({error:"A walk-in must be assigned to a currently available room"});
   if(bookingSource!=="WALK_IN"&&room.occupancyStatus==="OCCUPIED"){
@@ -387,6 +398,7 @@ app.post("/api/housekeeping", allow("housekeeping.tasks.create"), asyncRoute(asy
   if(!roomId) return res.status(400).json({error:"Choose a room for this task"});
   const room=await prisma.room.findUnique({where:{id:roomId}});
   if(!room) return res.status(404).json({error:"Room not found"});
+  if(room.archivedAt) return res.status(409).json({error:"Archived rooms cannot be used for bookings or housekeeping"});
   const scheduled=scheduledAt?new Date(scheduledAt):new Date();
   if(Number.isNaN(scheduled.getTime())) return res.status(400).json({error:"Enter a valid scheduled date and time"});
   if(assignedTo){
@@ -461,7 +473,7 @@ app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
   const days=mode==="daily"?1:mode==="weekly"?7:new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
   const end=new Date(start);end.setDate(end.getDate()+days);
   const [rooms,reservations]=await Promise.all([
-    prisma.room.findMany({orderBy:[{floor:"asc"},{number:"asc"}]}),
+    prisma.room.findMany({where:{archivedAt:null},orderBy:[{floor:"asc"},{number:"asc"}]}),
     prisma.reservation.findMany({where:{checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}],status:{in:["CONFIRMED","CHECKED_IN"]}},include:{guest:true}})
   ]);
   const dates=Array.from({length:days},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");});
