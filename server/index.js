@@ -382,6 +382,8 @@ app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
   res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
 }));
 
+app.get("/api/housekeeping/assignees",allow("housekeeping.tasks.assign"),asyncRoute(async(_req,res)=>{const users=await prisma.user.findMany({where:{active:true},select:{id:true,fullName:true,roleRecord:{select:{permissions:true}}},orderBy:{fullName:"asc"}});res.json(users.filter(user=>Array.isArray(user.roleRecord?.permissions)&&user.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned")));}));
+
 app.get("/api/housekeeping", (req,res,next)=>{
  const permissions=req.user?.permissions||[];
  if(req.user?.role==="ADMIN"||permissions.includes("*")||permissions.includes("housekeeping.tasks.viewAll"))return next();
