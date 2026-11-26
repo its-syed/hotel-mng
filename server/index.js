@@ -277,6 +277,19 @@ app.delete("/api/rooms/:id", allow("rooms.delete"), asyncRoute(async (req,res) =
   const archived=await prisma.room.update({where:{id:room.id},data:{archivedAt:new Date()}});
   res.json({success:true,room:archived,message:"Room archived. Its history has been preserved."});
 }));
+app.patch("/api/rooms/:id/out-of-order", allow("rooms.update"), asyncRoute(async (req,res) => {
+  const room=await prisma.room.findUnique({where:{id:req.params.id}});
+  if(!room||room.archivedAt)return res.status(404).json({error:"Active room not found"});
+  const outOfOrder=Boolean(req.body.outOfOrder);
+  if(outOfOrder){
+    if(room.occupancyStatus==="OCCUPIED")return res.status(409).json({error:"An occupied room cannot be marked out of order"});
+    const activeReservations=await prisma.reservation.count({where:{roomId:room.id,status:{in:["PENDING","CONFIRMED","CHECKED_IN"]}}});
+    if(activeReservations)return res.status(409).json({error:"This room has active or pending reservations. Move or resolve them before marking it out of order."});
+  }
+  const updated=await prisma.room.update({where:{id:room.id},data:{occupancyStatus:outOfOrder?"OUT_OF_ORDER":"AVAILABLE"}});
+  res.json({success:true,room:updated,message:outOfOrder?"Room marked out of order":"Room returned to service"});
+}));
+
 app.patch("/api/rooms/:id", allow("rooms.update"), asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
