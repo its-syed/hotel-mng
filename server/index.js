@@ -208,7 +208,7 @@ app.post("/api/rooms", allow("rooms.create"), asyncRoute(async (req,res) => {
   if (!number || !["STANDARD","DELUXE","SUITE"].includes(type) || rate == null || Number(rate)<0) return res.status(400).json({error:"Room number, valid room type and non-negative rate are required"});
   res.status(201).json(await prisma.room.create({data:{number:String(number).trim(),floor:Number(floor||1),category:type,rate:Number(rate)}}));
 }));
-app.post("/api/rooms/bulk", allow("rooms.delete"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk", allow("rooms.create"), asyncRoute(async (req,res) => {
   const {startNumber,endNumber,floor,category,rate}=req.body;
   const start=String(startNumber||"").trim(),end=String(endNumber||"").trim();
   const matchStart=start.match(/^(.*?)(\d+)$/),matchEnd=end.match(/^(.*?)(\d+)$/);
@@ -232,7 +232,7 @@ app.post("/api/rooms/bulk-delete", allow("rooms.delete"), asyncRoute(async (req,
   await prisma.room.deleteMany({where:{id:{in:roomIds}}});
   res.json({success:true,deleted:roomIds.length,message:roomIds.length+" room(s) removed"});
 }));
-app.delete("/api/rooms/:id", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+app.delete("/api/rooms/:id", allow("rooms.delete"), asyncRoute(async (req,res) => {
   const room=await prisma.room.findUnique({where:{id:req.params.id},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
   if(!room)return res.status(404).json({error:"Room not found"});
   if(room.reservations.length||room.tasks.length)return res.status(409).json({error:"This room has reservation or housekeeping history and cannot be deleted. Mark it Out of Order instead."});
@@ -280,7 +280,10 @@ app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (re
   if(isWalkIn) await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   res.status(201).json(reservation);
 }));
-app.patch("/api/reservations/:id/status", allow("reservations.update"), asyncRoute(async (req,res) => {
+app.patch("/api/reservations/:id/status", (req,res,next)=>{
+ const permission=({CONFIRMED:"reservations.confirm",CANCELLED:"reservations.cancel",CHECKED_IN:"reservations.checkIn",CHECKED_OUT:"reservations.checkOut",NO_SHOW:"reservations.update"})[req.body.status]||"reservations.update";
+ return allow(permission)(req,res,next);
+}, asyncRoute(async (req,res) => {
   const {status,totalAmount,extraCharges,discount}=req.body;
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
@@ -388,7 +391,7 @@ app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), as
   res.json(await prisma.housekeepingTask.update({where:{id:task.id},data:{assignedTo:assignedTo||null},include:{room:true}}));
 }));
 
-app.patch("/api/housekeeping/:id/status", allow("housekeeping.tasks.start"), asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/status", (req,res,next)=>allow(req.body.status==="COMPLETED"?"housekeeping.tasks.complete":"housekeeping.tasks.start")(req,res,next), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
   const result=await prisma.$transaction(async tx=>{
@@ -414,7 +417,7 @@ app.post("/api/payments", allow("payments.record"), asyncRoute(async (req,res)=>
   res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,amount,method,reference},include:{guest:true}}));
 }));
 
-app.get("/api/room-rack", allow("reservations.view"), asyncRoute(async (req,res)=>{
+app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
   const mode=["daily","weekly","monthly"].includes(req.query.mode)?req.query.mode:"daily";
   const start=dayStart(req.query.date||new Date());
   if(mode==="weekly")start.setDate(start.getDate()-((start.getDay()+6)%7));
