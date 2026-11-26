@@ -3382,4 +3382,7 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 .role-permission-item{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer}
 .role-permission-item input{accent-color:var(--accent,#7a8c70)}
 .role-save-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e8e5df);font-size:13px;color:var(--muted,#777)}
+.role-create .btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:3px}
+.role-create-actions{display:flex;align-items:center;gap:8px}
+@media(max-width:520px){.role-save-row{align-items:flex-start;flex-direction:column}.role-create-actions{width:100%}.role-create-actions .btn{flex:1}}
 @media(max-width:900px){.role-layout{grid-template-columns:1fr}.role-permission-groups{grid-template-columns:1fr}}
