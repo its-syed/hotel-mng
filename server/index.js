@@ -4,8 +4,12 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer,{cors:{origin:true}});
 const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
@@ -19,6 +23,29 @@ app.get("/api/health", (_req,res) => res.json({ ok:true, service:"StaySuite HMS 
 const JWT_SECRET=process.env.JWT_SECRET;
 if(!JWT_SECRET) console.warn("JWT_SECRET is not configured. Set it before use.");
 const jwtSecret=JWT_SECRET||"development-only-change-me";
+io.use(async(socket,next)=>{
+ try{
+  const token=socket.handshake.auth?.token;
+  if(!token&&process.env.DEV_AUTH_BYPASS==="true"){socket.data.kind="staff";return next();}
+  if(!token)return next(new Error("Authentication required"));
+  const payload=jwt.verify(token,jwtSecret);
+  if(payload.type==="guest"){
+   const account=await prisma.guestAccount.findUnique({where:{id:payload.sub}});
+   if(!account||!account.active)return next(new Error("Guest account is inactive"));
+   socket.data.kind="guest";socket.data.guestAccountId=account.id;return next();
+  }
+  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true}});
+  if(!user||!user.active)return next(new Error("Staff account is inactive"));
+  const permissions=Array.isArray(user.roleRecord?.permissions)?user.roleRecord.permissions:[];
+  if(user.role!=="ADMIN"&&!permissions.includes("*")&&!permissions.includes("reservations.view"))return next(new Error("Not authorized"));
+  socket.data.kind="staff";return next();
+ }catch{return next(new Error("Unauthorized"));}
+});
+io.on("connection",socket=>{
+ if(socket.data.kind==="guest")socket.join("guest:"+socket.data.guestAccountId);
+ if(socket.data.kind==="staff")socket.join("staff:reservations");
+});
+
 const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},jwtSecret,{expiresIn:"12h"});
 const guestTokenFor=account=>jwt.sign({sub:account.id,type:"guest"},jwtSecret,{expiresIn:"30d"});
 const guestAuthenticate=asyncRoute(async(req,res,next)=>{
@@ -150,6 +177,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
  const result=await prisma.$transaction(async tx=>{let guest=await tx.guest.findFirst({where:{guestAccountId:account.id},orderBy:{createdAt:"asc"}});if(guest){guest=await tx.guest.update({where:{id:guest.id},data:{fullName,phone,email:email||null}})}else{guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account.id}})}const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
+ io.to("staff:reservations").emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
@@ -285,7 +313,7 @@ app.patch("/api/reservations/:id/status", (req,res,next)=>{
  return allow(permission)(req,res,next);
 }, asyncRoute(async (req,res) => {
   const {status,totalAmount,extraCharges,discount}=req.body;
-  const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
+  const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true,guest:{select:{guestAccountId:true}}}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
   const transitions={
     PENDING:["CONFIRMED","CANCELLED"],
@@ -331,6 +359,7 @@ app.patch("/api/reservations/:id/status", (req,res,next)=>{
     if(status==="CHECKED_OUT") await tx.room.update({where:{id:r.roomId},data:{occupancyStatus:"AVAILABLE",housekeepingStatus:"DIRTY"}});
     return r;
   });
+  if(current.guest?.guestAccountId)io.to("guest:"+current.guest.guestAccountId).emit("reservation:updated",{bookingCode:updated.bookingCode,status:updated.status});
   res.json(updated);
 }));
 
@@ -475,4 +504,4 @@ app.delete("/api/roles/:id",allow("roles.update"),asyncRoute(async(req,res)=>{
  await prisma.role.delete({where:{id:role.id}});res.json({success:true});
 }));
 
-app.listen(port,()=>console.log("StaySuite API running on http://localhost:"+port));
+httpServer.listen(port,()=>console.log("EzyStay API running on http://localhost:"+port));
