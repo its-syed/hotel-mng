@@ -47,7 +47,7 @@ const normalizePhone=value=>String(value||"").replace(/\D/g,"");
 const isValidIndianMobile=value=>/^[6-9]\d{9}$/.test(normalizePhone(value));
 const authenticate=asyncRoute(async(req,res,next)=>{
  if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true,permissions:["*"]};return next();}
- const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
+ const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
  if(!token)return res.status(401).json({error:"Please sign in"});
  try{
   const payload=jwt.verify(token,JWT_SECRET||"development-only-change-me");
