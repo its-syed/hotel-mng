@@ -46,20 +46,30 @@ const guestAccountFromRequest=async(req,res)=>{
 const normalizePhone=value=>String(value||"").replace(/\D/g,"");
 const isValidIndianMobile=value=>/^[6-9]\d{9}$/.test(normalizePhone(value));
 const authenticate=asyncRoute(async(req,res,next)=>{
- if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true};return next();}
- const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
+ if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true,permissions:["*"]};return next();}
+ const token=(req.headers.authorization||"").replace(/^Bearer\\s+/i,"");
  if(!token)return res.status(401).json({error:"Please sign in"});
- try{const payload=jwt.verify(token,JWT_SECRET||"development-only-change-me");const user=await prisma.user.findUnique({where:{id:payload.sub}});if(!user||!user.active)return res.status(401).json({error:"Account is inactive"});req.user=user;next();}
- catch{return res.status(401).json({error:"Session expired. Please sign in again"});}
+ try{
+  const payload=jwt.verify(token,JWT_SECRET||"development-only-change-me");
+  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true}});
+  if(!user||!user.active)return res.status(401).json({error:"Account is inactive"});
+  user.permissions=Array.isArray(user.roleRecord?.permissions)?user.roleRecord.permissions:[];
+  req.user=user;next();
+ }catch{return res.status(401).json({error:"Session expired. Please sign in again"});}
 });
-const allow=(...roles)=>(req,res,next)=>roles.includes(req.user?.role)?next():res.status(403).json({error:"Your role does not have permission for this action"});
+const allow=(permission)=>(req,res,next)=>{
+ const permissions=req.user?.permissions||[];
+ if(permissions.includes("*")||permissions.includes(permission))return next();
+ return res.status(403).json({error:"Your role does not have permission to perform this action",requiredPermission:permission});
+};
 app.post("/api/auth/login",asyncRoute(async(req,res)=>{
  const {email,password}=req.body;if(!email||!password)return res.status(400).json({error:"Email and password are required"});
  const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()}});
  if(!user||!user.active||!(await bcrypt.compare(password,user.passwordHash)))return res.status(401).json({error:"Invalid email or password"});
- res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role}});
+ const roleRecord=user.roleId?await prisma.role.findUnique({where:{id:user.roleId}}):await prisma.role.findUnique({where:{key:user.role}});
+ res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role,roleId:user.roleId,permissions:Array.isArray(roleRecord?.permissions)?roleRecord.permissions:[]}});
 }));
-app.get("/api/auth/me",authenticate,(req,res)=>res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role}));
+app.get("/api/auth/me",authenticate,(req,res)=>res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role,roleId:req.user.roleId,permissions:req.user.permissions||[]}));
 
 app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
  const fullName=String(req.body.fullName||"").trim();
@@ -152,7 +162,7 @@ app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
 app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
 
 
-app.get("/api/dashboard", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (_req,res) => {
+app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) => {
   const today = dayStart();
   const tomorrow = dayEnd();
   const [total, occupied, availableBase, outOfOrder, clean, dirty, cleaning, arrivals, departures, checkIns, checkOuts, tasks, reservedTodayRows] = await Promise.all([
@@ -172,7 +182,7 @@ app.get("/api/dashboard", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING")
   res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,checkIns,checkOuts,pendingTasks:tasks});
 }));
 
-app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), asyncRoute(async (req,res) => {
+app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
   const where = {};
   if (req.query.housekeepingStatus) where.housekeepingStatus = req.query.housekeepingStatus;
   if (req.query.floor) where.floor = Number(req.query.floor);
@@ -192,13 +202,13 @@ app.get("/api/rooms", allow("ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"), as
         : rooms;
   res.json(filtered);
 }));
-app.post("/api/rooms", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+app.post("/api/rooms", allow("rooms.create"), asyncRoute(async (req,res) => {
   const {number,floor,category,rate} = req.body;
   const type=String(category||"").toUpperCase();
   if (!number || !["STANDARD","DELUXE","SUITE"].includes(type) || rate == null || Number(rate)<0) return res.status(400).json({error:"Room number, valid room type and non-negative rate are required"});
   res.status(201).json(await prisma.room.create({data:{number:String(number).trim(),floor:Number(floor||1),category:type,rate:Number(rate)}}));
 }));
-app.post("/api/rooms/bulk", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk", allow("rooms.delete"), asyncRoute(async (req,res) => {
   const {startNumber,endNumber,floor,category,rate}=req.body;
   const start=String(startNumber||"").trim(),end=String(endNumber||"").trim();
   const matchStart=start.match(/^(.*?)(\d+)$/),matchEnd=end.match(/^(.*?)(\d+)$/);
@@ -212,7 +222,7 @@ app.post("/api/rooms/bulk", allow("ADMIN","MANAGER"), asyncRoute(async (req,res)
   const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
   res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
 }));
-app.post("/api/rooms/bulk-delete", allow("ADMIN","MANAGER"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk-delete", allow("rooms.delete"), asyncRoute(async (req,res) => {
   const roomIds=[...new Set((Array.isArray(req.body.roomIds)?req.body.roomIds:[]).filter(id=>typeof id==="string"))];
   if(!roomIds.length)return res.status(400).json({error:"Select at least one room"});
   const selected=await prisma.room.findMany({where:{id:{in:roomIds}},include:{reservations:{select:{id:true},take:1},tasks:{select:{id:true},take:1}}});
@@ -229,20 +239,20 @@ app.delete("/api/rooms/:id", allow("ADMIN","MANAGER"), asyncRoute(async (req,res
   await prisma.room.delete({where:{id:req.params.id}});
   res.json({success:true});
 }));
-app.patch("/api/rooms/:id", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
+app.patch("/api/rooms/:id", allow("rooms.update"), asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
   res.json(await prisma.room.update({where:{id:req.params.id},data}));
 }));
 
-app.get("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
+app.get("/api/reservations", allow("reservations.view"), asyncRoute(async (req,res) => {
   const where = {};
   if (req.query.status) where.status = req.query.status;
   if (req.query.source) where.source = req.query.source;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
   res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{createdAt:"desc"}}));
 }));
-app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
+app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
   if (!guestId||!roomId||!checkIn) return res.status(400).json({error:"Guest, room and check-in are required"});
   const bookingSource=source||"WALK_IN";
@@ -270,7 +280,7 @@ app.post("/api/reservations", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRout
   if(isWalkIn) await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   res.status(201).json(reservation);
 }));
-app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res) => {
+app.patch("/api/reservations/:id/status", allow("reservations.update"), asyncRoute(async (req,res) => {
   const {status,totalAmount,extraCharges,discount}=req.body;
   const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
@@ -321,21 +331,21 @@ app.patch("/api/reservations/:id/status", allow("ADMIN","MANAGER","RECEPTIONIST"
   res.json(updated);
 }));
 
-app.get("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>{const records=await prisma.guest.findMany({orderBy:{createdAt:"desc"}});const seenAccounts=new Set();res.json(records.filter(guest=>{if(!guest.guestAccountId)return true;if(seenAccounts.has(guest.guestAccountId))return false;seenAccounts.add(guest.guestAccountId);return true;}));}));
-app.post("/api/guests", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
+app.get("/api/guests", allow("guests.view"), asyncRoute(async (_req,res)=>{const records=await prisma.guest.findMany({orderBy:{createdAt:"desc"}});const seenAccounts=new Set();res.json(records.filter(guest=>{if(!guest.guestAccountId)return true;if(seenAccounts.has(guest.guestAccountId))return false;seenAccounts.add(guest.guestAccountId);return true;}));}));
+app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
   const {fullName,email,idType,idNumber}=req.body;
   const phone=normalizePhone(req.body.phone);
   if(!fullName||!isValidIndianMobile(phone)) return res.status(400).json({error:"Enter a guest name and a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9"});
   res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
 }));
 
-app.get("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
+app.get("/api/housekeeping", allow("housekeeping.tasks.viewAll"), asyncRoute(async (req,res)=>{
   const where={};
   if(req.query.status) where.status=req.query.status;
   if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
   res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
 }));
-app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
+app.post("/api/housekeeping", allow("housekeeping.tasks.create"), asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
   if(!roomId) return res.status(400).json({error:"Choose a room for this task"});
   const room=await prisma.room.findUnique({where:{id:roomId}});
@@ -356,7 +366,7 @@ app.post("/api/housekeeping", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRout
   });
   res.status(201).json(result);
 }));
-app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (_req,res)=>{
+app.post("/api/housekeeping/generate-daily", allow("housekeeping.tasks.create"), asyncRoute(async (_req,res)=>{
   const today=dayStart(), tomorrow=dayEnd();
   const occupied=await prisma.room.findMany({where:{occupancyStatus:"OCCUPIED"}});
   let created=0;
@@ -366,7 +376,7 @@ app.post("/api/housekeeping/generate-daily", allow("ADMIN","MANAGER","HOUSEKEEPI
   }
   res.json({created,message:`Created ${created} daily cleaning tasks`});
 }));
-app.patch("/api/housekeeping/:id/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), asyncRoute(async (req,res)=>{
   const {assignedTo}=req.body;
   const task=await prisma.housekeepingTask.findUnique({where:{id:req.params.id}});
   if(!task) return res.status(404).json({error:"Housekeeping task not found"});
@@ -378,7 +388,7 @@ app.patch("/api/housekeeping/:id/assign", allow("ADMIN","MANAGER","HOUSEKEEPING"
   res.json(await prisma.housekeepingTask.update({where:{id:task.id},data:{assignedTo:assignedTo||null},include:{room:true}}));
 }));
 
-app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"), asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/status", allow("housekeeping.tasks.start"), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
   const result=await prisma.$transaction(async tx=>{
@@ -397,14 +407,14 @@ app.patch("/api/housekeeping/:id/status", allow("ADMIN","MANAGER","HOUSEKEEPING"
   res.json({...result.task,room:result.room});
 }));
 
-app.get("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
-app.post("/api/payments", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
+app.get("/api/payments", allow("payments.view"), asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
+app.post("/api/payments", allow("payments.record"), asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
   res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,amount,method,reference},include:{guest:true}}));
 }));
 
-app.get("/api/room-rack", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(async (req,res)=>{
+app.get("/api/room-rack", allow("reservations.view"), asyncRoute(async (req,res)=>{
   const mode=["daily","weekly","monthly"].includes(req.query.mode)?req.query.mode:"daily";
   const start=dayStart(req.query.date||new Date());
   if(mode==="weekly")start.setDate(start.getDate()-((start.getDay()+6)%7));
@@ -420,7 +430,39 @@ app.get("/api/room-rack", allow("ADMIN","MANAGER","RECEPTIONIST"), asyncRoute(as
 }));
 
 app.use((err,_req,res,_next)=>{console.error(err);res.status(500).json({error:err.code==="P2002"?"That record already exists": "Server error. Check the server logs."});});
-app.get("/api/staff",allow("ADMIN","MANAGER","HOUSEKEEPING"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
-app.post("/api/staff",allow("ADMIN"),asyncRoute(async(req,res)=>{const {fullName,email,password,role}=req.body;if(!fullName||!email||!password||!["ADMIN","MANAGER","RECEPTIONIST","HOUSEKEEPING"].includes(role))return res.status(400).json({error:"Name, email, password and valid role are required"});const passwordHash=await bcrypt.hash(password,12);const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role},select:{id:true,fullName:true,email:true,role:true,active:true}});res.status(201).json(user);}));
-app.patch("/api/staff/:id/active",allow("ADMIN"),asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});res.json(await prisma.user.update({where:{id:req.params.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
+app.get("/api/staff",allow("staff.view"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
+app.post("/api/staff",allow("staff.create"),asyncRoute(async(req,res)=>{
+ const {fullName,email,password,roleId}=req.body;
+ if(!fullName||!email||!password||!roleId)return res.status(400).json({error:"Name, email, password and role are required"});
+ const selectedRole=await prisma.role.findUnique({where:{id:roleId}});
+ if(!selectedRole)return res.status(400).json({error:"Choose a valid role"});
+ const passwordHash=await bcrypt.hash(password,12);
+ const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role:selectedRole.key,roleId:selectedRole.id},select:{id:true,fullName:true,email:true,role:true,roleId:true,active:true}});
+ res.status(201).json(user);
+}));
+app.patch("/api/staff/:id/active",allow("staff.deactivate"),asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});res.json(await prisma.user.update({where:{id:req.params.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
+
+app.get("/api/roles",allow("roles.view"),asyncRoute(async(_req,res)=>res.json(await prisma.role.findMany({orderBy:[{isSystem:"desc"},{name:"asc"}]}))));
+app.post("/api/roles",allow("roles.create"),asyncRoute(async(req,res)=>{
+ const name=String(req.body.name||"").trim(),permissions=Array.isArray(req.body.permissions)?[...new Set(req.body.permissions.filter(p=>typeof p==="string"))]:[];
+ if(!name)return res.status(400).json({error:"Role name is required"});
+ const key="CUSTOM_"+name.toUpperCase().replace(/[^A-Z0-9]+/g,"_").replace(/^_|_$/g,"")+"_"+Date.now().toString(36).toUpperCase();
+ res.status(201).json(await prisma.role.create({data:{key,name,description:String(req.body.description||"").trim()||null,permissions,isSystem:false}}));
+}));
+app.patch("/api/roles/:id",allow("roles.update"),asyncRoute(async(req,res)=>{
+ const current=await prisma.role.findUnique({where:{id:req.params.id}});if(!current)return res.status(404).json({error:"Role not found"});
+ const data={};
+ if(req.body.name!==undefined){const name=String(req.body.name).trim();if(!name)return res.status(400).json({error:"Role name cannot be empty"});data.name=name;}
+ if(req.body.description!==undefined)data.description=String(req.body.description||"").trim()||null;
+ if(req.body.permissions!==undefined){if(!Array.isArray(req.body.permissions)||req.body.permissions.some(p=>typeof p!=="string"))return res.status(400).json({error:"Permissions must be a list"});data.permissions=[...new Set(req.body.permissions)];}
+ res.json(await prisma.role.update({where:{id:current.id},data}));
+}));
+app.delete("/api/roles/:id",allow("roles.update"),asyncRoute(async(req,res)=>{
+ const role=await prisma.role.findUnique({where:{id:req.params.id},include:{users:{select:{id:true},take:1}}});
+ if(!role)return res.status(404).json({error:"Role not found"});
+ if(role.isSystem)return res.status(400).json({error:"Predefined roles cannot be deleted"});
+ if(role.users.length)return res.status(409).json({error:"Reassign users before deleting this role"});
+ await prisma.role.delete({where:{id:role.id}});res.json({success:true});
+}));
+
 app.listen(port,()=>console.log("StaySuite API running on http://localhost:"+port));
