@@ -3358,3 +3358,22 @@ td .custom-select-trigger{min-height:34px;padding:7px 9px;font-size:12px}
 
 
 @media(max-width:700px){.rack-toolbar{width:100%;justify-content:flex-start;gap:9px}.rack-period-nav{width:100%;justify-content:flex-start}.rack-period-nav>b{min-width:0;flex:1;text-align:center}.rack-date-picker{width:180px}}
+
+
+/* Role-based access management */
+.role-layout{display:grid;grid-template-columns:minmax(230px,.72fr) minmax(0,1.8fr);gap:18px;align-items:start}
+.role-list{display:flex;flex-direction:column;gap:6px}
+.role-list-item{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px;border:1px solid var(--line,#e8e5df);border-radius:10px;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.role-list-item.selected{border-color:var(--accent,#7a8c70);background:var(--surface-soft,#f5f5f1)}
+.role-list-item span{display:flex;flex-direction:column;gap:4px}
+.role-list-item small{color:var(--muted,#777);font-size:12px}
+.role-create{display:flex;flex-direction:column;gap:9px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line,#e8e5df)}
+.role-create input{width:100%;min-width:0;padding:10px 11px;border:1px solid var(--line,#e8e5df);border-radius:8px;background:var(--surface,#fff);color:inherit;font:inherit}
+.role-permission-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.role-permission-group{padding:13px;border:1px solid var(--line,#e8e5df);border-radius:10px}
+.role-permission-group h3{margin:0 0 10px;font-size:14px}
+.role-permission-list{display:flex;flex-direction:column;gap:9px}
+.role-permission-item{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer}
+.role-permission-item input{accent-color:var(--accent,#7a8c70)}
+.role-save-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line,#e8e5df);font-size:13px;color:var(--muted,#777)}
+@media(max-width:900px){.role-layout{grid-template-columns:1fr}.role-permission-groups{grid-template-columns:1fr}}
