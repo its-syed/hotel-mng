@@ -59,7 +59,7 @@ const authenticate=asyncRoute(async(req,res,next)=>{
 });
 const allow=(permission)=>(req,res,next)=>{
  const permissions=req.user?.permissions||[];
- if(permissions.includes("*")||permissions.includes(permission))return next();
+ if(req.user?.role==="ADMIN"||permissions.includes("*")||permissions.includes(permission))return next();
  return res.status(403).json({error:"Your role does not have permission to perform this action",requiredPermission:permission});
 };
 app.post("/api/auth/login",asyncRoute(async(req,res)=>{
@@ -344,7 +344,7 @@ app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
 
 app.get("/api/housekeeping", (req,res,next)=>{
  const permissions=req.user?.permissions||[];
- if(permissions.includes("*")||permissions.includes("housekeeping.tasks.viewAll"))return next();
+ if(req.user?.role==="ADMIN"||permissions.includes("*")||permissions.includes("housekeeping.tasks.viewAll"))return next();
  if(permissions.includes("housekeeping.tasks.viewAssigned")){req.housekeepingAssignedOnly=true;return next();}
  return res.status(403).json({error:"Your role does not have permission to view housekeeping tasks"});
 }, asyncRoute(async (req,res)=>{
