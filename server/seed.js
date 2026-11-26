@@ -85,7 +85,7 @@ try {
   for (const role of roles) {
     const savedRole = await prisma.role.upsert({
       where: {key: role.key},
-      update: {name: role.name, description: role.description, isSystem: true, permissions: role.permissions},
+      update: {name: role.name, description: role.description, isSystem: true},
       create: {...role, isSystem: true}
     });
     await prisma.user.updateMany({
