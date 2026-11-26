@@ -342,11 +342,16 @@ app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
   res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
 }));
 
-app.get("/api/housekeeping", allow("housekeeping.tasks.viewAll"), asyncRoute(async (req,res)=>{
-  const where={};
-  if(req.query.status) where.status=req.query.status;
-  if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
-  res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
+app.get("/api/housekeeping", (req,res,next)=>{
+ const permissions=req.user?.permissions||[];
+ if(permissions.includes("*")||permissions.includes("housekeeping.tasks.viewAll"))return next();
+ if(permissions.includes("housekeeping.tasks.viewAssigned")){req.housekeepingAssignedOnly=true;return next();}
+ return res.status(403).json({error:"Your role does not have permission to view housekeeping tasks"});
+}, asyncRoute(async (req,res)=>{
+ const where=req.housekeepingAssignedOnly?{assignedTo:req.user.fullName}:{};
+ if(req.query.status)where.status=req.query.status;
+ if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
+ res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
 }));
 app.post("/api/housekeeping", allow("housekeeping.tasks.create"), asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
