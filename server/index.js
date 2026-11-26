@@ -481,7 +481,7 @@ app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
 }));
 
 app.use((err,_req,res,_next)=>{console.error(err);res.status(500).json({error:err.code==="P2002"?"That record already exists": "Server error. Check the server logs."});});
-app.get("/api/staff",allow("staff.view"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,roleId:true,roleRecord:{select:{name:true}},active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
+app.get("/api/staff",allow("staff.view"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,roleId:true,roleRecord:{select:{name:true,permissions:true}},active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
 app.post("/api/staff",allow("staff.create"),allow("roles.assign"),asyncRoute(async(req,res)=>{
  const {fullName,email,password,roleId}=req.body;
  if(!fullName||!email||!password||!roleId)return res.status(400).json({error:"Name, email, password and role are required"});
