@@ -361,7 +361,8 @@ app.post("/api/housekeeping", allow("housekeeping.tasks.create"), asyncRoute(asy
   const scheduled=scheduledAt?new Date(scheduledAt):new Date();
   if(Number.isNaN(scheduled.getTime())) return res.status(400).json({error:"Enter a valid scheduled date and time"});
   if(assignedTo){
-    const cleaner=await prisma.user.findFirst({where:{fullName:assignedTo,role:"HOUSEKEEPING",active:true}});
+    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true},include:{roleRecord:true}});
+    const cleaner=cleanerCandidates.find(candidate=>Array.isArray(candidate.roleRecord?.permissions)&&candidate.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned"));
     if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
   }
   const result=await prisma.$transaction(async tx=>{
@@ -390,7 +391,8 @@ app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), as
   if(!task) return res.status(404).json({error:"Housekeeping task not found"});
   if(task.status!=="PENDING") return res.status(409).json({error:"Only pending tasks can be reassigned"});
   if(assignedTo){
-    const cleaner=await prisma.user.findFirst({where:{fullName:assignedTo,role:"HOUSEKEEPING",active:true}});
+    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true},include:{roleRecord:true}});
+    const cleaner=cleanerCandidates.find(candidate=>Array.isArray(candidate.roleRecord?.permissions)&&candidate.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned"));
     if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
   }
   res.json(await prisma.housekeepingTask.update({where:{id:task.id},data:{assignedTo:assignedTo||null},include:{room:true}}));
