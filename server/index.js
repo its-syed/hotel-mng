@@ -276,6 +276,83 @@ app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (req,res) =>
   res.json({rooms:{total,occupied,available,reserved,outOfOrder},housekeeping:{clean,dirty,cleaning},arrivals,departures,checkIns,checkOuts,pendingTasks:tasks});
 }));
 
+
+app.get("/api/reports", allow("reports.view"), asyncRoute(async (req,res)=>{
+  if(!req.organizationId) return res.status(403).json({error:"Organization context is not available"});
+  const startText=String(req.query.start||"");
+  const endText=String(req.query.end||"");
+  const validDate=value=>{
+    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+    const parsed=new Date(value+"T00:00:00");
+    return !Number.isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
+  };
+  if(!validDate(startText)||!validDate(endText)) return res.status(400).json({error:"Choose a valid start and end date"});
+  const start=new Date(startText+"T00:00:00");
+  const lastDay=new Date(endText+"T00:00:00");
+  if(start>lastDay) return res.status(400).json({error:"Start date must be on or before end date"});
+  const end=new Date(lastDay);end.setDate(end.getDate()+1);
+  const dayCount=Math.round((end-start)/86400000);
+  if(dayCount>366) return res.status(400).json({error:"Reports can cover up to 366 days at a time"});
+  const branches=await prisma.branch.findMany({
+    where:{organizationId:req.organizationId,active:true,...(req.branchId?{id:req.branchId}:{})},
+    select:{id:true,name:true,code:true}
+  });
+  const branchIds=branches.map(branch=>branch.id);
+  if(!branchIds.length) return res.json({range:{start:startText,end:endText},summary:{revenue:0,paymentCount:0,reservations:0,cancellations:0,checkIns:0,checkOuts:0,occupancyRate:0},branches:[]});
+  const [roomGroups,paymentGroups,reservations]=await Promise.all([
+    prisma.room.groupBy({by:["branchId"],where:{branchId:{in:branchIds},archivedAt:null},_count:{_all:true}}),
+    prisma.payment.groupBy({by:["branchId"],where:{branchId:{in:branchIds},paidAt:{gte:start,lt:end},status:"PAID"},_sum:{amount:true},_count:{_all:true}}),
+    prisma.reservation.findMany({
+      where:{branchId:{in:branchIds},OR:[
+        {checkIn:{gte:start,lt:end}},
+        {checkedInAt:{gte:start,lt:end}},
+        {checkedOutAt:{gte:start,lt:end}},
+        {checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]}
+      ]},
+      select:{branchId:true,checkIn:true,checkOut:true,checkedInAt:true,checkedOutAt:true,status:true}
+    })
+  ]);
+  const roomByBranch=new Map(roomGroups.map(item=>[item.branchId,item._count._all]));
+  const paymentByBranch=new Map(paymentGroups.map(item=>[item.branchId,{revenue:Number(item._sum.amount||0),paymentCount:item._count._all}]));
+  const inRange=(value)=>value&&new Date(value)>=start&&new Date(value)<end;
+  const branchReports=branches.map(branch=>{
+    const branchReservations=reservations.filter(item=>item.branchId===branch.id);
+    const scheduled=branchReservations.filter(item=>inRange(item.checkIn));
+    const revenueData=paymentByBranch.get(branch.id)||{revenue:0,paymentCount:0};
+    const roomCount=roomByBranch.get(branch.id)||0;
+    let roomNights=0;
+    for(const item of branchReservations){
+      if(!["CONFIRMED","CHECKED_IN","CHECKED_OUT"].includes(item.status)) continue;
+      const stayStart=new Date(item.checkIn);stayStart.setHours(0,0,0,0);
+      let stayEnd;
+      if(item.checkOut){stayEnd=new Date(item.checkOut);stayEnd.setHours(0,0,0,0);}
+      else if(item.status==="CHECKED_IN"){stayEnd=new Date(Math.min(end.getTime(),dayEnd().getTime()));}
+      else{stayEnd=new Date(stayStart);stayEnd.setDate(stayEnd.getDate()+1);}
+      const overlapStart=new Date(Math.max(stayStart.getTime(),start.getTime()));
+      const overlapEnd=new Date(Math.min(stayEnd.getTime(),end.getTime()));
+      roomNights+=Math.max(0,Math.round((overlapEnd-overlapStart)/86400000));
+    }
+    const availableRoomNights=roomCount*dayCount;
+    return {
+      id:branch.id,name:branch.name,code:branch.code,
+      revenue:revenueData.revenue,paymentCount:revenueData.paymentCount,
+      reservations:scheduled.length,cancellations:scheduled.filter(item=>item.status==="CANCELLED").length,
+      checkIns:branchReservations.filter(item=>inRange(item.checkedInAt)).length,
+      checkOuts:branchReservations.filter(item=>inRange(item.checkedOutAt)).length,
+      occupancyRate:availableRoomNights?Math.round(roomNights/availableRoomNights*1000)/10:0,
+      roomNights,availableRoomNights
+    };
+  });
+  const totals=branchReports.reduce((total,item)=>({
+    revenue:total.revenue+item.revenue,paymentCount:total.paymentCount+item.paymentCount,
+    reservations:total.reservations+item.reservations,cancellations:total.cancellations+item.cancellations,
+    checkIns:total.checkIns+item.checkIns,checkOuts:total.checkOuts+item.checkOuts,
+    roomNights:total.roomNights+item.roomNights,availableRoomNights:total.availableRoomNights+item.availableRoomNights
+  }),{revenue:0,paymentCount:0,reservations:0,cancellations:0,checkIns:0,checkOuts:0,roomNights:0,availableRoomNights:0});
+  totals.occupancyRate=totals.availableRoomNights?Math.round(totals.roomNights/totals.availableRoomNights*1000)/10:0;
+  res.json({range:{start:startText,end:endText},summary:totals,branches:branchReports});
+}));
+
 app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
   const where = {...branchScope(req),archivedAt:req.query.archived==="true"?{not:null}:null};
   if (req.query.housekeepingStatus) where.housekeepingStatus = req.query.housekeepingStatus;
