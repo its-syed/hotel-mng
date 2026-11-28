@@ -51,7 +51,7 @@ try {
 
     // Admins remain organization-wide. Existing non-admin users start in Main Branch.
     const branchUsers = await tx.user.findMany({
-      where: { organizationId: organization.id, role: { not: "ADMIN" } },
+      where: { organizationId: organization.id, role: { not: "ADMIN" }, branchAssignments: { none: {} } },
       select: { id: true }
     });
     if (branchUsers.length) {
@@ -67,14 +67,16 @@ try {
       paymentsWithoutBranch,
       guestsWithoutOrganization,
       accountsWithoutOrganization,
-      usersWithoutOrganization
+      usersWithoutOrganization,
+      nonAdminUsersWithoutBranch
     ] = await Promise.all([
       tx.room.count({ where: { branchId: null } }),
       tx.reservation.count({ where: { branchId: null } }),
       tx.payment.count({ where: { branchId: null } }),
       tx.guest.count({ where: { organizationId: null } }),
       tx.guestAccount.count({ where: { organizationId: null } }),
-      tx.user.count({ where: { organizationId: null } })
+      tx.user.count({ where: { organizationId: null } }),
+      tx.user.count({ where: { organizationId: organization.id, role: { not: "ADMIN" }, branchAssignments: { none: {} } } })
     ]);
 
     const reservationRoomMismatch = await tx.$queryRawUnsafe(
@@ -91,6 +93,7 @@ try {
       guestsWithoutOrganization,
       accountsWithoutOrganization,
       usersWithoutOrganization,
+      nonAdminUsersWithoutBranch,
       reservationRoomMismatch: Number(reservationRoomMismatch[0]?.count || 0),
       paymentReservationMismatch: Number(paymentReservationMismatch[0]?.count || 0)
     };
