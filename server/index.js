@@ -256,7 +256,7 @@ app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (req,res) =>
     prisma.reservation.count({where:{...branch,checkOut:{gte:today,lt:tomorrow},status:{in:["CONFIRMED","CHECKED_IN"]}}}),
     prisma.reservation.count({where:{...branch,checkedInAt:{gte:today,lt:tomorrow}}}),
     prisma.reservation.count({where:{...branch,checkedOutAt:{gte:today,lt:tomorrow}}}),
-    prisma.housekeepingTask.count({where:{...branch,scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}}),
+    prisma.housekeepingTask.count({where:{room:branch,scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}}),
     prisma.reservation.findMany({where:{...branch,status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
   ]);
   const reserved=await prisma.room.count({where:{id:{in:reservedTodayRows.map(r=>r.roomId)},occupancyStatus:{in:["AVAILABLE","RESERVED"]}}});
@@ -345,9 +345,11 @@ app.patch("/api/rooms/:id/out-of-order", allow("rooms.update"), requireBranchCon
 }));
 
 app.patch("/api/rooms/:id", allow("rooms.update"), requireBranchContext, asyncRoute(async (req,res) => {
+  const room=await prisma.room.findFirst({where:{id:req.params.id,...branchScope(req)}});
+  if(!room)return res.status(404).json({error:"Room not found"});
   const allowed = ["floor","category","rate","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
-  res.json(await prisma.room.update({where:{id:req.params.id},data}));
+  res.json(await prisma.room.update({where:{id:room.id},data}));
 }));
 
 app.get("/api/reservations", allow("reservations.view"), asyncRoute(async (req,res) => {
@@ -485,9 +487,9 @@ app.post("/api/housekeeping", allow("housekeeping.tasks.create"), requireBranchC
   });
   res.status(201).json(result);
 }));
-app.post("/api/housekeeping/generate-daily", allow("housekeeping.tasks.create"), asyncRoute(async (_req,res)=>{
+app.post("/api/housekeeping/generate-daily", allow("housekeeping.tasks.create"), requireBranchContext, asyncRoute(async (req,res)=>{
   const today=dayStart(), tomorrow=dayEnd();
-  const occupied=await prisma.room.findMany({where:{occupancyStatus:"OCCUPIED"}});
+  const occupied=await prisma.room.findMany({where:{...branchScope(req),occupancyStatus:"OCCUPIED"}});
   let created=0;
   for(const room of occupied){
     const existing=await prisma.housekeepingTask.findFirst({where:{roomId:room.id,taskType:"DAILY_CLEANING",scheduledAt:{gte:today,lt:tomorrow}}});
@@ -497,7 +499,7 @@ app.post("/api/housekeeping/generate-daily", allow("housekeeping.tasks.create"),
 }));
 app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {assignedTo}=req.body;
-  const task=await prisma.housekeepingTask.findUnique({where:{id:req.params.id}});
+  const task=await prisma.housekeepingTask.findFirst({where:{id:req.params.id,room:branchScope(req)}});
   if(!task) return res.status(404).json({error:"Housekeeping task not found"});
   if(task.status!=="PENDING") return res.status(409).json({error:"Only pending tasks can be reassigned"});
   if(assignedTo){
@@ -512,7 +514,7 @@ app.patch("/api/housekeeping/:id/status", requireBranchContext, (req,res,next)=>
   const {status}=req.body;
   if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
   const result=await prisma.$transaction(async tx=>{
-    const current=await tx.housekeepingTask.findUnique({where:{id:req.params.id}});
+    const current=await tx.housekeepingTask.findFirst({where:{id:req.params.id,room:branchScope(req)}});
     if(!current) return {error:"Housekeeping task not found",statusCode:404};
     if(status==="IN_PROGRESS"&&current.status!=="PENDING") return {error:"Only pending tasks can be started",statusCode:409};
     if(status==="COMPLETED"&&current.status!=="IN_PROGRESS") return {error:"Only a task in progress can be completed",statusCode:409};
