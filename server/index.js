@@ -116,6 +116,7 @@ app.post("/api/auth/login",asyncRoute(async(req,res)=>{
  const {email,password}=req.body;if(!email||!password)return res.status(400).json({error:"Email and password are required"});
  const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()},include:{branchAssignments:{include:{branch:true}}}});
  if(!user||!user.active||!(await bcrypt.compare(password,user.passwordHash)))return res.status(401).json({error:"Invalid email or password"});
+ if(user.role!=="ADMIN"&&!user.branchAssignments.some(assignment=>assignment.branch.active))return res.status(403).json({error:"Your account is not assigned to an active branch. Contact the administrator."});
  const roleRecord=user.roleId?await prisma.role.findUnique({where:{id:user.roleId}}):await prisma.role.findUnique({where:{key:user.role}});
  const branches=user.role==="ADMIN"?await prisma.branch.findMany({where:{organizationId:user.organizationId,active:true},orderBy:{name:"asc"}}):user.branchAssignments.filter(a=>a.branch.active).map(a=>a.branch);
  res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role,roleId:user.roleId,organizationId:user.organizationId,permissions:Array.isArray(roleRecord?.permissions)?roleRecord.permissions:[],branches,isAdmin:user.role==="ADMIN"}});
