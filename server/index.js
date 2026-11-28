@@ -277,7 +277,7 @@ app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
   if (req.query.floor) where.floor = Number(req.query.floor);
   const today=dayStart(), tomorrow=dayEnd();
   const [allRooms,reservedRows]=await Promise.all([
-    prisma.room.findMany({where,orderBy:[{floor:"asc"},{number:"asc"}]}),
+    prisma.room.findMany({where,include:{branch:{select:{id:true,name:true,code:true}}},orderBy:[{floor:"asc"},{number:"asc"}]}),
     prisma.reservation.findMany({where:{...branchScope(req),status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
   ]);
   const reservedIds=new Set(reservedRows.map(r=>r.roomId));
@@ -364,7 +364,7 @@ app.get("/api/reservations", allow("reservations.view"), asyncRoute(async (req,r
   if (req.query.status) where.status = req.query.status;
   if (req.query.source) where.source = req.query.source;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
-  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{createdAt:"desc"}}));
+  res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,branch:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{createdAt:"desc"}}));
 }));
 app.post("/api/reservations", allow("reservations.create"), requireBranchContext, asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
@@ -469,7 +469,7 @@ app.get("/api/housekeeping", (req,res,next)=>{
  const where={...(req.housekeepingAssignedOnly?{assignedTo:req.user.fullName}:{}),room:branchScope(req)};
  if(req.query.status)where.status=req.query.status;
  if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
- res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
+ res.json(await prisma.housekeepingTask.findMany({where,include:{room:{include:{branch:{select:{id:true,name:true,code:true}}}}},orderBy:{scheduledAt:"desc"}}));
 }));
 app.post("/api/housekeeping", allow("housekeeping.tasks.create"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
@@ -536,7 +536,7 @@ app.patch("/api/housekeeping/:id/status", requireBranchContext, (req,res,next)=>
   res.json({...result.task,room:result.room});
 }));
 
-app.get("/api/payments", allow("payments.view"), asyncRoute(async (req,res)=>res.json(await prisma.payment.findMany({where:branchScope(req),include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
+app.get("/api/payments", allow("payments.view"), asyncRoute(async (req,res)=>res.json(await prisma.payment.findMany({where:branchScope(req),include:{guest:true,reservation:true,branch:true},orderBy:{paidAt:"desc"}}))));
 app.post("/api/payments", allow("payments.record"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
@@ -553,7 +553,7 @@ app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
   const days=mode==="daily"?1:mode==="weekly"?7:new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
   const end=new Date(start);end.setDate(end.getDate()+days);
   const [rooms,reservations]=await Promise.all([
-    prisma.room.findMany({where:{...branchScope(req),archivedAt:null},orderBy:[{floor:"asc"},{number:"asc"}]}),
+    prisma.room.findMany({where:{...branchScope(req),archivedAt:null},include:{branch:{select:{id:true,name:true,code:true}}},orderBy:[{floor:"asc"},{number:"asc"}]}),
     prisma.reservation.findMany({where:{...branchScope(req),checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}],status:{in:["CONFIRMED","CHECKED_IN"]}},include:{guest:true}})
   ]);
   const dates=Array.from({length:days},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");});
