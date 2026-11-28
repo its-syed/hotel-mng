@@ -203,7 +203,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const conflict=await prisma.reservation.findFirst({where:{roomId,status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]}});
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
- const result=await prisma.$transaction(async tx=>{let guest=await tx.guest.findFirst({where:{guestAccountId:account.id},orderBy:{createdAt:"asc"}});if(guest){guest=await tx.guest.update({where:{id:guest.id},data:{fullName,phone,email:email||null}})}else{guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account.id}})}const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
+ const result=await prisma.$transaction(async tx=>{let guest=await tx.guest.findFirst({where:{guestAccountId:account.id},orderBy:{createdAt:"asc"}});if(guest){guest=await tx.guest.update({where:{id:guest.id},data:{fullName,phone,email:email||null}})}else{guest=await tx.guest.create({data:{organizationId:account.organizationId,fullName,phone,email:email||null,guestAccountId:account.id}})}const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,branchId:room.branchId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
  io.to("staff:branch:"+result.branchId).emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
  if(account.organizationId)io.to("staff:org:"+account.organizationId).emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
@@ -452,7 +452,7 @@ app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
   res.status(201).json(await prisma.guest.create({data:{organizationId:req.organizationId,fullName,phone,email,idType,idNumber}}));
 }));
 
-app.get("/api/housekeeping/assignees",allow("housekeeping.tasks.assign"),asyncRoute(async(_req,res)=>{const users=await prisma.user.findMany({where:{active:true},select:{id:true,fullName:true,role:true,active:true,roleRecord:{select:{name:true,permissions:true}}},orderBy:{fullName:"asc"}});res.json(users.filter(user=>Array.isArray(user.roleRecord?.permissions)&&user.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned")));}));
+app.get("/api/housekeeping/assignees",allow("housekeeping.tasks.assign"),asyncRoute(async(req,res)=>{const users=await prisma.user.findMany({where:{active:true,organizationId:req.organizationId,branchAssignments:{some:{branchId:req.branchId}}},select:{id:true,fullName:true,role:true,active:true,roleRecord:{select:{name:true,permissions:true}}},orderBy:{fullName:"asc"}});res.json(users.filter(user=>Array.isArray(user.roleRecord?.permissions)&&user.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned")));}));
 
 app.get("/api/housekeeping", (req,res,next)=>{
  const permissions=req.user?.permissions||[];
@@ -474,7 +474,7 @@ app.post("/api/housekeeping", allow("housekeeping.tasks.create"), requireBranchC
   const scheduled=scheduledAt?new Date(scheduledAt):new Date();
   if(Number.isNaN(scheduled.getTime())) return res.status(400).json({error:"Enter a valid scheduled date and time"});
   if(assignedTo){
-    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true},include:{roleRecord:true}});
+    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true,organizationId:req.organizationId,branchAssignments:{some:{branchId:req.branchId}}},include:{roleRecord:true}});
     const cleaner=cleanerCandidates.find(candidate=>Array.isArray(candidate.roleRecord?.permissions)&&candidate.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned"));
     if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
   }
@@ -504,7 +504,7 @@ app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), re
   if(!task) return res.status(404).json({error:"Housekeeping task not found"});
   if(task.status!=="PENDING") return res.status(409).json({error:"Only pending tasks can be reassigned"});
   if(assignedTo){
-    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true},include:{roleRecord:true}});
+    const cleanerCandidates=await prisma.user.findMany({where:{fullName:assignedTo,active:true,organizationId:req.organizationId,branchAssignments:{some:{branchId:req.branchId}}},include:{roleRecord:true}});
     const cleaner=cleanerCandidates.find(candidate=>Array.isArray(candidate.roleRecord?.permissions)&&candidate.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned"));
     if(!cleaner) return res.status(400).json({error:"Choose an active housekeeping staff member"});
   }
@@ -534,6 +534,8 @@ app.get("/api/payments", allow("payments.view"), asyncRoute(async (req,res)=>res
 app.post("/api/payments", allow("payments.record"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
+  const guest=await prisma.guest.findFirst({where:{id:guestId,organizationId:req.organizationId}});if(!guest)return res.status(404).json({error:"Guest not found in this organization"});
+  if(reservationId){const reservation=await prisma.reservation.findFirst({where:{id:reservationId,branchId:req.branchId}});if(!reservation)return res.status(404).json({error:"Reservation not found in the selected branch"});}
   res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,branchId:req.branchId,amount,method,reference},include:{guest:true}}));
 }));
 
