@@ -8,7 +8,8 @@
     "start": "node index.js",
     "db:push": "prisma db push",
     "db:seed": "node seed.js",
-    "db:backfill-checkout-amounts": "node backfill-checkout-amounts.js"
+    "db:backfill-checkout-amounts": "node backfill-checkout-amounts.js",
+    "db:backfill-multi-branch": "node backfill-multi-branch.js"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
