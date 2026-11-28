@@ -550,17 +550,20 @@ app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
 }));
 
 app.use((err,_req,res,_next)=>{console.error(err);res.status(500).json({error:err.code==="P2002"?"That record already exists": "Server error. Check the server logs."});});
-app.get("/api/staff",allow("staff.view"),asyncRoute(async(_req,res)=>res.json(await prisma.user.findMany({select:{id:true,fullName:true,email:true,role:true,roleId:true,roleRecord:{select:{name:true,permissions:true}},active:true,createdAt:true},orderBy:{createdAt:"desc"}}))));
-app.post("/api/staff",allow("staff.create"),allow("roles.assign"),asyncRoute(async(req,res)=>{
+app.get("/api/staff",allow("staff.view"),asyncRoute(async(req,res)=>res.json(await prisma.user.findMany({where:{organizationId:req.organizationId,...(req.branchId?{branchAssignments:{some:{branchId:req.branchId}}}:{})},include:{branchAssignments:{include:{branch:{select:{id:true,name:true,code:true}}}},roleRecord:{select:{name:true,permissions:true}}},orderBy:{createdAt:"desc"}}))));
+app.post("/api/staff",allow("staff.create"),allow("roles.assign"),adminOnly,asyncRoute(async(req,res)=>{
  const {fullName,email,password,roleId}=req.body;
  if(!fullName||!email||!password||!roleId)return res.status(400).json({error:"Name, email, password and role are required"});
  const selectedRole=await prisma.role.findUnique({where:{id:roleId}});
  if(!selectedRole)return res.status(400).json({error:"Choose a valid role"});
+ const branchId=selectedRole.key==="ADMIN"?null:String(req.body.branchId||req.branchId||"").trim();
+ if(selectedRole.key!=="ADMIN"&&!branchId)return res.status(400).json({error:"Select a branch for this staff member"});
+ if(branchId){const branch=await prisma.branch.findFirst({where:{id:branchId,organizationId:req.organizationId,active:true}});if(!branch)return res.status(400).json({error:"Choose an active branch in this organization"});}
  const passwordHash=await bcrypt.hash(password,12);
- const user=await prisma.user.create({data:{fullName,email:String(email).toLowerCase(),passwordHash,role:selectedRole.key,roleId:selectedRole.id},select:{id:true,fullName:true,email:true,role:true,roleId:true,active:true}});
+ const user=await prisma.$transaction(async tx=>{const created=await tx.user.create({data:{organizationId:req.organizationId,fullName,email:String(email).toLowerCase(),passwordHash,role:selectedRole.key,roleId:selectedRole.id},select:{id:true,fullName:true,email:true,role:true,roleId:true,active:true}});if(branchId)await tx.staffBranch.create({data:{userId:created.id,branchId}});return created;});
  res.status(201).json(user);
 }));
-app.patch("/api/staff/:id/active",allow("staff.deactivate"),asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});res.json(await prisma.user.update({where:{id:req.params.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
+app.patch("/api/staff/:id/active",allow("staff.deactivate"),adminOnly,asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});const current=await prisma.user.findFirst({where:{id:req.params.id,organizationId:req.organizationId}});if(!current)return res.status(404).json({error:"Staff member not found"});res.json(await prisma.user.update({where:{id:current.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
 
 app.get("/api/roles",allow("roles.view"),asyncRoute(async(_req,res)=>res.json(await prisma.role.findMany({orderBy:[{isSystem:"desc"},{name:"asc"}]}))));
 app.post("/api/roles",allow("roles.create"),asyncRoute(async(req,res)=>{
