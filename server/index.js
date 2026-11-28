@@ -194,7 +194,7 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const email=account.email;
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
  if(!fullName||!isValidIndianMobile(phone)||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"A valid Indian mobile number and valid stay dates are required"});
- const room=await prisma.room.findUnique({where:{id:roomId}});
+ const room=await prisma.room.findFirst({where:{id:roomId,...branchScope(req)}});
  if(!room||room.archivedAt||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
  if(room.occupancyStatus==="OCCUPIED"){
   const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
@@ -284,13 +284,13 @@ app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
         : rooms;
   res.json(filtered);
 }));
-app.post("/api/rooms", allow("rooms.create"), asyncRoute(async (req,res) => {
+app.post("/api/rooms", allow("rooms.create"), requireBranchContext, asyncRoute(async (req,res) => {
   const {number,floor,category,rate} = req.body;
   const type=String(category||"").toUpperCase();
   if (!number || !["STANDARD","DELUXE","SUITE"].includes(type) || rate == null || Number(rate)<0) return res.status(400).json({error:"Room number, valid room type and non-negative rate are required"});
-  res.status(201).json(await prisma.room.create({data:{number:String(number).trim(),floor:Number(floor||1),category:type,rate:Number(rate)}}));
+  res.status(201).json(await prisma.room.create({data:{branchId:req.branchId,number:String(number).trim(),floor:Number(floor||1),category:type,rate:Number(rate)}}));
 }));
-app.post("/api/rooms/bulk", allow("rooms.create"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk", allow("rooms.create"), requireBranchContext, asyncRoute(async (req,res) => {
   const {startNumber,endNumber,floor,category,rate}=req.body;
   const start=String(startNumber||"").trim(),end=String(endNumber||"").trim();
   const matchStart=start.match(/^(.*?)(\d+)$/),matchEnd=end.match(/^(.*?)(\d+)$/);
@@ -300,7 +300,7 @@ app.post("/api/rooms/bulk", allow("rooms.create"), asyncRoute(async (req,res) =>
   const type=String(category||"").toUpperCase();
   if(!["STANDARD","DELUXE","SUITE"].includes(type)||rate==null||Number(rate)<0)return res.status(400).json({error:"Choose a valid room type and non-negative rate"});
   const width=matchStart[2].length;
-  const rows=Array.from({length:count},(_,i)=>({number:matchStart[1]+String(first+i).padStart(width,"0"),floor:Number(floor||1),category:type,rate:Number(rate)}));
+  const rows=Array.from({length:count},(_,i)=>({branchId:req.branchId,number:matchStart[1]+String(first+i).padStart(width,"0"),floor:Number(floor||1),category:type,rate:Number(rate)}));
   const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
   res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
 }));
@@ -357,7 +357,7 @@ app.get("/api/reservations", allow("reservations.view"), asyncRoute(async (req,r
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
   res.json(await prisma.reservation.findMany({where,include:{guest:true,room:true,payments:true,statusHistory:{orderBy:{changedAt:"asc"}}},orderBy:{createdAt:"desc"}}));
 }));
-app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (req,res) => {
+app.post("/api/reservations", allow("reservations.create"), requireBranchContext, asyncRoute(async (req,res) => {
   const {guestId,roomId,checkIn,checkOut,totalAmount,adults,children,source,notes} = req.body;
   if (!guestId||!roomId||!checkIn) return res.status(400).json({error:"Guest, room and check-in are required"});
   const bookingSource=source||"WALK_IN";
@@ -367,7 +367,7 @@ app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (re
   if(!Number.isFinite(start.getTime())) return res.status(400).json({error:"Choose a valid check-in date"});
   const end=checkOut?new Date(checkOut):null;
   if(checkOut&&(!Number.isFinite(end.getTime())||!(end>start))) return res.status(400).json({error:"Check-out must be after check-in"});
-  const room=await prisma.room.findUnique({where:{id:roomId}});
+  const room=await prisma.room.findFirst({where:{id:roomId,...branchScope(req)}});
   if(!room) return res.status(404).json({error:"Room not found"});
   if(room.archivedAt) return res.status(409).json({error:"Archived rooms cannot be used for bookings or housekeeping"});
   if(room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
@@ -381,7 +381,7 @@ app.post("/api/reservations", allow("reservations.create"), asyncRoute(async (re
   if(conflict) return res.status(409).json({error:"This room already has a reservation for those dates"});
   const isWalkIn=bookingSource==="WALK_IN";
   const bookingCode="ST"+Date.now().toString().slice(-8);
-  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:bookingSource,notes,status:isWalkIn?"CHECKED_IN":"CONFIRMED",checkedInAt:isWalkIn?new Date():null},include:{guest:true,room:true}});
+  const reservation=await prisma.reservation.create({data:{bookingCode,guestId,roomId,branchId:req.branchId,checkIn:start,checkOut:end,totalAmount:totalAmount===""||totalAmount==null?null:Number(totalAmount),adults:adults===""||adults==null?1:Number(adults),children:children===""||children==null?0:Number(children),source:bookingSource,notes,status:isWalkIn?"CHECKED_IN":"CONFIRMED",checkedInAt:isWalkIn?new Date():null},include:{guest:true,room:true}});
   await prisma.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:reservation.status,changedBy:req.user.fullName||req.user.email||"Staff"}});
   if(isWalkIn) await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   res.status(201).json(reservation);
@@ -391,7 +391,7 @@ app.patch("/api/reservations/:id/status", (req,res,next)=>{
  return allow(permission)(req,res,next);
 }, asyncRoute(async (req,res) => {
   const {status,totalAmount,extraCharges,discount}=req.body;
-  const current=await prisma.reservation.findUnique({where:{id:req.params.id},include:{room:true,guest:{select:{guestAccountId:true}}}});
+  const current=await prisma.reservation.findFirst({where:{id:req.params.id,...branchScope(req)},include:{room:true,guest:{select:{guestAccountId:true}}}});
   if(!current) return res.status(404).json({error:"Reservation not found"});
   const transitions={
     PENDING:["CONFIRMED","CANCELLED"],
@@ -441,12 +441,12 @@ app.patch("/api/reservations/:id/status", (req,res,next)=>{
   res.json(updated);
 }));
 
-app.get("/api/guests", allow("guests.view"), asyncRoute(async (_req,res)=>{const records=await prisma.guest.findMany({orderBy:{createdAt:"desc"}});const seenAccounts=new Set();res.json(records.filter(guest=>{if(!guest.guestAccountId)return true;if(seenAccounts.has(guest.guestAccountId))return false;seenAccounts.add(guest.guestAccountId);return true;}));}));
+app.get("/api/guests", allow("guests.view"), asyncRoute(async (req,res)=>{const records=await prisma.guest.findMany({where:{organizationId:req.organizationId},orderBy:{createdAt:"desc"}});const seenAccounts=new Set();res.json(records.filter(guest=>{if(!guest.guestAccountId)return true;if(seenAccounts.has(guest.guestAccountId))return false;seenAccounts.add(guest.guestAccountId);return true;}));}));
 app.post("/api/guests", allow("guests.create"), asyncRoute(async (req,res)=>{
   const {fullName,email,idType,idNumber}=req.body;
   const phone=normalizePhone(req.body.phone);
   if(!fullName||!isValidIndianMobile(phone)) return res.status(400).json({error:"Enter a guest name and a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9"});
-  res.status(201).json(await prisma.guest.create({data:{fullName,phone,email,idType,idNumber}}));
+  res.status(201).json(await prisma.guest.create({data:{organizationId:req.organizationId,fullName,phone,email,idType,idNumber}}));
 }));
 
 app.get("/api/housekeeping/assignees",allow("housekeeping.tasks.assign"),asyncRoute(async(_req,res)=>{const users=await prisma.user.findMany({where:{active:true},select:{id:true,fullName:true,role:true,active:true,roleRecord:{select:{name:true,permissions:true}}},orderBy:{fullName:"asc"}});res.json(users.filter(user=>Array.isArray(user.roleRecord?.permissions)&&user.roleRecord.permissions.includes("housekeeping.tasks.viewAssigned")));}));
@@ -462,7 +462,7 @@ app.get("/api/housekeeping", (req,res,next)=>{
  if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
  res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
 }));
-app.post("/api/housekeeping", allow("housekeeping.tasks.create"), asyncRoute(async (req,res)=>{
+app.post("/api/housekeeping", allow("housekeeping.tasks.create"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {roomId,description,assignedTo,scheduledAt,taskType}=req.body;
   if(!roomId) return res.status(400).json({error:"Choose a room for this task"});
   const room=await prisma.room.findUnique({where:{id:roomId}});
@@ -528,10 +528,10 @@ app.patch("/api/housekeeping/:id/status", (req,res,next)=>allow(req.body.status=
 }));
 
 app.get("/api/payments", allow("payments.view"), asyncRoute(async (req,res)=>res.json(await prisma.payment.findMany({where:branchScope(req),include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
-app.post("/api/payments", allow("payments.record"), asyncRoute(async (req,res)=>{
+app.post("/api/payments", allow("payments.record"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
-  res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,amount,method,reference},include:{guest:true}}));
+  res.status(201).json(await prisma.payment.create({data:{paymentCode:"PAY"+Date.now().toString().slice(-8),guestId,reservationId:reservationId||null,branchId:req.branchId,amount,method,reference},include:{guest:true}}));
 }));
 
 app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
