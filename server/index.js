@@ -202,6 +202,8 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const room=await prisma.room.findUnique({where:{id:roomId}});
  if(req.body.branchId&&room?.branchId!==req.body.branchId)return res.status(409).json({error:"The selected room does not belong to the chosen branch"});
  if(!room||room.archivedAt||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
+ const bookingBranch=await prisma.branch.findFirst({where:{id:room.branchId,organizationId:account.organizationId,active:true}});
+ if(!bookingBranch)return res.status(409).json({error:"This branch is no longer accepting booking requests"});
  if(room.occupancyStatus==="OCCUPIED"){
   const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
   if(!activeStay?.checkOut||activeStay.checkOut>start)return res.status(409).json({error:"This room is currently occupied through the selected check-in date"});
@@ -380,6 +382,8 @@ app.post("/api/reservations", allow("reservations.create"), requireBranchContext
   if(checkOut&&(!Number.isFinite(end.getTime())||!(end>start))) return res.status(400).json({error:"Check-out must be after check-in"});
   const room=await prisma.room.findFirst({where:{id:roomId,...branchScope(req)}});
   if(!room) return res.status(404).json({error:"Room not found"});
+  const guest=await prisma.guest.findFirst({where:{id:guestId,organizationId:req.organizationId}});
+  if(!guest)return res.status(404).json({error:"Guest not found in this organization"});
   if(room.archivedAt) return res.status(409).json({error:"Archived rooms cannot be used for bookings or housekeeping"});
   if(room.occupancyStatus==="OUT_OF_ORDER") return res.status(409).json({error:"This room is out of order"});
   if(bookingSource==="WALK_IN"&&room.occupancyStatus==="OCCUPIED") return res.status(409).json({error:"A walk-in must be assigned to a currently available room"});
