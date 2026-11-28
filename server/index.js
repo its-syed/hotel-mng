@@ -26,7 +26,7 @@ const jwtSecret=JWT_SECRET||"development-only-change-me";
 io.use(async(socket,next)=>{
  try{
   const token=socket.handshake.auth?.token;
-  if(!token&&process.env.DEV_AUTH_BYPASS==="true"){socket.data.kind="staff";return next();}
+  if(!token&&process.env.DEV_AUTH_BYPASS==="true"){const organization=await prisma.organization.findFirst();socket.data.kind="staff";socket.data.isAdmin=true;socket.data.organizationId=organization?.id||null;socket.data.branchIds=[];return next();}
   if(!token)return next(new Error("Authentication required"));
   const payload=jwt.verify(token,jwtSecret);
   if(payload.type==="guest"){
