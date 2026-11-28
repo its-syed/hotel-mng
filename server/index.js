@@ -34,16 +34,16 @@ io.use(async(socket,next)=>{
    if(!account||!account.active)return next(new Error("Guest account is inactive"));
    socket.data.kind="guest";socket.data.guestAccountId=account.id;return next();
   }
-  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true}});
+  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true,branchAssignments:{include:{branch:true}}}});
   if(!user||!user.active)return next(new Error("Staff account is inactive"));
   const permissions=Array.isArray(user.roleRecord?.permissions)?user.roleRecord.permissions:[];
   if(user.role!=="ADMIN"&&!permissions.includes("*")&&!permissions.includes("reservations.view"))return next(new Error("Not authorized"));
-  socket.data.kind="staff";return next();
+  socket.data.kind="staff";socket.data.organizationId=user.organizationId;socket.data.isAdmin=user.role==="ADMIN";socket.data.branchIds=user.branchAssignments.filter(a=>a.branch.active).map(a=>a.branchId);return next();
  }catch{return next(new Error("Unauthorized"));}
 });
 io.on("connection",socket=>{
  if(socket.data.kind==="guest")socket.join("guest:"+socket.data.guestAccountId);
- if(socket.data.kind==="staff")socket.join("staff:reservations");
+ if(socket.data.kind==="staff"){if(socket.data.isAdmin&&socket.data.organizationId)socket.join("staff:org:"+socket.data.organizationId);else socket.data.branchIds.forEach(id=>socket.join("staff:branch:"+id));}
 });
 
 const tokenFor=user=>jwt.sign({sub:user.id,role:user.role,email:user.email},jwtSecret,{expiresIn:"12h"});
@@ -204,7 +204,8 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  if(conflict)return res.status(409).json({error:"This room was just booked. Please search again."});
  const nights=Math.max(1,Math.ceil((end-start)/86400000));
  const result=await prisma.$transaction(async tx=>{let guest=await tx.guest.findFirst({where:{guestAccountId:account.id},orderBy:{createdAt:"asc"}});if(guest){guest=await tx.guest.update({where:{id:guest.id},data:{fullName,phone,email:email||null}})}else{guest=await tx.guest.create({data:{fullName,phone,email:email||null,guestAccountId:account.id}})}const reservation=await tx.reservation.create({data:{bookingCode:"WEB"+Date.now().toString().slice(-8),guestId:guest.id,roomId,checkIn:start,checkOut:end,adults:Number(adults||1),children:Number(children||0),totalAmount:Number(room.rate)*nights,status:"PENDING",source:"WEBSITE",notes:"Public website booking request"},include:{room:true,guest:true}});await tx.reservationStatusHistory.create({data:{reservationId:reservation.id,fromStatus:null,toStatus:"PENDING",changedBy:"Customer website"}});return reservation;});
- io.to("staff:reservations").emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
+ io.to("staff:branch:"+result.branchId).emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
+ if(account.organizationId)io.to("staff:org:"+account.organizationId).emit("reservation:created",{id:result.id,bookingCode:result.bookingCode});
  res.status(201).json({bookingCode:result.bookingCode,status:result.status,guest:result.guest.fullName,room:result.room.number,totalAmount:result.totalAmount,message:"Your booking request has been received. The hotel will confirm it shortly."});
 }));
 app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
