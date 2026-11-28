@@ -271,7 +271,7 @@ app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
   const today=dayStart(), tomorrow=dayEnd();
   const [allRooms,reservedRows]=await Promise.all([
     prisma.room.findMany({where,orderBy:[{floor:"asc"},{number:"asc"}]}),
-    prisma.reservation.findMany({where:{status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
+    prisma.reservation.findMany({where:{...branchScope(req),status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
   ]);
   const reservedIds=new Set(reservedRows.map(r=>r.roomId));
   const rooms=allRooms.map(room=>({...room,occupancyStatus:room.occupancyStatus==="RESERVED"&&!reservedIds.has(room.id)?"AVAILABLE":room.occupancyStatus,reservedToday:reservedIds.has(room.id)}));
@@ -304,25 +304,25 @@ app.post("/api/rooms/bulk", allow("rooms.create"), requireBranchContext, asyncRo
   const result=await prisma.room.createMany({data:rows,skipDuplicates:true});
   res.status(201).json({created:result.count,skipped:count-result.count,message:`Added ${result.count} rooms; ${count-result.count} already existed`});
 }));
-app.post("/api/rooms/bulk-archive", allow("rooms.delete"), asyncRoute(async (req,res) => {
+app.post("/api/rooms/bulk-archive", allow("rooms.delete"), requireBranchContext, asyncRoute(async (req,res) => {
   const roomIds=[...new Set((Array.isArray(req.body.roomIds)?req.body.roomIds:[]).filter(id=>typeof id==="string"))];
   if(!roomIds.length)return res.status(400).json({error:"Select at least one room"});
-  const selected=await prisma.room.findMany({where:{id:{in:roomIds},archivedAt:null},include:{reservations:{where:{status:{in:["PENDING","CONFIRMED","CHECKED_IN"]}},select:{id:true},take:1},tasks:{where:{status:{not:"COMPLETED"}},select:{id:true},take:1}}});
+  const selected=await prisma.room.findMany({where:{...branchScope(req),id:{in:roomIds},archivedAt:null},include:{reservations:{where:{status:{in:["PENDING","CONFIRMED","CHECKED_IN"]}},select:{id:true},take:1},tasks:{where:{status:{not:"COMPLETED"}},select:{id:true},take:1}}});
   if(selected.length!==roomIds.length)return res.status(404).json({error:"One or more selected rooms were not found or are already archived. Refresh and try again."});
   const unavailable=selected.filter(room=>room.occupancyStatus==="OCCUPIED"||room.reservations.length||room.tasks.length);
   if(unavailable.length)return res.status(409).json({error:"Cannot archive rooms with an active stay, upcoming reservation or unfinished housekeeping task: "+unavailable.map(room=>room.number).join(", ")+". Complete or move those operations first."});
   await prisma.room.updateMany({where:{id:{in:roomIds},archivedAt:null},data:{archivedAt:new Date()}});
   res.json({success:true,archived:roomIds.length,message:roomIds.length+" room(s) archived. Their history has been preserved."});
 }));
-app.patch("/api/rooms/:id/restore", allow("rooms.update"), asyncRoute(async (req,res) => {
-  const room=await prisma.room.findUnique({where:{id:req.params.id}});
+app.patch("/api/rooms/:id/restore", allow("rooms.update"), requireBranchContext, asyncRoute(async (req,res) => {
+  const room=await prisma.room.findFirst({where:{id:req.params.id,...branchScope(req)}});
   if(!room)return res.status(404).json({error:"Room not found"});
   if(!room.archivedAt)return res.status(409).json({error:"This room is already active"});
   const restored=await prisma.room.update({where:{id:room.id},data:{archivedAt:null}});
   res.json({success:true,room:restored,message:"Room "+room.number+" restored"});
 }));
-app.delete("/api/rooms/:id", allow("rooms.delete"), asyncRoute(async (req,res) => {
-  const room=await prisma.room.findUnique({where:{id:req.params.id}});
+app.delete("/api/rooms/:id", allow("rooms.delete"), requireBranchContext, asyncRoute(async (req,res) => {
+  const room=await prisma.room.findFirst({where:{id:req.params.id,...branchScope(req)}});
   if(!room)return res.status(404).json({error:"Room not found"});
   if(room.archivedAt)return res.status(409).json({error:"This room is already archived"});
   if(room.occupancyStatus==="OCCUPIED")return res.status(409).json({error:"An occupied room cannot be archived"});
@@ -331,8 +331,8 @@ app.delete("/api/rooms/:id", allow("rooms.delete"), asyncRoute(async (req,res) =
   const archived=await prisma.room.update({where:{id:room.id},data:{archivedAt:new Date()}});
   res.json({success:true,room:archived,message:"Room archived. Its history has been preserved."});
 }));
-app.patch("/api/rooms/:id/out-of-order", allow("rooms.update"), asyncRoute(async (req,res) => {
-  const room=await prisma.room.findUnique({where:{id:req.params.id}});
+app.patch("/api/rooms/:id/out-of-order", allow("rooms.update"), requireBranchContext, asyncRoute(async (req,res) => {
+  const room=await prisma.room.findFirst({where:{id:req.params.id,...branchScope(req)}});
   if(!room||room.archivedAt)return res.status(404).json({error:"Active room not found"});
   const outOfOrder=Boolean(req.body.outOfOrder);
   if(outOfOrder){
@@ -344,7 +344,7 @@ app.patch("/api/rooms/:id/out-of-order", allow("rooms.update"), asyncRoute(async
   res.json({success:true,room:updated,message:outOfOrder?"Room marked out of order":"Room returned to service"});
 }));
 
-app.patch("/api/rooms/:id", allow("rooms.update"), asyncRoute(async (req,res) => {
+app.patch("/api/rooms/:id", allow("rooms.update"), requireBranchContext, asyncRoute(async (req,res) => {
   const allowed = ["floor","category","rate","notes"];
   const data = Object.fromEntries(Object.entries(req.body).filter(([key])=>allowed.includes(key)));
   res.json(await prisma.room.update({where:{id:req.params.id},data}));
@@ -386,7 +386,7 @@ app.post("/api/reservations", allow("reservations.create"), requireBranchContext
   if(isWalkIn) await prisma.room.update({where:{id:roomId},data:{occupancyStatus:"OCCUPIED",housekeepingStatus:"CLEAN"}});
   res.status(201).json(reservation);
 }));
-app.patch("/api/reservations/:id/status", (req,res,next)=>{
+app.patch("/api/reservations/:id/status", requireBranchContext, (req,res,next)=>{
  const permission=({CONFIRMED:"reservations.confirm",CANCELLED:"reservations.cancel",CHECKED_IN:"reservations.checkIn",CHECKED_OUT:"reservations.checkOut",NO_SHOW:"reservations.update"})[req.body.status]||"reservations.update";
  return allow(permission)(req,res,next);
 }, asyncRoute(async (req,res) => {
@@ -495,7 +495,7 @@ app.post("/api/housekeeping/generate-daily", allow("housekeeping.tasks.create"),
   }
   res.json({created,message:`Created ${created} daily cleaning tasks`});
 }));
-app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), requireBranchContext, asyncRoute(async (req,res)=>{
   const {assignedTo}=req.body;
   const task=await prisma.housekeepingTask.findUnique({where:{id:req.params.id}});
   if(!task) return res.status(404).json({error:"Housekeeping task not found"});
@@ -508,7 +508,7 @@ app.patch("/api/housekeeping/:id/assign", allow("housekeeping.tasks.assign"), as
   res.json(await prisma.housekeepingTask.update({where:{id:task.id},data:{assignedTo:assignedTo||null},include:{room:true}}));
 }));
 
-app.patch("/api/housekeeping/:id/status", (req,res,next)=>allow(req.body.status==="COMPLETED"?"housekeeping.tasks.complete":"housekeeping.tasks.start")(req,res,next), asyncRoute(async (req,res)=>{
+app.patch("/api/housekeeping/:id/status", requireBranchContext, (req,res,next)=>allow(req.body.status==="COMPLETED"?"housekeeping.tasks.complete":"housekeeping.tasks.start")(req,res,next), asyncRoute(async (req,res)=>{
   const {status}=req.body;
   if(!["IN_PROGRESS","COMPLETED"].includes(status)) return res.status(400).json({error:"Use the Start Cleaning or Mark as Completed action"});
   const result=await prisma.$transaction(async tx=>{
