@@ -282,9 +282,10 @@ app.get("/api/reports", allow("reports.view"), asyncRoute(async (req,res)=>{
   const startText=String(req.query.start||"");
   const endText=String(req.query.end||"");
   const validDate=value=>{
-    if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
-    const parsed=new Date(value+"T00:00:00");
-    return !Number.isNaN(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year,month,day]=value.split("-").map(Number);
+    const parsed=new Date(year,month-1,day);
+    return parsed.getFullYear()===year&&parsed.getMonth()===month-1&&parsed.getDate()===day;
   };
   if(!validDate(startText)||!validDate(endText)) return res.status(400).json({error:"Choose a valid start and end date"});
   const start=new Date(startText+"T00:00:00");
