@@ -72,17 +72,38 @@ const guestAccountFromRequest=async(req,res)=>{
 };
 const normalizePhone=value=>String(value||"").replace(/\D/g,"");
 const isValidIndianMobile=value=>/^[6-9]\d{9}$/.test(normalizePhone(value));
+const setBranchContext=async(req,user)=>{
+ const assignments=(user.branchAssignments||[]).filter(a=>a.branch?.active);
+ req.organizationId=user.organizationId||null;
+ if(user.role==="ADMIN"){
+  const requested=String(req.headers["x-branch-id"]||"").trim();
+  if(requested){
+   const branch=await prisma.branch.findFirst({where:{id:requested,organizationId:user.organizationId,active:true}});
+   if(!branch)throw new Error("The selected branch is not available in this organization");
+   req.branchId=branch.id;req.branch=branch;
+  }else{req.branchId=null;req.branch=null;}
+  return;
+ }
+ if(!assignments.length)throw new Error("Your account is not assigned to an active branch. Contact the administrator.");
+ const branch=assignments[0].branch;
+ req.branchId=branch.id;req.branch=branch;
+};
 const authenticate=asyncRoute(async(req,res,next)=>{
- if(process.env.DEV_AUTH_BYPASS==="true"){req.user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true,permissions:["*"]};return next();}
+ if(process.env.DEV_AUTH_BYPASS==="true"){
+  const organization=await prisma.organization.findFirst({include:{branches:{where:{active:true},orderBy:{createdAt:"asc"}}}});
+  const user={id:"dev-admin",fullName:"Development Admin",email:"dev@ezystay.local",role:"ADMIN",active:true,permissions:["*"],organizationId:organization?.id||null};
+  req.user=user;await setBranchContext(req,user);return next();
+ }
  const token=(req.headers.authorization||"").replace(/^Bearer\s+/i,"");
  if(!token)return res.status(401).json({error:"Please sign in"});
  try{
   const payload=jwt.verify(token,JWT_SECRET||"development-only-change-me");
-  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true}});
+  const user=await prisma.user.findUnique({where:{id:payload.sub},include:{roleRecord:true,branchAssignments:{include:{branch:true}}}});
   if(!user||!user.active)return res.status(401).json({error:"Account is inactive"});
   user.permissions=Array.isArray(user.roleRecord?.permissions)?user.roleRecord.permissions:[];
+  await setBranchContext(req,user);
   req.user=user;next();
- }catch{return res.status(401).json({error:"Session expired. Please sign in again"});}
+ }catch(error){return res.status(401).json({error:error.message||"Session expired. Please sign in again"});}
 });
 const allow=(permission)=>(req,res,next)=>{
  const permissions=req.user?.permissions||[];
@@ -91,12 +112,16 @@ const allow=(permission)=>(req,res,next)=>{
 };
 app.post("/api/auth/login",asyncRoute(async(req,res)=>{
  const {email,password}=req.body;if(!email||!password)return res.status(400).json({error:"Email and password are required"});
- const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()}});
+ const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()},include:{branchAssignments:{include:{branch:true}}}});
  if(!user||!user.active||!(await bcrypt.compare(password,user.passwordHash)))return res.status(401).json({error:"Invalid email or password"});
  const roleRecord=user.roleId?await prisma.role.findUnique({where:{id:user.roleId}}):await prisma.role.findUnique({where:{key:user.role}});
- res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role,roleId:user.roleId,permissions:Array.isArray(roleRecord?.permissions)?roleRecord.permissions:[]}});
+ const branches=user.role==="ADMIN"?await prisma.branch.findMany({where:{organizationId:user.organizationId,active:true},orderBy:{name:"asc"}}):user.branchAssignments.filter(a=>a.branch.active).map(a=>a.branch);
+ res.json({token:tokenFor(user),user:{id:user.id,fullName:user.fullName,email:user.email,role:user.role,roleId:user.roleId,organizationId:user.organizationId,permissions:Array.isArray(roleRecord?.permissions)?roleRecord.permissions:[],branches,isAdmin:user.role==="ADMIN"}});
 }));
-app.get("/api/auth/me",authenticate,(req,res)=>res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role,roleId:req.user.roleId,permissions:req.user.permissions||[]}));
+app.get("/api/auth/me",authenticate,asyncRoute(async(req,res)=>{
+ const branches=req.user.role==="ADMIN"?await prisma.branch.findMany({where:{organizationId:req.user.organizationId,active:true},orderBy:{name:"asc"}}):(req.user.branchAssignments||[]).filter(a=>a.branch.active).map(a=>a.branch);
+ res.json({id:req.user.id,fullName:req.user.fullName,email:req.user.email,role:req.user.role,roleId:req.user.roleId,organizationId:req.user.organizationId,permissions:req.user.permissions||[],branches,isAdmin:req.user.role==="ADMIN",activeBranchId:req.branchId});
+}));
 
 app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
  const fullName=String(req.body.fullName||"").trim();
@@ -188,6 +213,32 @@ app.post("/api/public/booking-status",asyncRoute(async(req,res)=>{
  res.json({bookingCode:booking.bookingCode,status:booking.status,room:booking.room.number,category:booking.room.category,checkIn:booking.checkIn,checkOut:booking.checkOut});
 }));
 app.use("/api",(req,res,next)=>{if(req.path.startsWith("/auth/")||req.path.startsWith("/public/"))return next();authenticate(req,res,next);});
+
+const adminOnly=(req,res,next)=>req.user?.role==="ADMIN"?next():res.status(403).json({error:"Only an organization administrator can manage branches"});
+app.get("/api/branches",adminOnly,asyncRoute(async(req,res)=>{
+ if(!req.organizationId)return res.status(409).json({error:"This account is not linked to an organization yet"});
+ res.json(await prisma.branch.findMany({where:{organizationId:req.organizationId},orderBy:[{active:"desc"},{name:"asc"}]}));
+}));
+app.post("/api/branches",adminOnly,asyncRoute(async(req,res)=>{
+ const name=String(req.body.name||"").trim(),code=String(req.body.code||"").trim().toUpperCase();
+ if(!name||!code)return res.status(400).json({error:"Branch name and code are required"});
+ if(!req.organizationId)return res.status(409).json({error:"This account is not linked to an organization yet"});
+ const branch=await prisma.branch.create({data:{organizationId:req.organizationId,name,code,address:String(req.body.address||"").trim()||null,phone:String(req.body.phone||"").trim()||null,email:String(req.body.email||"").trim().toLowerCase()||null}});
+ res.status(201).json(branch);
+}));
+app.patch("/api/branches/:id",adminOnly,asyncRoute(async(req,res)=>{
+ const current=await prisma.branch.findFirst({where:{id:req.params.id,organizationId:req.organizationId}});
+ if(!current)return res.status(404).json({error:"Branch not found"});
+ const data={};
+ for(const key of ["name","address","phone"])if(req.body[key]!==undefined)data[key]=String(req.body[key]||"").trim()||null;
+ if(req.body.email!==undefined)data.email=String(req.body.email||"").trim().toLowerCase()||null;
+ if(req.body.active!==undefined)data.active=Boolean(req.body.active);
+ res.json(await prisma.branch.update({where:{id:current.id},data}));
+}));
+app.get("/api/branches/context",asyncRoute(async(req,res)=>{
+ res.json({activeBranchId:req.branchId,branch:req.branch||null,isAdmin:req.user.role==="ADMIN",branches:req.user.role==="ADMIN"?await prisma.branch.findMany({where:{organizationId:req.organizationId,active:true},orderBy:{name:"asc"}}):(req.user.branchAssignments||[]).filter(a=>a.branch.active).map(a=>a.branch)});
+}));
+
 
 
 app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) => {
