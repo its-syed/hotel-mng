@@ -239,7 +239,9 @@ app.patch("/api/branches/:id",adminOnly,asyncRoute(async(req,res)=>{
  const current=await prisma.branch.findFirst({where:{id:req.params.id,organizationId:req.organizationId}});
  if(!current)return res.status(404).json({error:"Branch not found"});
  const data={};
- for(const key of ["name","address","phone"])if(req.body[key]!==undefined)data[key]=String(req.body[key]||"").trim()||null;
+ if(req.body.name!==undefined){const name=String(req.body.name||"").trim();if(!name)return res.status(400).json({error:"Branch name cannot be empty"});data.name=name;}
+ if(req.body.code!==undefined){const code=String(req.body.code||"").trim().toUpperCase();if(!code)return res.status(400).json({error:"Branch code cannot be empty"});data.code=code;}
+ for(const key of ["address","phone"])if(req.body[key]!==undefined)data[key]=String(req.body[key]||"").trim()||null;
  if(req.body.email!==undefined)data.email=String(req.body.email||"").trim().toLowerCase()||null;
  if(req.body.active!==undefined)data.active=Boolean(req.body.active);
  res.json(await prisma.branch.update({where:{id:current.id},data}));
