@@ -18,18 +18,24 @@ try {
       organization = await tx.organization.create({ data: { name: organizationName } });
     }
 
-    const branch = await tx.branch.upsert({
-      where: { organizationId_code: { organizationId: organization.id, code: branchCode } },
-      update: { name: branchName },
-      create: { organizationId: organization.id, name: branchName, code: branchCode }
+    let branch = await tx.branch.findUnique({
+      where: { organizationId_code: { organizationId: organization.id, code: branchCode } }
     });
+    if (branch && branch.name !== branchName) {
+      throw new Error(`Branch code "${branchCode}" already exists as "${branch.name}". Refusing to rename it automatically.`);
+    }
+    if (!branch) {
+      branch = await tx.branch.create({
+        data: { organizationId: organization.id, name: branchName, code: branchCode }
+      });
+    }
 
-    // Existing operational records belong to the first branch.
+    // Existing operational records belong to the initial branch.
     await tx.room.updateMany({ where: { branchId: null }, data: { branchId: branch.id } });
     await tx.reservation.updateMany({ where: { branchId: null }, data: { branchId: branch.id } });
     await tx.payment.updateMany({ where: { branchId: null }, data: { branchId: branch.id } });
 
-    // Guest profiles and guest accounts belong to the organization, not a branch.
+    // Guest records are shared across branches within the organization.
     await tx.guestAccount.updateMany({
       where: { organizationId: null },
       data: { organizationId: organization.id }
@@ -38,13 +44,12 @@ try {
       where: { organizationId: null },
       data: { organizationId: organization.id }
     });
-
     await tx.user.updateMany({
       where: { organizationId: null },
       data: { organizationId: organization.id }
     });
 
-    // Admins remain organization-wide. Other existing users start in the first branch.
+    // Admins remain organization-wide. Existing non-admin users start in Main Branch.
     const branchUsers = await tx.user.findMany({
       where: { organizationId: organization.id, role: { not: "ADMIN" } },
       select: { id: true }
@@ -56,8 +61,49 @@ try {
       });
     }
 
+    const [
+      roomsWithoutBranch,
+      reservationsWithoutBranch,
+      paymentsWithoutBranch,
+      guestsWithoutOrganization,
+      accountsWithoutOrganization,
+      usersWithoutOrganization
+    ] = await Promise.all([
+      tx.room.count({ where: { branchId: null } }),
+      tx.reservation.count({ where: { branchId: null } }),
+      tx.payment.count({ where: { branchId: null } }),
+      tx.guest.count({ where: { organizationId: null } }),
+      tx.guestAccount.count({ where: { organizationId: null } }),
+      tx.user.count({ where: { organizationId: null } })
+    ]);
+
+    const reservationRoomMismatch = await tx.$queryRawUnsafe(
+      'SELECT COUNT(*)::int AS count FROM "Reservation" r JOIN "Room" rm ON rm."id" = r."roomId" WHERE r."branchId" IS DISTINCT FROM rm."branchId"'
+    );
+    const paymentReservationMismatch = await tx.$queryRawUnsafe(
+      'SELECT COUNT(*)::int AS count FROM "Payment" p JOIN "Reservation" r ON r."id" = p."reservationId" WHERE p."branchId" IS DISTINCT FROM r."branchId"'
+    );
+
+    const incomplete = {
+      roomsWithoutBranch,
+      reservationsWithoutBranch,
+      paymentsWithoutBranch,
+      guestsWithoutOrganization,
+      accountsWithoutOrganization,
+      usersWithoutOrganization,
+      reservationRoomMismatch: Number(reservationRoomMismatch[0]?.count || 0),
+      paymentReservationMismatch: Number(paymentReservationMismatch[0]?.count || 0)
+    };
+    const failures = Object.entries(incomplete).filter(([, count]) => count > 0);
+    if (failures.length) {
+      throw new Error("Backfill verification failed: " + failures.map(([key, count]) => key + "=" + count).join(", "));
+    }
+
     console.log(`Organization "${organization.name}" and branch "${branch.name}" are ready.`);
-    console.log(`Assigned existing rooms, reservations, payments, guests and staff to the initial organization/branch.`);
+    console.log(`Assigned ${await tx.room.count({ where: { branchId: branch.id }})} rooms and ${await tx.reservation.count({ where: { branchId: branch.id }})} reservations to the initial branch.`);
+    console.log(`Shared guest records: ${await tx.guest.count({ where: { organizationId: organization.id }})} guests and ${await tx.guestAccount.count({ where: { organizationId: organization.id }})} guest accounts.`);
+    console.log(`Assigned ${branchUsers.length} existing non-admin staff accounts to the initial branch. Admin accounts retain organization-wide access.`);
+    console.log("Backfill verification passed. No records were deleted.");
   });
 } catch (error) {
   console.error("Multi-branch data backfill failed:", error);
