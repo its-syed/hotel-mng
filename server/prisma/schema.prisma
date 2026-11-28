@@ -42,6 +42,51 @@ enum PaymentMethod {
   ONLINE
 }
 
+model Organization {
+  id            String         @id @default(cuid())
+  name          String
+  branches      Branch[]
+  users         User[]
+  guestAccounts GuestAccount[]
+  guests        Guest[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Branch {
+  id             String        @id @default(cuid())
+  organizationId String
+  name           String
+  code           String
+  address        String?
+  phone          String?
+  email          String?
+  active         Boolean       @default(true)
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  rooms          Room[]
+  reservations   Reservation[]
+  payments       Payment[]
+  staff          StaffBranch[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([organizationId, code])
+  @@unique([organizationId, name])
+  @@index([organizationId, active])
+}
+
+model StaffBranch {
+  id        String   @id @default(cuid())
+  userId    String
+  branchId  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, branchId])
+  @@index([branchId])
+}
+
 model Role {
   id          String   @id @default(cuid())
   key         String   @unique
@@ -58,7 +103,7 @@ model Role {
 
 model Room {
   id                 String             @id @default(cuid())
-  number             String             @unique
+  number             String
   floor              Int                @default(1)
   category           String
   rate               Decimal            @db.Decimal(10, 2)
@@ -66,10 +111,15 @@ model Room {
   housekeepingStatus HousekeepingStatus @default(CLEAN)
   notes              String?
   archivedAt         DateTime?
+  branchId           String?
+  branch             Branch?            @relation(fields: [branchId], references: [id], onDelete: Restrict)
   reservations       Reservation[]
   tasks              HousekeepingTask[]
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
+
+  @@unique([branchId, number])
+  @@index([branchId, archivedAt])
 }
 
 model GuestAccount {
@@ -79,6 +129,8 @@ model GuestAccount {
   email        String   @unique
   passwordHash String
   active       Boolean  @default(true)
+  organizationId String?
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   guestRecords Guest[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -86,6 +138,8 @@ model GuestAccount {
 
 model Guest {
   id             String        @id @default(cuid())
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   fullName       String
   phone          String
   email          String?
@@ -104,6 +158,7 @@ model Reservation {
   bookingCode  String                     @unique
   guestId      String
   roomId       String
+  branchId     String?
   checkIn      DateTime
   checkOut     DateTime?
   checkedInAt  DateTime?
@@ -118,6 +173,7 @@ model Reservation {
   notes        String?
   guest        Guest                      @relation(fields: [guestId], references: [id])
   room         Room                       @relation(fields: [roomId], references: [id])
+  branch       Branch?                    @relation(fields: [branchId], references: [id], onDelete: Restrict)
   payments     Payment[]
   statusHistory ReservationStatusHistory[]
   createdAt    DateTime                   @default(now())
@@ -125,6 +181,7 @@ model Reservation {
 
   @@index([checkIn, status])
   @@index([roomId, checkIn, checkOut])
+  @@index([branchId, checkIn, status])
 }
 
 model HousekeepingTask {
@@ -148,6 +205,7 @@ model Payment {
   paymentCode   String        @unique
   guestId       String
   reservationId String?
+  branchId      String?
   amount        Decimal       @db.Decimal(10, 2)
   method        PaymentMethod
   status        String        @default("PAID")
@@ -155,6 +213,9 @@ model Payment {
   paidAt        DateTime      @default(now())
   guest         Guest         @relation(fields: [guestId], references: [id])
   reservation   Reservation?  @relation(fields: [reservationId], references: [id])
+  branch        Branch?       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+
+  @@index([branchId, paidAt])
 }
 
 model Staff {
@@ -173,6 +234,9 @@ model User {
   passwordHash String
   role         String   @default("RECEPTIONIST")
   roleId       String?
+  organizationId String?
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  branchAssignments StaffBranch[]
   roleRecord   Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
