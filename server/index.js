@@ -126,6 +126,8 @@ app.get("/api/auth/me",authenticate,asyncRoute(async(req,res)=>{
 }));
 
 app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
+ const organization=await prisma.organization.findFirst();
+ if(!organization)return res.status(503).json({error:"Hotel booking is not configured yet. Please contact the property."});
  const fullName=String(req.body.fullName||"").trim();
  const phone=normalizePhone(req.body.phone);
  const email=String(req.body.email||"").trim().toLowerCase();
@@ -134,7 +136,7 @@ app.post("/api/guest/auth/register",asyncRoute(async(req,res)=>{
   return res.status(400).json({error:"Enter your name, a valid phone number, email and a password of at least 8 characters"});
  const existing=await prisma.guestAccount.findFirst({where:{OR:[{email},{phone}]}});
  if(existing)return res.status(409).json({error:"An account already exists with this email or phone number. Please sign in instead."});
- const account=await prisma.guestAccount.create({data:{fullName,phone,email,passwordHash:await bcrypt.hash(password,12)}});
+ const account=await prisma.guestAccount.create({data:{organizationId:organization.id,fullName,phone,email,passwordHash:await bcrypt.hash(password,12)}});
  res.status(201).json({token:guestTokenFor(account),user:{id:account.id,fullName:account.fullName,phone:account.phone,email:account.email}});
 }));
 app.post("/api/guest/auth/login",asyncRoute(async(req,res)=>{
@@ -175,10 +177,13 @@ app.post("/api/public/guest-otp/verify",asyncRoute(async(req,res)=>{
  res.json({success:true,bookings});
 }));
 
+app.get("/api/public/branches",asyncRoute(async(_req,res)=>{const organization=await prisma.organization.findFirst();if(!organization)return res.json([]);res.json(await prisma.branch.findMany({where:{organizationId:organization.id,active:true},select:{id:true,name:true,code:true,address:true},orderBy:{name:"asc"}}));}));
 app.get("/api/public/availability",asyncRoute(async(req,res)=>{
- const {checkIn,checkOut}=req.query;const start=new Date(checkIn),end=new Date(checkOut);
+ const {checkIn,checkOut,branchId}=req.query;const start=new Date(checkIn),end=new Date(checkOut);
  if(!checkIn||!checkOut||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"Choose valid check-in and check-out dates"});
- const rooms=await prisma.room.findMany({where:{archivedAt:null,occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
+ const branch=branchId?await prisma.branch.findFirst({where:{id:String(branchId),active:true}}):null;
+ if(branchId&&!branch)return res.status(404).json({error:"Choose an active branch"});
+ const rooms=await prisma.room.findMany({where:{...(branchId?{branchId:String(branchId)}:{}),archivedAt:null,occupancyStatus:{not:"OUT_OF_ORDER"}},orderBy:[{floor:"asc"},{number:"asc"}]});
  const conflicts=await prisma.reservation.findMany({where:{status:{in:["CONFIRMED","CHECKED_IN"]},checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}]},select:{roomId:true}});
  const busy=new Set(conflicts.map(x=>x.roomId));
  const occupiedIds=rooms.filter(r=>r.occupancyStatus==="OCCUPIED").map(r=>r.id);
@@ -194,7 +199,8 @@ app.post("/api/public/bookings",asyncRoute(async(req,res)=>{
  const email=account.email;
  const {roomId,checkIn,checkOut,adults,children}=req.body;const start=new Date(checkIn),end=new Date(checkOut);
  if(!fullName||!isValidIndianMobile(phone)||!roomId||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||end<=start)return res.status(400).json({error:"A valid Indian mobile number and valid stay dates are required"});
- const room=await prisma.room.findFirst({where:{id:roomId,...branchScope(req)}});
+ const room=await prisma.room.findUnique({where:{id:roomId}});
+ if(req.body.branchId&&room?.branchId!==req.body.branchId)return res.status(409).json({error:"The selected room does not belong to the chosen branch"});
  if(!room||room.archivedAt||room.occupancyStatus==="OUT_OF_ORDER")return res.status(404).json({error:"Room is not available"});
  if(room.occupancyStatus==="OCCUPIED"){
   const activeStay=await prisma.reservation.findFirst({where:{roomId,status:"CHECKED_IN"}});
