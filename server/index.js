@@ -565,6 +565,17 @@ app.post("/api/staff",allow("staff.create"),allow("roles.assign"),adminOnly,asyn
  const user=await prisma.$transaction(async tx=>{const created=await tx.user.create({data:{organizationId:req.organizationId,fullName,email:String(email).toLowerCase(),passwordHash,role:selectedRole.key,roleId:selectedRole.id},select:{id:true,fullName:true,email:true,role:true,roleId:true,active:true}});if(branchId)await tx.staffBranch.create({data:{userId:created.id,branchId}});return created;});
  res.status(201).json(user);
 }));
+app.patch("/api/staff/:id/branch",adminOnly,asyncRoute(async(req,res)=>{
+ const current=await prisma.user.findFirst({where:{id:req.params.id,organizationId:req.organizationId}});
+ if(!current)return res.status(404).json({error:"Staff member not found"});
+ if(current.role==="ADMIN")return res.status(400).json({error:"Administrator accounts have access to all branches"});
+ const branchId=String(req.body.branchId||"").trim();
+ if(!branchId)return res.status(400).json({error:"Choose a branch for this staff member"});
+ const branch=await prisma.branch.findFirst({where:{id:branchId,organizationId:req.organizationId,active:true}});
+ if(!branch)return res.status(400).json({error:"Choose an active branch in this organization"});
+ await prisma.$transaction(async tx=>{await tx.staffBranch.deleteMany({where:{userId:current.id}});await tx.staffBranch.create({data:{userId:current.id,branchId}});});
+ res.json({success:true,message:current.fullName+" is now assigned to "+branch.name});
+}));
 app.patch("/api/staff/:id/active",allow("staff.deactivate"),adminOnly,asyncRoute(async(req,res)=>{if(req.params.id===req.user.id&&req.body.active===false)return res.status(400).json({error:"You cannot deactivate your own account"});const current=await prisma.user.findFirst({where:{id:req.params.id,organizationId:req.organizationId}});if(!current)return res.status(404).json({error:"Staff member not found"});res.json(await prisma.user.update({where:{id:current.id},data:{active:Boolean(req.body.active)},select:{id:true,fullName:true,email:true,role:true,active:true}}));}));
 
 app.get("/api/roles",allow("roles.view"),asyncRoute(async(_req,res)=>res.json(await prisma.role.findMany({orderBy:[{isSystem:"desc"},{name:"asc"}]}))));
