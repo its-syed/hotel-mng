@@ -110,6 +110,8 @@ const allow=(permission)=>(req,res,next)=>{
  if(req.user?.role==="ADMIN"||permissions.includes("*")||permissions.includes(permission))return next();
  return res.status(403).json({error:"Your role does not have permission to perform this action",requiredPermission:permission});
 };
+const branchScope=req=>req.branchId?{branchId:req.branchId}:req.user?.role==="ADMIN"?{}:{branchId:"__no_branch_access__"};
+const requireBranchContext=(req,res,next)=>req.branchId?next():res.status(409).json({error:"Select an individual branch before performing this action"});
 app.post("/api/auth/login",asyncRoute(async(req,res)=>{
  const {email,password}=req.body;if(!email||!password)return res.status(400).json({error:"Email and password are required"});
  const user=await prisma.user.findUnique({where:{email:String(email).toLowerCase()},include:{branchAssignments:{include:{branch:true}}}});
@@ -241,20 +243,21 @@ app.get("/api/branches/context",asyncRoute(async(req,res)=>{
 
 
 
-app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) => {
+app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (req,res) => {
+  const branch=branchScope(req);
   const today = dayStart();
   const tomorrow = dayEnd();
   const [total, occupied, availableBase, outOfOrder, clean, dirty, cleaning, arrivals, departures, checkIns, checkOuts, tasks, reservedTodayRows] = await Promise.all([
-    prisma.room.count({where:{archivedAt:null}}), prisma.room.count({where:{archivedAt:null,occupancyStatus:"OCCUPIED"}}),
-    prisma.room.count({where:{archivedAt:null,occupancyStatus:{in:["AVAILABLE","RESERVED"]}}}), prisma.room.count({where:{archivedAt:null,occupancyStatus:"OUT_OF_ORDER"}}),
-    prisma.room.count({where:{archivedAt:null,housekeepingStatus:"CLEAN"}}),
-    prisma.room.count({where:{archivedAt:null,housekeepingStatus:"DIRTY"}}), prisma.room.count({where:{archivedAt:null,housekeepingStatus:"CLEANING"}}),
-    prisma.reservation.count({where:{checkIn:{gte:today,lt:tomorrow},status:"CONFIRMED"}}),
-    prisma.reservation.count({where:{checkOut:{gte:today,lt:tomorrow},status:{in:["CONFIRMED","CHECKED_IN"]}}}),
-    prisma.reservation.count({where:{checkedInAt:{gte:today,lt:tomorrow}}}),
-    prisma.reservation.count({where:{checkedOutAt:{gte:today,lt:tomorrow}}}),
-    prisma.housekeepingTask.count({where:{scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}}),
-    prisma.reservation.findMany({where:{status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
+    prisma.room.count({where:{...branch,archivedAt:null}}), prisma.room.count({where:{...branch,archivedAt:null,occupancyStatus:"OCCUPIED"}}),
+    prisma.room.count({where:{...branch,archivedAt:null,occupancyStatus:{in:["AVAILABLE","RESERVED"]}}}), prisma.room.count({where:{...branch,archivedAt:null,occupancyStatus:"OUT_OF_ORDER"}}),
+    prisma.room.count({where:{...branch,archivedAt:null,housekeepingStatus:"CLEAN"}}),
+    prisma.room.count({where:{...branch,archivedAt:null,housekeepingStatus:"DIRTY"}}), prisma.room.count({where:{...branch,archivedAt:null,housekeepingStatus:"CLEANING"}}),
+    prisma.reservation.count({where:{...branch,checkIn:{gte:today,lt:tomorrow},status:"CONFIRMED"}}),
+    prisma.reservation.count({where:{...branch,checkOut:{gte:today,lt:tomorrow},status:{in:["CONFIRMED","CHECKED_IN"]}}}),
+    prisma.reservation.count({where:{...branch,checkedInAt:{gte:today,lt:tomorrow}}}),
+    prisma.reservation.count({where:{...branch,checkedOutAt:{gte:today,lt:tomorrow}}}),
+    prisma.housekeepingTask.count({where:{...branch,scheduledAt:{gte:today,lt:tomorrow},status:{not:"COMPLETED"}}}),
+    prisma.reservation.findMany({where:{...branch,status:"CONFIRMED",checkIn:{lt:tomorrow},OR:[{checkOut:{gt:today}},{checkOut:null}]},select:{roomId:true},distinct:["roomId"]})
   ]);
   const reserved=await prisma.room.count({where:{id:{in:reservedTodayRows.map(r=>r.roomId)},occupancyStatus:{in:["AVAILABLE","RESERVED"]}}});
   const available=Math.max(0,availableBase-reserved);
@@ -262,7 +265,7 @@ app.get("/api/dashboard", allow("dashboard.view"), asyncRoute(async (_req,res) =
 }));
 
 app.get("/api/rooms", allow("rooms.view"), asyncRoute(async (req,res) => {
-  const where = {archivedAt:req.query.archived==="true"?{not:null}:null};
+  const where = {...branchScope(req),archivedAt:req.query.archived==="true"?{not:null}:null};
   if (req.query.housekeepingStatus) where.housekeepingStatus = req.query.housekeepingStatus;
   if (req.query.floor) where.floor = Number(req.query.floor);
   const today=dayStart(), tomorrow=dayEnd();
@@ -348,7 +351,7 @@ app.patch("/api/rooms/:id", allow("rooms.update"), asyncRoute(async (req,res) =>
 }));
 
 app.get("/api/reservations", allow("reservations.view"), asyncRoute(async (req,res) => {
-  const where = {};
+  const where = {...branchScope(req)};
   if (req.query.status) where.status = req.query.status;
   if (req.query.source) where.source = req.query.source;
   if (req.query.date) { const d=dayStart(req.query.date); where.checkIn={gte:d,lt:dayEnd(d)}; }
@@ -454,7 +457,7 @@ app.get("/api/housekeeping", (req,res,next)=>{
  if(permissions.includes("housekeeping.tasks.viewAssigned")){req.housekeepingAssignedOnly=true;return next();}
  return res.status(403).json({error:"Your role does not have permission to view housekeeping tasks"});
 }, asyncRoute(async (req,res)=>{
- const where=req.housekeepingAssignedOnly?{assignedTo:req.user.fullName}:{};
+ const where={...(req.housekeepingAssignedOnly?{assignedTo:req.user.fullName}:{}),room:branchScope(req)};
  if(req.query.status)where.status=req.query.status;
  if(req.query.date){const d=dayStart(req.query.date);where.scheduledAt={gte:d,lt:dayEnd(d)};}
  res.json(await prisma.housekeepingTask.findMany({where,include:{room:true},orderBy:{scheduledAt:"desc"}}));
@@ -524,7 +527,7 @@ app.patch("/api/housekeeping/:id/status", (req,res,next)=>allow(req.body.status=
   res.json({...result.task,room:result.room});
 }));
 
-app.get("/api/payments", allow("payments.view"), asyncRoute(async (_req,res)=>res.json(await prisma.payment.findMany({include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
+app.get("/api/payments", allow("payments.view"), asyncRoute(async (req,res)=>res.json(await prisma.payment.findMany({where:branchScope(req),include:{guest:true,reservation:true},orderBy:{paidAt:"desc"}}))));
 app.post("/api/payments", allow("payments.record"), asyncRoute(async (req,res)=>{
   const {guestId,reservationId,amount,method,reference}=req.body;
   if(!guestId||amount==null||!["CASH","UPI","CARD","ONLINE"].includes(method)) return res.status(400).json({error:"Guest, amount and valid payment method are required"});
@@ -539,8 +542,8 @@ app.get("/api/room-rack", allow("rooms.view"), asyncRoute(async (req,res)=>{
   const days=mode==="daily"?1:mode==="weekly"?7:new Date(start.getFullYear(),start.getMonth()+1,0).getDate();
   const end=new Date(start);end.setDate(end.getDate()+days);
   const [rooms,reservations]=await Promise.all([
-    prisma.room.findMany({where:{archivedAt:null},orderBy:[{floor:"asc"},{number:"asc"}]}),
-    prisma.reservation.findMany({where:{checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}],status:{in:["CONFIRMED","CHECKED_IN"]}},include:{guest:true}})
+    prisma.room.findMany({where:{...branchScope(req),archivedAt:null},orderBy:[{floor:"asc"},{number:"asc"}]}),
+    prisma.reservation.findMany({where:{...branchScope(req),checkIn:{lt:end},OR:[{checkOut:{gt:start}},{checkOut:null}],status:{in:["CONFIRMED","CHECKED_IN"]}},include:{guest:true}})
   ]);
   const dates=Array.from({length:days},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");});
   res.json({mode,dates,rooms:rooms.map(room=>({...room,reservations:reservations.filter(r=>r.roomId===room.id)}))});
